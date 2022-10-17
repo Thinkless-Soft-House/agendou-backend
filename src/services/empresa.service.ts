@@ -16,7 +16,7 @@ class EmpresaService extends Repository<EmpresaEntity> {
     if (isEmpty(companyId)) throw new HttpException(400, 'CompanyId está vazio');
 
     const findCompany: Empresa = await EmpresaEntity.findOne({ where: { id: companyId } });
-    if (!findCompany) throw new HttpException(409, 'Usuario não existe');
+    if (!findCompany) throw new HttpException(409, 'Empresa não existe');
 
     return findCompany;
   }
@@ -33,7 +33,7 @@ class EmpresaService extends Repository<EmpresaEntity> {
     if (isEmpty(companyData)) throw new HttpException(400, 'Usuário Data está vazio');
 
     const findCompany: Empresa = await EmpresaEntity.findOne({ where: { id: companyId } });
-    if (!findCompany) throw new HttpException(409, 'Usuário não existe');
+    if (!findCompany) throw new HttpException(409, 'Empresa não existe');
 
     await EmpresaEntity.update(companyId, { ...companyData });
 
@@ -45,7 +45,7 @@ class EmpresaService extends Repository<EmpresaEntity> {
     if (isEmpty(companyId)) throw new HttpException(400, 'CompanyId está vazio');
 
     const findCompany: Empresa = await EmpresaEntity.findOne({ where: { id: companyId } });
-    if (!findCompany) throw new HttpException(409, 'Usuário não existe');
+    if (!findCompany) throw new HttpException(409, 'Empresa não existe');
 
     await EmpresaEntity.delete({ id: companyId });
     return findCompany;

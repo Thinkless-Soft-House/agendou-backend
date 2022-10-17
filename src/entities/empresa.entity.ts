@@ -1,5 +1,6 @@
 import { Empresa } from '@/interfaces/empresa.interface';
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { SalaEntity } from './sala.entity';
 import { UsuarioEntity } from './usuario.entity';
 
 @Entity({ name: 'EMPRESA' })
@@ -27,4 +28,10 @@ export class EmpresaEntity extends BaseEntity implements Empresa {
     onUpdate: 'NO ACTION',
   })
   usuarios: UsuarioEntity[];
+
+  @OneToMany(() => SalaEntity, sala => sala.empresa, {
+    onDelete: 'NO ACTION',
+    onUpdate: 'NO ACTION',
+  })
+  salas: SalaEntity[];
 }

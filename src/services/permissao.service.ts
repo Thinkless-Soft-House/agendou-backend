@@ -16,7 +16,7 @@ class PermissaoService extends Repository<PermissaoEntity> {
     if (isEmpty(permissionId)) throw new HttpException(400, 'PermissionId está vazio');
 
     const findPermission: Permissao = await PermissaoEntity.findOne({ where: { id: permissionId } });
-    if (!findPermission) throw new HttpException(409, 'Usuario não existe');
+    if (!findPermission) throw new HttpException(409, 'Permissão não existe');
 
     return findPermission;
   }
@@ -33,7 +33,7 @@ class PermissaoService extends Repository<PermissaoEntity> {
     if (isEmpty(permissionData)) throw new HttpException(400, 'Usuário Data está vazio');
 
     const findPermission: Permissao = await PermissaoEntity.findOne({ where: { id: permissionId } });
-    if (!findPermission) throw new HttpException(409, 'Usuário não existe');
+    if (!findPermission) throw new HttpException(409, 'Permissão não existe');
 
     await PermissaoEntity.update(permissionId, { ...permissionData });
 
@@ -45,7 +45,7 @@ class PermissaoService extends Repository<PermissaoEntity> {
     if (isEmpty(permissionId)) throw new HttpException(400, 'PermissionId está vazio');
 
     const findPermission: Permissao = await PermissaoEntity.findOne({ where: { id: permissionId } });
-    if (!findPermission) throw new HttpException(409, 'Usuário não existe');
+    if (!findPermission) throw new HttpException(409, 'Permissão não existe');
 
     await PermissaoEntity.delete({ id: permissionId });
     return findPermission;

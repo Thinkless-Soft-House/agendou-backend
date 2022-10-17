@@ -1,6 +1,8 @@
 import { EmpresaEntity } from '@/entities/empresa.entity';
 import { PermissaoEntity } from '@/entities/permissao.entity';
 import { PessoaEntity } from '@/entities/pessoa.entity';
+import { ReservaEntity } from '@/entities/reserva.entity';
+import { ResponsavelEntity } from '@/entities/responsavel.entity';
 
 export interface Usuario {
   id: number;
@@ -20,4 +22,7 @@ export interface Usuario {
   empresa: EmpresaEntity;
   permissao: PermissaoEntity;
   pessoa: PessoaEntity;
+
+  responsavel: ResponsavelEntity[];
+  reservas: ReservaEntity[];
 }

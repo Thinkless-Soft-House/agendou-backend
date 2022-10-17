@@ -1,5 +1,4 @@
-import { Pessoa } from '@/interfaces/pessoa.interface';
-import { IsEmail, IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class PessoaCreateDTO {
   @IsString()
@@ -10,5 +9,7 @@ export class PessoaUpdateDTO {
   @IsNumber()
   id: number;
 
-  nome?: string;
+  @IsOptional()
+  @IsString()
+  nome: string;
 }

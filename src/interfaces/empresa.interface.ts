@@ -1,3 +1,4 @@
+import { SalaEntity } from '@/entities/sala.entity';
 import { UsuarioEntity } from '@/entities/usuario.entity';
 
 export interface Empresa {
@@ -11,4 +12,5 @@ export interface Empresa {
   dateUpdated: Date;
 
   usuarios: UsuarioEntity[];
+  salas: SalaEntity[];
 }

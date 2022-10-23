@@ -18,6 +18,11 @@ class DisponibilidadeRoute implements Routes {
     this.router.get(`${this.path}`, this.disponibilidadeController.getAvailabilities);
     this.router.get(`${this.path}/:id(\\d+)`, this.disponibilidadeController.getAvailabilityById);
     this.router.post(`${this.path}`, validationMiddleware(DisponibilidadeCreateDTO, 'body'), this.disponibilidadeController.createAvailability);
+    this.router.post(
+      `${this.path}/many`,
+      validationMiddleware(DisponibilidadeCreateDTO, 'body'),
+      this.disponibilidadeController.createManyAvailability,
+    );
     this.router.put(
       `${this.path}/:id(\\d+)`,
       validationMiddleware(DisponibilidadeUpdateDTO, 'body', true),

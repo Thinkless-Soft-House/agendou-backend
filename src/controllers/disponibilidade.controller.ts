@@ -38,6 +38,17 @@ class DisponibilidadeController {
     }
   };
 
+  public createManyAvailability = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const availabilityData: DisponibilidadeCreateDTO[] = req.body.disponibilidades;
+      const createAvailabilityData: Disponibilidade[] = await this.disponibilidadeService.createManyAvailability(availabilityData);
+
+      res.status(200).json({ data: createAvailabilityData, message: 'createdMany' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public updateAvailability = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const availabilityId = Number(req.params.id);

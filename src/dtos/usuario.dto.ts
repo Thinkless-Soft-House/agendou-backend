@@ -49,3 +49,11 @@ export class UsuarioUpdateDTO {
   @IsNumber()
   permissaoId: number;
 }
+
+export class UsuarioLoginDTO {
+  @IsEmail()
+  login?: string;
+
+  @IsString()
+  senha?: string;
+}

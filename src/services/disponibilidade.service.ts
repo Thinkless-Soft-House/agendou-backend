@@ -39,6 +39,15 @@ class DisponibilidadeService extends Repository<DisponibilidadeEntity> {
     return createAvailabilityData;
   }
 
+  public async createManyAvailability(availabilityData: DisponibilidadeCreateDTO[]): Promise<Disponibilidade[]> {
+    if (isEmpty(availabilityData)) throw new HttpException(400, 'availabilityData is empty');
+
+    const savePoints = availabilityData.map(async data => await DisponibilidadeEntity.create({ ...data }).save());
+    const results = await Promise.all(savePoints);
+
+    return results;
+  }
+
   public async updateAvailability(availabilityId: number, availabilityData: DisponibilidadeUpdateDTO): Promise<Disponibilidade> {
     if (isEmpty(availabilityData)) throw new HttpException(400, 'Usuário Data está vazio');
 

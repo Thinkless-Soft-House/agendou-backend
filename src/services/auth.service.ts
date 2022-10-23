@@ -2,7 +2,7 @@ import { compare, hash } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { EntityRepository, Repository } from 'typeorm';
 import { SECRET_KEY } from '@config';
-import { UsuarioCreateDTO } from '@dtos/usuario.dto';
+import { UsuarioCreateDTO, UsuarioLoginDTO } from '@dtos/usuario.dto';
 import { UsuarioEntity } from '@entities/usuario.entity';
 import { HttpException } from '@exceptions/HttpException';
 import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
@@ -22,7 +22,7 @@ class AuthService extends Repository<UsuarioEntity> {
     return createUserData;
   }
 
-  public async login(userData: UsuarioCreateDTO): Promise<{ cookie: string; findUser: Usuario }> {
+  public async login(userData: UsuarioLoginDTO): Promise<{ cookie: string; findUser: Usuario }> {
     if (isEmpty(userData)) throw new HttpException(400, 'userData is empty');
 
     const findUser: Usuario = await UsuarioEntity.findOne({ where: { email: userData.login } });

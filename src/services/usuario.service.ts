@@ -5,6 +5,7 @@ import { isEmpty } from '@utils/util';
 import { UsuarioEntity } from '@/entities/usuario.entity';
 import { Usuario } from '@/interfaces/usuario.interface';
 import { UsuarioCreateDTO, UsuarioUpdateDTO } from '@/dtos/usuario.dto';
+import { PaginationConfig } from '@/interfaces/utils.interface';
 
 @EntityRepository()
 class UsuarioService extends Repository<UsuarioEntity> {
@@ -20,6 +21,54 @@ class UsuarioService extends Repository<UsuarioEntity> {
     if (!findUser) throw new HttpException(409, 'Usuario não existe');
 
     return findUser;
+  }
+
+  public async findUserByCompany(
+    companyId: number,
+    paginationConfig: PaginationConfig,
+  ): Promise<{
+    data: Usuario[];
+    total: number;
+  }> {
+    if (isEmpty(companyId)) throw new HttpException(400, 'CompanyId está vazio');
+    const order = {};
+    order[paginationConfig.orderColumn] = paginationConfig.order;
+
+    const [results, total]: [Usuario[], number] = await UsuarioEntity.findAndCount({
+      where: { empresaId: companyId },
+      order,
+      take: paginationConfig.take,
+      skip: paginationConfig.skip,
+    });
+
+    return {
+      data: results,
+      total,
+    };
+  }
+
+  public async findUserByPermission(
+    permissionId: number,
+    paginationConfig: PaginationConfig,
+  ): Promise<{
+    data: Usuario[];
+    total: number;
+  }> {
+    if (isEmpty(permissionId)) throw new HttpException(400, 'PermissionId está vazio');
+    const order = {};
+    order[paginationConfig.orderColumn] = paginationConfig.order;
+
+    const [results, total]: [Usuario[], number] = await UsuarioEntity.findAndCount({
+      where: { permissaoId: permissionId },
+      order,
+      take: paginationConfig.take,
+      skip: paginationConfig.skip,
+    });
+
+    return {
+      data: results,
+      total,
+    };
   }
 
   public async createUser(userData: UsuarioCreateDTO): Promise<Usuario> {

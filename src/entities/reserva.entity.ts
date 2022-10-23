@@ -10,13 +10,15 @@ export class ReservaEntity extends BaseEntity implements Reserva {
   id: number;
 
   @Column({ name: 'RES_DATA' })
-  date: string;
+  date: Date;
   @Column({ name: 'RES_HRINICIO' })
   horaInicio: string;
   @Column({ name: 'RES_HRFIM' })
   horaFim: string;
   @Column({ name: 'RES_OBSERVACAO' })
   observacao: string;
+  @Column({ name: 'RES_DIASEMANAINDEX' })
+  diaSemanaIndex: number;
 
   @Column({ name: 'RES_SAL_ID' })
   salaId: number;

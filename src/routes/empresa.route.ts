@@ -17,6 +17,7 @@ class EmpresaRoute implements Routes {
   private initializeRoutes() {
     this.router.get(`${this.path}`, this.empresaController.getCompanies);
     this.router.get(`${this.path}/:id(\\d+)`, this.empresaController.getCompanyById);
+    this.router.get(`${this.path}/categoria/:id(\\d+)`, this.empresaController.getCompanyByCategory);
     this.router.post(`${this.path}`, validationMiddleware(EmpresaCreateDTO, 'body'), this.empresaController.createCompany);
     this.router.put(`${this.path}/:id(\\d+)`, validationMiddleware(EmpresaUpdateDTO, 'body', true), this.empresaController.updateCompany);
     this.router.delete(`${this.path}/:id(\\d+)`, this.empresaController.deleteCompany);

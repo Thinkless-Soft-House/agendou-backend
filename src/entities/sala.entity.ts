@@ -10,7 +10,7 @@ export class SalaEntity extends BaseEntity implements Sala {
   @PrimaryGeneratedColumn({ name: 'SAL_ID' })
   id: number;
   @Column({ name: 'SAL_STATUS' })
-  status: string;
+  status: number;
   @Column({ name: 'SAL_NOME' })
   nome: string;
 
@@ -39,6 +39,7 @@ export class SalaEntity extends BaseEntity implements Sala {
   @OneToMany(() => DisponibilidadeEntity, disponibilidade => disponibilidade.sala, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
+    eager: true,
   })
   disponibilidades: DisponibilidadeEntity[];
 }

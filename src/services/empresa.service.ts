@@ -4,6 +4,7 @@ import { isEmpty } from '@utils/util';
 import { EmpresaEntity } from '@/entities/empresa.entity';
 import { Empresa } from '@/interfaces/empresa.interface';
 import { EmpresaCreateDTO, EmpresaUpdateDTO } from '@/dtos/empresa.dto';
+import { PaginationConfig } from '@/interfaces/utils.interface';
 
 @EntityRepository()
 class EmpresaService extends Repository<EmpresaEntity> {
@@ -19,6 +20,18 @@ class EmpresaService extends Repository<EmpresaEntity> {
     if (!findCompany) throw new HttpException(409, 'Empresa não existe');
 
     return findCompany;
+  }
+
+  public async findCompanyByCategory(categoryId: number, paginationConfig: PaginationConfig) {
+    if (isEmpty(categoryId)) throw new HttpException(400, 'CompanyId está vazio');
+    const order = {};
+    order[paginationConfig.orderColumn] = paginationConfig.order;
+    const [results, total]: [Empresa[], number] = await EmpresaEntity.findAndCount({ where: { categoriaId: categoryId } });
+
+    return {
+      data: results,
+      total,
+    };
   }
 
   public async createCompany(companyData: EmpresaCreateDTO): Promise<Empresa> {

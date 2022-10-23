@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import { UsuarioCreateDTO, UsuarioUpdateDTO } from '@dtos/usuario.dto';
 import { Usuario } from '@interfaces/usuario.interface';
 import UsuarioService from '@/services/usuario.service';
+import { PaginationConfig } from '@/interfaces/utils.interface';
+import { createPaginationConfig } from '@/utils/util';
 
 class UsersController {
   public usuarioService = new UsuarioService();
@@ -22,6 +24,38 @@ class UsersController {
       const findOneUserData: Usuario = await this.usuarioService.findUserById(userId);
 
       res.status(200).json({ data: findOneUserData, message: 'findOne' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getUserByCompany = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const companyId = Number(req.params.id);
+      const paginationConfig: PaginationConfig = createPaginationConfig(req);
+
+      const findUsersForCompany: {
+        data: Usuario[];
+        total: number;
+      } = await this.usuarioService.findUserByCompany(companyId, paginationConfig);
+
+      res.status(200).json({ data: findUsersForCompany, message: 'findByCompany' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getUserByPermission = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const permissionId = Number(req.params.id);
+      const paginationConfig: PaginationConfig = createPaginationConfig(req);
+
+      const findUsersForCompany: {
+        data: Usuario[];
+        total: number;
+      } = await this.usuarioService.findUserByPermission(permissionId, paginationConfig);
+
+      res.status(200).json({ data: findUsersForCompany, message: 'findByPermission' });
     } catch (error) {
       next(error);
     }

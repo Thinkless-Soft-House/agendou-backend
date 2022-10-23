@@ -2,13 +2,16 @@ import { NextFunction, Request, Response } from 'express';
 import { ReservaCreateDTO, ReservaUpdateDTO } from '@dtos/reserva.dto';
 import { Reserva } from '@interfaces/reserva.interface';
 import ReservaService from '@/services/reserva.service';
+import { PaginationConfig } from '@/interfaces/utils.interface';
+import { createPaginationConfig } from '@/utils/util';
 
 class ReservaController {
   public reservaService = new ReservaService();
 
   public getBookings = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const findAllBookingsData: Reserva[] = await this.reservaService.findAllBooking();
+      const paginationConfig: PaginationConfig = createPaginationConfig(req);
+      const findAllBookingsData: Reserva[] = await this.reservaService.findAllBooking(paginationConfig);
 
       res.status(200).json({ data: findAllBookingsData, message: 'findAll' });
     } catch (error) {
@@ -22,6 +25,19 @@ class ReservaController {
       const findOneBookingData: Reserva = await this.reservaService.findBookingById(bookingId);
 
       res.status(200).json({ data: findOneBookingData, message: 'findOne' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getBookingByRommAndDate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const rommId = Number(req.params.id);
+      const month = Number(req.params.mes);
+      const year = Number(req.params.ano);
+      const findBookings: Reserva[] = await this.reservaService.findBookingByRommAndDate(rommId, month, year);
+
+      res.status(200).json({ data: findBookings, message: 'findBookingByRommAndDate' });
     } catch (error) {
       next(error);
     }

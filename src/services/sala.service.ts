@@ -4,6 +4,7 @@ import { isEmpty } from '@utils/util';
 import { SalaEntity } from '@/entities/sala.entity';
 import { Sala } from '@/interfaces/sala.interface';
 import { SalaCreateDTO, SalaUpdateDTO } from '@/dtos/sala.dto';
+import { PaginationConfig } from '@/interfaces/utils.interface';
 
 @EntityRepository()
 class SalaService extends Repository<SalaEntity> {
@@ -16,9 +17,33 @@ class SalaService extends Repository<SalaEntity> {
     if (isEmpty(rommId)) throw new HttpException(400, 'RommId está vazio');
 
     const findRomm: Sala = await SalaEntity.findOne({ where: { id: rommId } });
-    if (!findRomm) throw new HttpException(409, 'Usuario não existe');
+    if (!findRomm) throw new HttpException(409, 'Sala não existe');
 
     return findRomm;
+  }
+
+  public async findRommByCompany(
+    companyId: number,
+    paginationConfig: PaginationConfig,
+  ): Promise<{
+    data: Sala[];
+    total: number;
+  }> {
+    if (isEmpty(companyId)) throw new HttpException(400, 'RommId está vazio');
+    const order = {};
+    order[paginationConfig.orderColumn] = paginationConfig.order;
+
+    const [results, total]: [Sala[], number] = await SalaEntity.findAndCount({
+      where: { empresaId: companyId },
+      order,
+      take: paginationConfig.take,
+      skip: paginationConfig.skip,
+    });
+
+    return {
+      data: results,
+      total,
+    };
   }
 
   public async createRomm(rommData: SalaCreateDTO): Promise<Sala> {

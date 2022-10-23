@@ -16,7 +16,6 @@ export class StatusReservaEntity extends BaseEntity implements StatusReserva {
   @ManyToOne(() => ReservaEntity, reserva => reserva.statusReserva, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
-    eager: true,
   })
   @JoinColumn([{ name: 'STARES_RES_ID', referencedColumnName: 'id' }])
   reserva: ReservaEntity;
@@ -24,7 +23,6 @@ export class StatusReservaEntity extends BaseEntity implements StatusReserva {
   @ManyToOne(() => StatusEntity, status => status.statusReserva, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
-    eager: true,
   })
   @JoinColumn([{ name: 'STARES_STA_ID', referencedColumnName: 'id' }])
   status: StatusEntity;

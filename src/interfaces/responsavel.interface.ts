@@ -3,8 +3,8 @@ import { UsuarioEntity } from '@/entities/usuario.entity';
 
 export interface Responsavel {
   id: number;
-  salaId: string;
-  usuarioId: string;
+  salaId: number;
+  usuarioId: number;
 
   sala: SalaEntity;
   usuario: UsuarioEntity;

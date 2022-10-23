@@ -8,7 +8,7 @@ export interface Usuario {
   id: number;
   login: string;
   senha: string;
-  status: string;
+  status: number;
 
   userCreated: number;
   dateCreated: Date;

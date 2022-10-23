@@ -8,7 +8,11 @@ export class ReservaCreateDTO {
   @IsString()
   horaFim: string;
   @IsString()
+  @IsOptional()
   observacao: string;
+
+  @IsNumber()
+  diaSemanaIndex: number;
 
   @IsNumber()
   salaId: number;
@@ -35,4 +39,8 @@ export class ReservaUpdateDTO {
   @IsOptional()
   @IsString()
   observacao: string;
+
+  @IsOptional()
+  @IsNumber()
+  diaSemanaIndex: number;
 }

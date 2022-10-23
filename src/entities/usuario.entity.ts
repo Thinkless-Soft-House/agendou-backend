@@ -27,7 +27,7 @@ export class UsuarioEntity extends BaseEntity implements Usuario {
   @Column({ name: 'USU_SENHA' })
   senha: string;
   @Column({ name: 'USU_STATUS' })
-  status: string;
+  status: number;
 
   @Column({ name: 'USU_USERINCLUI' })
   userCreated: number;

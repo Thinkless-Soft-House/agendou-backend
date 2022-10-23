@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import { SalaCreateDTO, SalaUpdateDTO } from '@dtos/sala.dto';
 import { Sala } from '@interfaces/sala.interface';
 import SalaService from '@/services/sala.service';
+import { PaginationConfig } from '@/interfaces/utils.interface';
+import { createPaginationConfig } from '@/utils/util';
 
 class SalaController {
   public salaService = new SalaService();
@@ -22,6 +24,22 @@ class SalaController {
       const findOneRommData: Sala = await this.salaService.findRommById(rommId);
 
       res.status(200).json({ data: findOneRommData, message: 'findOne' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getRommByCompany = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const companyId = Number(req.params.id);
+      const paginationConfig: PaginationConfig = createPaginationConfig(req);
+
+      const findRommsForCompany: {
+        data: Sala[];
+        total: number;
+      } = await this.salaService.findRommByCompany(companyId, paginationConfig);
+
+      res.status(200).json({ data: findRommsForCompany, message: 'findByCompany' });
     } catch (error) {
       next(error);
     }

@@ -8,9 +8,9 @@ export class ResponsavelEntity extends BaseEntity implements Responsavel {
   @PrimaryGeneratedColumn({ name: 'RESP_ID' })
   id: number;
   @Column({ name: 'RESP_SAL_ID' })
-  salaId: string;
+  salaId: number;
   @Column({ name: 'RESP_USU_ID' })
-  usuarioId: string;
+  usuarioId: number;
 
   @ManyToOne(() => SalaEntity, sala => sala.responsavel, {
     onDelete: 'NO ACTION',

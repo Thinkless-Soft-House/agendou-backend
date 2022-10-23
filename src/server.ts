@@ -11,6 +11,7 @@ import SalaRoute from './routes/sala.route';
 import StatusReservaRoute from './routes/status-reserva.route';
 import StatusRoute from './routes/status.route';
 import UsuarioRoute from './routes/usuario.route';
+import CategoriaEmpresaRoute from './routes/categoria-empresa.route';
 
 validateEnv();
 
@@ -26,6 +27,7 @@ const app = new App([
   new SalaRoute(),
   new StatusReservaRoute(),
   new StatusRoute(),
+  new CategoriaEmpresaRoute(),
 ]);
 
 app.listen();

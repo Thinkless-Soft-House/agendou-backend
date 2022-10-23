@@ -11,6 +11,11 @@ export class DisponibilidadeCreateDTO {
   minDiasCan: number;
 
   @IsNumber()
+  diaSemanaIndex: number;
+  @IsNumber()
+  intervaloMinutos: number;
+
+  @IsNumber()
   salaId: number;
 }
 export class DisponibilidadeUpdateDTO {
@@ -32,4 +37,11 @@ export class DisponibilidadeUpdateDTO {
   @IsOptional()
   @IsNumber()
   minDiaScan: number;
+
+  @IsOptional()
+  @IsNumber()
+  diaSemanaIndex: number;
+  @IsOptional()
+  @IsNumber()
+  intervaloMinutos: number;
 }

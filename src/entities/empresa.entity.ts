@@ -1,5 +1,6 @@
 import { Empresa } from '@/interfaces/empresa.interface';
-import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { CategoriaEmpresaEntity } from './categoria-empresa.entity';
 import { SalaEntity } from './sala.entity';
 import { UsuarioEntity } from './usuario.entity';
 
@@ -9,6 +10,8 @@ export class EmpresaEntity extends BaseEntity implements Empresa {
   id: number;
   @Column({ name: 'EMP_LOGOURL' })
   logoUrl: string;
+  @Column({ name: 'EMP_CATEMP_ID' })
+  categoriaId: number;
 
   @Column({ name: 'EMP_USERINCLUI' })
   userCreated: number;
@@ -34,4 +37,11 @@ export class EmpresaEntity extends BaseEntity implements Empresa {
     onUpdate: 'NO ACTION',
   })
   salas: SalaEntity[];
+
+  @ManyToOne(() => CategoriaEmpresaEntity, categoriaEmpresa => categoriaEmpresa.empresas, {
+    onDelete: 'NO ACTION',
+    onUpdate: 'NO ACTION',
+  })
+  @JoinColumn([{ name: 'EMP_CATEMP_ID', referencedColumnName: 'id' }])
+  categoria: CategoriaEmpresaEntity;
 }

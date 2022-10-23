@@ -8,6 +8,8 @@ export interface Disponibilidade {
   hrFim: string;
   diaSemana: string;
   minDiasCan: number;
+  diaSemanaIndex: number;
+  intervaloMinutos: number;
 
   salaId: number;
 

@@ -17,6 +17,7 @@ class ReservaRoute implements Routes {
   private initializeRoutes() {
     this.router.get(`${this.path}`, this.reservaController.getBookings);
     this.router.get(`${this.path}/:id(\\d+)`, this.reservaController.getBookingById);
+    this.router.get(`${this.path}/sala/mes/:id(\\d+)/:mes(\\d+)/:ano(\\d+)`, this.reservaController.getBookingByRommAndDate);
     this.router.post(`${this.path}`, validationMiddleware(ReservaCreateDTO, 'body'), this.reservaController.createBooking);
     this.router.put(`${this.path}/:id(\\d+)`, validationMiddleware(ReservaUpdateDTO, 'body', true), this.reservaController.updateBooking);
     this.router.delete(`${this.path}/:id(\\d+)`, this.reservaController.deleteBooking);

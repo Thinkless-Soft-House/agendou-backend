@@ -17,6 +17,8 @@ class UsuarioRoute implements Routes {
   private initializeRoutes() {
     this.router.get(`${this.path}`, this.usuarioController.getUsers);
     this.router.get(`${this.path}/:id(\\d+)`, this.usuarioController.getUserById);
+    this.router.get(`${this.path}/empresa/:id(\\d+)`, this.usuarioController.getUserByCompany);
+    this.router.get(`${this.path}/permissao/:id(\\d+)`, this.usuarioController.getUserByPermission);
     this.router.post(`${this.path}`, validationMiddleware(UsuarioCreateDTO, 'body'), this.usuarioController.createUser);
     this.router.put(`${this.path}/:id(\\d+)`, validationMiddleware(UsuarioUpdateDTO, 'body', true), this.usuarioController.updateUser);
     this.router.delete(`${this.path}/:id(\\d+)`, this.usuarioController.deleteUser);

@@ -1,4 +1,4 @@
-import { IsEmail, IsNumber, IsObject, IsString } from 'class-validator';
+import { IsEmail, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
 import { PessoaCreateDTO } from './pessoa.dto';
 
 export class UsuarioCreateDTO {
@@ -8,14 +8,16 @@ export class UsuarioCreateDTO {
   @IsString()
   senha: string;
 
-  @IsString()
-  status: string;
+  @IsNumber()
+  status: number;
 
   @IsNumber()
   userCreated: number;
 
   @IsNumber()
   permissaoId: number;
+
+  @IsOptional()
   @IsNumber()
   empresaId: number;
 
@@ -27,15 +29,23 @@ export class UsuarioUpdateDTO {
   @IsNumber()
   id: number;
 
+  @IsOptional()
   @IsEmail()
   login?: string;
 
+  @IsOptional()
   @IsString()
   senha?: string;
 
-  @IsString()
-  status?: string;
+  @IsOptional()
+  @IsNumber()
+  status?: number;
 
+  @IsOptional()
   @IsNumber()
   userUpdated: number;
+
+  @IsOptional()
+  @IsNumber()
+  permissaoId: number;
 }

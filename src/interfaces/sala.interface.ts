@@ -5,7 +5,7 @@ import { ResponsavelEntity } from '@/entities/responsavel.entity';
 
 export interface Sala {
   id: number;
-  status: string;
+  status: number;
   nome: string;
 
   empresaId: number;

@@ -2,9 +2,9 @@ import { IsNumber, IsOptional } from 'class-validator';
 
 export class ResponsavelCreateDTO {
   @IsNumber()
-  salaId: string;
+  salaId: number;
   @IsNumber()
-  usuarioId: string;
+  usuarioId: number;
 }
 
 export class ResponsavelUpdateDTO {
@@ -17,6 +17,8 @@ export class ResponsavelUpdateDTO {
 
   @IsOptional()
   @IsNumber()
-  salaId: string;
-  usuarioId: string;
+  salaId: number;
+  @IsOptional()
+  @IsNumber()
+  usuarioId: number;
 }

@@ -1,8 +1,8 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class SalaCreateDTO {
-  @IsString()
-  status: string;
+  @IsNumber()
+  status: number;
 
   @IsString()
   nome: string;
@@ -16,8 +16,8 @@ export class SalaUpdateDTO {
   id: number;
 
   @IsOptional()
-  @IsString()
-  status: string;
+  @IsNumber()
+  status: number;
 
   @IsOptional()
   @IsString()

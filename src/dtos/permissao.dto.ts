@@ -1,3 +1,4 @@
+import { PermissaoEnum } from '@/interfaces/permissao.interface';
 import { IsNumber, IsString } from 'class-validator';
 
 export class PermissaoCreateDTO {
@@ -7,7 +8,7 @@ export class PermissaoCreateDTO {
 
 export class PermissaoUpdateDTO {
   @IsNumber()
-  id: number;
+  id: PermissaoEnum;
   @IsString()
   descricao: string;
 }

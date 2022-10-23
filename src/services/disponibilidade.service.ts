@@ -21,6 +21,16 @@ class DisponibilidadeService extends Repository<DisponibilidadeEntity> {
     return findAvailability;
   }
 
+  public async findAvailabilityByDay(day: number): Promise<Disponibilidade> {
+    if (isEmpty(day)) throw new HttpException(400, 'AvailabilityId está vazio');
+    console.log('my day', day);
+    const findAvailability: Disponibilidade = await DisponibilidadeEntity.findOne({ where: { diaSemanaIndex: day } });
+    if (!findAvailability) throw new HttpException(409, 'Disponibilidade não disponivel para esse dia');
+    console.log('findAvailability', findAvailability);
+
+    return findAvailability;
+  }
+
   public async createAvailability(availabilityData: DisponibilidadeCreateDTO): Promise<Disponibilidade> {
     if (isEmpty(availabilityData)) throw new HttpException(400, 'availabilityData is empty');
 

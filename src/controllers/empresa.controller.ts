@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import { EmpresaCreateDTO, EmpresaUpdateDTO } from '@dtos/empresa.dto';
 import { Empresa } from '@interfaces/empresa.interface';
 import EmpresaService from '@/services/empresa.service';
+import { PaginationConfig } from '@/interfaces/utils.interface';
+import { createPaginationConfig } from '@/utils/util';
 
 class EmpresaController {
   public empresaService = new EmpresaService();
@@ -22,6 +24,22 @@ class EmpresaController {
       const findOneCompanyData: Empresa = await this.empresaService.findCompanyById(companyId);
 
       res.status(200).json({ data: findOneCompanyData, message: 'findOne' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getCompanyByCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const categoryId = Number(req.params.id);
+      const paginationConfig: PaginationConfig = createPaginationConfig(req);
+
+      const findOneCompanyData: {
+        data: Empresa[];
+        total: number;
+      } = await this.empresaService.findCompanyByCategory(categoryId, paginationConfig);
+
+      res.status(200).json({ data: findOneCompanyData, message: 'findOneByCategory' });
     } catch (error) {
       next(error);
     }

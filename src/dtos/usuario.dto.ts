@@ -11,6 +11,7 @@ export class UsuarioCreateDTO {
   @IsNumber()
   status: number;
 
+  @IsOptional()
   @IsNumber()
   userCreated: number;
 

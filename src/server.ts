@@ -12,6 +12,7 @@ import StatusReservaRoute from './routes/status-reserva.route';
 import StatusRoute from './routes/status.route';
 import UsuarioRoute from './routes/usuario.route';
 import CategoriaEmpresaRoute from './routes/categoria-empresa.route';
+import PessoaRoute from './routes/pessoa.route';
 
 validateEnv();
 
@@ -28,6 +29,7 @@ const app = new App([
   new StatusReservaRoute(),
   new StatusRoute(),
   new CategoriaEmpresaRoute(),
+  new PessoaRoute(),
 ]);
 
 app.listen();

@@ -29,7 +29,7 @@ export class UsuarioEntity extends BaseEntity implements Usuario {
   @Column({ name: 'USU_STATUS' })
   status: number;
 
-  @Column({ name: 'USU_USERINCLUI' })
+  @Column({ name: 'USU_USERINCLUI', nullable: true })
   userCreated: number;
   @CreateDateColumn({ name: 'USU_DTAINCLUI' })
   dateCreated: Date;
@@ -41,7 +41,7 @@ export class UsuarioEntity extends BaseEntity implements Usuario {
 
   @Column({ name: 'USU_PER_ID' })
   permissaoId: number;
-  @Column({ name: 'USU_EMP_ID' })
+  @Column({ name: 'USU_EMP_ID', nullable: true })
   empresaId: number;
   @Column({ name: 'USU_PES_ID' })
   pessoaId: number;
@@ -50,7 +50,7 @@ export class UsuarioEntity extends BaseEntity implements Usuario {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
     eager: true,
-    cascade: true,
+    nullable: true,
   })
   @JoinColumn([{ name: 'USU_EMP_ID', referencedColumnName: 'id' }])
   empresa: EmpresaEntity;

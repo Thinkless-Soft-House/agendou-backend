@@ -30,6 +30,29 @@ class AuthController {
     }
   };
 
+  public forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const email: string = req.body.login;
+      const user = await this.authService.forgotPassword(email);
+
+      res.status(200).json({ data: user, message: 'forgotPassword' });
+    } catch (error) {
+      next(error);
+    }
+  };
+  public resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const email: string = req.body.login;
+      const code = Number(req.body.codigo);
+      const password: string = req.body.novaSenha;
+      const user = await this.authService.resetPassword(email, code, password);
+
+      res.status(200).json({ data: user, message: 'forgotPassword' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public logOut = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: Usuario = req.user;

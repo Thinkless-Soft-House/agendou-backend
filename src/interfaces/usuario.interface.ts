@@ -10,6 +10,8 @@ export interface Usuario {
   senha: string;
   status: number;
 
+  resetPasswordCode: number;
+
   userCreated: number;
   dateCreated: Date;
 

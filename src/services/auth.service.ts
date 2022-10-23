@@ -8,6 +8,7 @@ import { HttpException } from '@exceptions/HttpException';
 import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
 import { Usuario } from '@interfaces/usuario.interface';
 import { isEmpty } from '@utils/util';
+import { sendForgotPasswordEmail } from '@/utils/sendEmail';
 
 @EntityRepository()
 class AuthService extends Repository<UsuarioEntity> {
@@ -37,10 +38,39 @@ class AuthService extends Repository<UsuarioEntity> {
     return { cookie, findUser };
   }
 
+  public async forgotPassword(email: string): Promise<Usuario> {
+    if (isEmpty(email)) throw new HttpException(400, 'userEmail is empty');
+
+    const findUser: Usuario = await UsuarioEntity.findOne({ where: { login: email } });
+    if (!findUser) throw new HttpException(409, "User doesn't exist");
+
+    const code = Math.floor(100000 + Math.random() * 900000);
+    await UsuarioEntity.update(findUser.id, { ...findUser, resetPasswordCode: code });
+    const updateUser: Usuario = await UsuarioEntity.findOne({ where: { id: findUser.id } });
+    // Send Email
+
+    await sendForgotPasswordEmail(updateUser.login, code);
+    return updateUser;
+  }
+
+  public async resetPassword(email: string, code: number, newPassword: string): Promise<Usuario> {
+    if (isEmpty(email)) throw new HttpException(400, 'userEmail is empty');
+
+    const findUser: Usuario = await UsuarioEntity.findOne({ where: { login: email } });
+    if (!findUser) throw new HttpException(409, 'Usuario com esse email não existe');
+    if (findUser.resetPasswordCode !== code) throw new HttpException(409, 'Código informado está incorreto');
+    const hashedPassword = await hash(newPassword, 10);
+
+    await UsuarioEntity.update(findUser.id, { ...findUser, senha: hashedPassword, resetPasswordCode: null });
+    const updateUser: Usuario = await UsuarioEntity.findOne({ where: { id: findUser.id } });
+    // Send Email
+    return updateUser;
+  }
+
   public async logout(userData: Usuario): Promise<Usuario> {
     if (isEmpty(userData)) throw new HttpException(400, 'userData is empty');
 
-    const findUser: Usuario = await UsuarioEntity.findOne({ where: { login: userData.login, senha: userData.senha } });
+    const findUser: Usuario = await UsuarioEntity.findOne({ where: { l: userData.login, password: userData.senha } });
     if (!findUser) throw new HttpException(409, "User doesn't exist");
 
     return findUser;

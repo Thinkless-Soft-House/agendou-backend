@@ -85,7 +85,7 @@ class AuthService extends Repository<UsuarioEntity> {
   }
 
   public createCookie(tokenData: TokenData): string {
-    return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn};`;
+    return `${tokenData.token}`;
   }
 }
 

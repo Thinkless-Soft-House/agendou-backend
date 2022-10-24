@@ -58,6 +58,7 @@ export class EmpresaEntity extends BaseEntity implements Empresa {
   @ManyToOne(() => CategoriaEmpresaEntity, categoriaEmpresa => categoriaEmpresa.empresas, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
+    eager: true,
   })
   @JoinColumn([{ name: 'EMP_CATEMP_ID', referencedColumnName: 'id' }])
   categoria: CategoriaEmpresaEntity;

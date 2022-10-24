@@ -7,6 +7,7 @@ export interface Sala {
   id: number;
   status: number;
   nome: string;
+  multiplasMarcacoes: boolean;
 
   empresaId: number;
   empresa: EmpresaEntity;

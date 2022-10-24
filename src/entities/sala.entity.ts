@@ -13,6 +13,8 @@ export class SalaEntity extends BaseEntity implements Sala {
   status: number;
   @Column({ name: 'SAL_NOME' })
   nome: string;
+  @Column({ name: 'SAL_MULTIPLASMARCACOES' })
+  multiplasMarcacoes: boolean;
 
   @Column({ name: 'SAL_EMP_ID' })
   empresaId: number;

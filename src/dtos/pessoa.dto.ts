@@ -21,8 +21,8 @@ export class PessoaCreateDTO {
   cep: number;
   @IsNumber()
   telefone: number;
-  @IsNumber()
-  dataNascimento: number;
+  @IsString()
+  dataNascimento: string;
 
   @IsOptional()
   @IsString()
@@ -62,7 +62,7 @@ export class PessoaUpdateDTO {
   @IsNumber()
   cep: number;
   @IsOptional()
-  @IsNumber()
+  @IsString()
   dataNascimento: number;
 
   @IsOptional()

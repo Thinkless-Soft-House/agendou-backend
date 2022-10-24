@@ -1,6 +1,5 @@
 import { Pessoa } from '@/interfaces/pessoa.interface';
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { UsuarioEntity } from './usuario.entity';
 
 @Entity({ name: 'PESSOA' })
 export class PessoaEntity extends BaseEntity implements Pessoa {
@@ -29,7 +28,7 @@ export class PessoaEntity extends BaseEntity implements Pessoa {
   @Column({ name: 'PES_CEP', nullable: true })
   cep: number;
   @Column({ name: 'PES_DATANASCIMENTO', nullable: true })
-  dataNascimento: number;
+  dataNascimento: string;
 
   @Column({ name: 'PES_FOTO', nullable: true })
   foto: string;

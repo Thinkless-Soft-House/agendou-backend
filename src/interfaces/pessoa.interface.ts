@@ -11,7 +11,7 @@ export interface Pessoa {
   numero: number;
   telefone: number;
   cep: number;
-  dataNascimento: number;
+  dataNascimento: string;
 
   foto: string;
 

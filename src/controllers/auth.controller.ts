@@ -64,6 +64,16 @@ class AuthController {
       next(error);
     }
   };
+  public verifyToken = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const token: string = req.body.token;
+      const verifyToken: boolean = await this.authService.verifyToken(token);
+
+      res.status(200).json({ data: verifyToken, message: 'verifyToken' });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export default AuthController;

@@ -1,5 +1,5 @@
 import { compare, hash } from 'bcrypt';
-import { sign } from 'jsonwebtoken';
+import { sign, verify } from 'jsonwebtoken';
 import { EntityRepository, Repository } from 'typeorm';
 import { SECRET_KEY } from '@config';
 import { UsuarioCreateDTO, UsuarioLoginDTO } from '@dtos/usuario.dto';
@@ -86,6 +86,22 @@ class AuthService extends Repository<UsuarioEntity> {
 
   public createCookie(tokenData: TokenData): string {
     return `${tokenData.token}`;
+  }
+
+  public async verifyToken(token: string): Promise<boolean> {
+    try {
+      const secretKey: string = SECRET_KEY;
+      const { id } = (await verify(token, secretKey)) as DataStoredInToken;
+      const findUser = await UsuarioEntity.findOne(id, { select: ['id', 'login', 'senha'] });
+
+      if (findUser) {
+        return true;
+      } else {
+        throw '';
+      }
+    } catch (error) {
+      return false;
+    }
   }
 }
 

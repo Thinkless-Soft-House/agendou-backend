@@ -10,6 +10,23 @@ export class EmpresaEntity extends BaseEntity implements Empresa {
   id: number;
   @Column({ name: 'EMP_LOGOURL' })
   logo: string;
+  @Column({ name: 'EMP_NOME', nullable: true })
+  nome: string;
+  @Column({ name: 'EMP_TELEFONE', nullable: true })
+  telefone: string;
+  @Column({ name: 'EMP_CPFCNPJ', nullable: true })
+  cpfCnpj: number;
+  @Column({ name: 'EMP_MUNICIPIO', nullable: true })
+  municipio: string;
+  @Column({ name: 'EMP_ESTADO', nullable: true })
+  estado: string;
+  @Column({ name: 'EMP_PAIS', nullable: true })
+  pais: string;
+  @Column({ name: 'EMP_ENDERECO', nullable: true })
+  endereco: string;
+  @Column({ name: 'EMP_NUMEROENDERECO', nullable: true })
+  numeroEndereco: string;
+
   @Column({ name: 'EMP_CATEMP_ID' })
   categoriaId: number;
 

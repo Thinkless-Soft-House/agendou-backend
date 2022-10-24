@@ -6,6 +6,15 @@ export interface Empresa {
   id: number;
   logo: string;
 
+  nome: string;
+  telefone: string;
+  cpfCnpj: number;
+  municipio: string;
+  estado: string;
+  pais: string;
+  endereco: string;
+  numeroEndereco: string;
+
   categoriaId: number;
 
   userCreated: number;

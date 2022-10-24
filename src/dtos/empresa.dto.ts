@@ -9,6 +9,23 @@ export class EmpresaCreateDTO {
 
   @IsNumber()
   categoriaId: number;
+
+  @IsString()
+  nome: string;
+  @IsString()
+  telefone: string;
+  @IsNumber()
+  cpfCnpj: number;
+  @IsString()
+  municipio: string;
+  @IsString()
+  estado: string;
+  @IsString()
+  pais: string;
+  @IsString()
+  endereco: string;
+  @IsString()
+  numeroEndereco: string;
 }
 
 export class EmpresaUpdateDTO {
@@ -19,10 +36,36 @@ export class EmpresaUpdateDTO {
   @IsString()
   logo: string;
 
+  @IsOptional()
   @IsNumber()
   userUpdated: number;
 
   @IsOptional()
   @IsNumber()
   categoriaId: number;
+
+  @IsOptional()
+  @IsString()
+  nome: string;
+  @IsOptional()
+  @IsString()
+  telefone: string;
+  @IsOptional()
+  @IsNumber()
+  cpfCnpj: number;
+  @IsOptional()
+  @IsString()
+  municipio: string;
+  @IsOptional()
+  @IsString()
+  estado: string;
+  @IsOptional()
+  @IsString()
+  pais: string;
+  @IsOptional()
+  @IsString()
+  endereco: string;
+  @IsOptional()
+  @IsString()
+  numeroEndereco: string;
 }

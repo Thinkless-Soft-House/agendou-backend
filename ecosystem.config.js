@@ -21,8 +21,8 @@ module.exports = {
       error: './logs/error.log', // pm2 error log file
       env: {
         // environment variable
-        PORT: 3000,
-        NODE_ENV: 'development',
+        PORT: 3300,
+        NODE_ENV: 'production',
         DB_HOST: 'collegato-app.c604sv7jbxkd.us-east-1.rds.amazonaws.com',
         DB_PORT: '3306',
         DB_USER: 'admin',

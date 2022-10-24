@@ -4,7 +4,7 @@ import { UsuarioEntity } from '@/entities/usuario.entity';
 
 export interface Empresa {
   id: number;
-  logoUrl: string;
+  logo: string;
 
   categoriaId: number;
 

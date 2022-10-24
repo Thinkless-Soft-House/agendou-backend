@@ -2,7 +2,7 @@ import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class EmpresaCreateDTO {
   @IsString()
-  logoUrl: string;
+  logo: string;
 
   @IsNumber()
   userCreated: number;
@@ -17,7 +17,7 @@ export class EmpresaUpdateDTO {
 
   @IsOptional()
   @IsString()
-  logoUrl: string;
+  logo: string;
 
   @IsNumber()
   userUpdated: number;

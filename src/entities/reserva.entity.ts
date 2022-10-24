@@ -44,6 +44,7 @@ export class ReservaEntity extends BaseEntity implements Reserva {
   @OneToMany(() => StatusReservaEntity, statusReserva => statusReserva.reserva, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
+    eager: true,
   })
   statusReserva: StatusReservaEntity[];
 }

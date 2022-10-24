@@ -72,6 +72,18 @@ class UsersController {
     }
   };
 
+  public updatePushToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = Number(req.params.id);
+      const token: string = req.body.token;
+      const updateUserData: Usuario = await this.usuarioService.updatePushNotificationToken(userId, token);
+
+      res.status(200).json({ data: updateUserData, message: 'updatedToken' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = Number(req.params.id);

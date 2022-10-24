@@ -85,6 +85,18 @@ class UsuarioService extends Repository<UsuarioEntity> {
     return createUserData;
   }
 
+  public async updatePushNotificationToken(userId: number, token: string): Promise<Usuario> {
+    if (isEmpty(userId)) throw new HttpException(400, 'Usuário Data está vazio');
+
+    const findUser: Usuario = await UsuarioEntity.findOne({ where: { id: userId } });
+    if (!findUser) throw new HttpException(409, 'Usuário não existe');
+
+    await UsuarioEntity.update(userId, { ...findUser, pushToken: token });
+
+    const updateUser: Usuario = await UsuarioEntity.findOne({ where: { id: userId } });
+    return updateUser;
+  }
+
   public async updateUser(userId: number, userData: UsuarioUpdateDTO): Promise<Usuario> {
     if (isEmpty(userData)) throw new HttpException(400, 'Usuário Data está vazio');
 

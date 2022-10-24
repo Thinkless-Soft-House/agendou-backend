@@ -11,6 +11,7 @@ export interface Usuario {
   status: number;
 
   resetPasswordCode: number;
+  pushToken: string;
 
   userCreated: number;
   dateCreated: Date;

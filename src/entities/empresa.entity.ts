@@ -9,7 +9,7 @@ export class EmpresaEntity extends BaseEntity implements Empresa {
   @PrimaryGeneratedColumn({ name: 'EMP_ID' })
   id: number;
   @Column({ name: 'EMP_LOGOURL' })
-  logoUrl: string;
+  logo: string;
   @Column({ name: 'EMP_CATEMP_ID' })
   categoriaId: number;
 

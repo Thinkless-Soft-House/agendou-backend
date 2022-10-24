@@ -31,6 +31,8 @@ export class UsuarioEntity extends BaseEntity implements Usuario {
 
   @Column({ name: 'USU_RESETCODE', nullable: true })
   resetPasswordCode: number;
+  @Column({ name: 'USU_PUSHTOKEN', nullable: true })
+  pushToken: string;
 
   @Column({ name: 'USU_USERINCLUI', nullable: true })
   userCreated: number;

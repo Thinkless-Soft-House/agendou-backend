@@ -17,6 +17,8 @@ export class DisponibilidadeCreateDTO {
 
   @IsNumber()
   salaId: number;
+  @IsBoolean()
+  ativo: boolean;
 }
 export class DisponibilidadeUpdateDTO {
   @IsNumber()

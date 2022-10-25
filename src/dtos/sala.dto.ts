@@ -1,4 +1,5 @@
-import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
+import { DisponibilidadeCreateDTO } from './disponibilidade.dto';
 
 export class SalaCreateDTO {
   @IsNumber()
@@ -12,6 +13,10 @@ export class SalaCreateDTO {
 
   @IsNumber()
   empresaId: number;
+
+  @IsOptional()
+  @IsObject()
+  disponibilidades: DisponibilidadeCreateDTO[];
 }
 
 export class SalaUpdateDTO {

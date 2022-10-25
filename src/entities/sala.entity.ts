@@ -46,6 +46,7 @@ export class SalaEntity extends BaseEntity implements Sala {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
     eager: true,
+    cascade: true,
   })
   disponibilidades: DisponibilidadeEntity[];
 }

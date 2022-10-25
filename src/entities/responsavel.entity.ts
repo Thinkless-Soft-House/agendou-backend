@@ -15,7 +15,6 @@ export class ResponsavelEntity extends BaseEntity implements Responsavel {
   @ManyToOne(() => SalaEntity, sala => sala.responsavel, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
-    eager: true,
   })
   @JoinColumn([{ name: 'RESP_SAL_ID', referencedColumnName: 'id' }])
   sala: SalaEntity;
@@ -23,7 +22,6 @@ export class ResponsavelEntity extends BaseEntity implements Responsavel {
   @ManyToOne(() => UsuarioEntity, usuario => usuario.responsavel, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
-    eager: true,
   })
   @JoinColumn([{ name: 'RESP_USU_ID', referencedColumnName: 'id' }])
   usuario: UsuarioEntity;

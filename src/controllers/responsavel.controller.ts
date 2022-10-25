@@ -38,6 +38,17 @@ class ResponsavelController {
     }
   };
 
+  public createManyResponsible = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const responsibleData: ResponsavelCreateDTO[] = req.body.responsaveis;
+      const createResponsibleData: Responsavel[] = await this.responsavelService.createManyResponsible(responsibleData);
+
+      res.status(201).json({ data: createResponsibleData, message: 'createdMany' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public updateResponsible = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const responsibleId = Number(req.params.id);

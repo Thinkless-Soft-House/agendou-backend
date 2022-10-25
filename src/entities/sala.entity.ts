@@ -33,6 +33,7 @@ export class SalaEntity extends BaseEntity implements Sala {
   @OneToMany(() => ResponsavelEntity, responsavel => responsavel.sala, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
+    eager: true,
   })
   responsavel: ResponsavelEntity[];
 

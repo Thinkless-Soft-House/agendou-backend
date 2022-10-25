@@ -28,6 +28,12 @@ class ResponsavelService extends Repository<ResponsavelEntity> {
 
     return createResponsibleData;
   }
+  public async createManyResponsible(responsibleData: ResponsavelCreateDTO[]): Promise<Responsavel[]> {
+    if (isEmpty(responsibleData)) throw new HttpException(400, 'responsibleData is empty');
+
+    const promises = responsibleData.map(async data => await ResponsavelEntity.create({ ...data }).save());
+    return Promise.all(promises);
+  }
 
   public async updateResponsible(responsibleId: number, responsibleData: ResponsavelUpdateDTO): Promise<Responsavel> {
     if (isEmpty(responsibleData)) throw new HttpException(400, 'Usuário Data está vazio');

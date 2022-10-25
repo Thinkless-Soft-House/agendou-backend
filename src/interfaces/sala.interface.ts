@@ -8,6 +8,7 @@ export interface Sala {
   status: number;
   nome: string;
   multiplasMarcacoes: boolean;
+  foto: string;
 
   empresaId: number;
   empresa: EmpresaEntity;

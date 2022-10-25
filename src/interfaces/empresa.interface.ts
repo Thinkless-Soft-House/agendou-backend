@@ -14,6 +14,7 @@ export interface Empresa {
   pais: string;
   endereco: string;
   numeroEndereco: string;
+  cep: number;
 
   categoriaId: number;
 

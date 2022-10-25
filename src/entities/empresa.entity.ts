@@ -26,6 +26,8 @@ export class EmpresaEntity extends BaseEntity implements Empresa {
   endereco: string;
   @Column({ name: 'EMP_NUMEROENDERECO', nullable: true })
   numeroEndereco: string;
+  @Column({ name: 'EMP_CEP', nullable: true })
+  cep: number;
 
   @Column({ name: 'EMP_CATEMP_ID' })
   categoriaId: number;

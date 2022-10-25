@@ -16,6 +16,9 @@ export class SalaEntity extends BaseEntity implements Sala {
   @Column({ name: 'SAL_MULTIPLASMARCACOES' })
   multiplasMarcacoes: boolean;
 
+  @Column({ name: 'SAL_FOTO', nullable: true, type: 'text' })
+  foto: string;
+
   @Column({ name: 'SAL_EMP_ID' })
   empresaId: number;
 

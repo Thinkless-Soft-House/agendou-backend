@@ -26,6 +26,8 @@ export class EmpresaCreateDTO {
   endereco: string;
   @IsString()
   numeroEndereco: string;
+  @IsNumber()
+  cep: number;
 }
 
 export class EmpresaUpdateDTO {
@@ -68,4 +70,7 @@ export class EmpresaUpdateDTO {
   @IsOptional()
   @IsString()
   numeroEndereco: string;
+  @IsOptional()
+  @IsNumber()
+  cep: number;
 }

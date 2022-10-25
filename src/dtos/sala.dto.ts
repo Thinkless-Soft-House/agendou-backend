@@ -7,6 +7,8 @@ export class SalaCreateDTO {
   nome: string;
   @IsBoolean()
   multiplasMarcacoes: boolean;
+  @IsString()
+  foto: string;
 
   @IsNumber()
   empresaId: number;
@@ -24,6 +26,9 @@ export class SalaUpdateDTO {
   @IsOptional()
   @IsBoolean()
   multiplasMarcacoes: boolean;
+  @IsOptional()
+  @IsString()
+  foto: string;
 
   @IsOptional()
   @IsNumber()

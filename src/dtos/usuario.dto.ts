@@ -35,10 +35,6 @@ export class UsuarioUpdateDTO {
   login?: string;
 
   @IsOptional()
-  @IsString()
-  senha?: string;
-
-  @IsOptional()
   @IsNumber()
   status?: number;
 

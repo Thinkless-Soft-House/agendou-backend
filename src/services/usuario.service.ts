@@ -103,8 +103,7 @@ class UsuarioService extends Repository<UsuarioEntity> {
     const findUser: Usuario = await UsuarioEntity.findOne({ where: { id: userId } });
     if (!findUser) throw new HttpException(409, 'Usuário não existe');
 
-    const hashedPassword = await hash(userData.senha, 10);
-    await UsuarioEntity.update(userId, { ...userData, senha: hashedPassword });
+    await UsuarioEntity.update(userId, { ...userData });
 
     const updateUser: Usuario = await UsuarioEntity.findOne({ where: { id: userId } });
     return updateUser;

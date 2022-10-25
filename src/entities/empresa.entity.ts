@@ -14,7 +14,7 @@ export class EmpresaEntity extends BaseEntity implements Empresa {
   nome: string;
   @Column({ name: 'EMP_TELEFONE', nullable: true })
   telefone: string;
-  @Column({ name: 'EMP_CPFCNPJ', nullable: true })
+  @Column({ name: 'EMP_CPFCNPJ', nullable: true, type: 'bigint' })
   cpfCnpj: number;
   @Column({ name: 'EMP_MUNICIPIO', nullable: true })
   municipio: string;

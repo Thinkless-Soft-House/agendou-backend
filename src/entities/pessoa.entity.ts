@@ -1,5 +1,5 @@
 import { Pessoa } from '@/interfaces/pessoa.interface';
-import { BaseEntity, Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity({ name: 'PESSOA' })
 export class PessoaEntity extends BaseEntity implements Pessoa {
@@ -9,7 +9,7 @@ export class PessoaEntity extends BaseEntity implements Pessoa {
   @Column({ name: 'PES_NAME' })
   nome: string;
 
-  @Column({ name: 'PES_CPFCNPJ', nullable: true })
+  @Column({ name: 'PES_CPFCNPJ', nullable: true, type: 'bigint' })
   cpfCnpj: number;
   @Column({ name: 'PES_FUNCAO', nullable: true })
   funcao: string;

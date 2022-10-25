@@ -20,6 +20,7 @@ class ResponsavelRoute implements Routes {
     this.router.post(`${this.path}`, validationMiddleware(ResponsavelCreateDTO, 'body'), this.responsavelController.createResponsible);
     this.router.post(`${this.path}/many`, this.responsavelController.createManyResponsible);
     this.router.put(`${this.path}/:id(\\d+)`, validationMiddleware(ResponsavelUpdateDTO, 'body', true), this.responsavelController.updateResponsible);
+    this.router.put(`${this.path}/many`, this.responsavelController.updateResponsible);
     this.router.delete(`${this.path}/:id(\\d+)`, this.responsavelController.deleteResponsible);
   }
 }

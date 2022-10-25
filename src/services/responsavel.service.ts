@@ -47,6 +47,24 @@ class ResponsavelService extends Repository<ResponsavelEntity> {
     return updateResponsible;
   }
 
+  public async updateManyResponsible(responsibleDatas: ResponsavelUpdateDTO[]): Promise<Responsavel[]> {
+    if (isEmpty(responsibleDatas)) throw new HttpException(400, 'Usuário Data está vazio');
+
+    const list = [];
+    for (const responsibleData of responsibleDatas) {
+      const responsibleId = responsibleData.id;
+      const findResponsible: Responsavel = await ResponsavelEntity.findOne({ where: { id: responsibleId } });
+      if (!findResponsible) throw new HttpException(409, 'Responsável não existe');
+
+      await ResponsavelEntity.update(responsibleId, { ...responsibleData });
+
+      const updateResponsible: Responsavel = await ResponsavelEntity.findOne({ where: { id: responsibleId } });
+      list.push(updateResponsible);
+    }
+
+    return list;
+  }
+
   public async deleteResponsible(responsibleId: number): Promise<Responsavel> {
     if (isEmpty(responsibleId)) throw new HttpException(400, 'ResponsibleId está vazio');
 

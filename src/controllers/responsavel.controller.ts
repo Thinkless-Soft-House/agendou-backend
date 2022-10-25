@@ -61,6 +61,16 @@ class ResponsavelController {
     }
   };
 
+  public updateManyResponsible = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const responsibleData: ResponsavelUpdateDTO[] = req.body.responsaveis;
+      const createResponsibleData: Responsavel[] = await this.responsavelService.updateManyResponsible(responsibleData);
+
+      res.status(200).json({ data: createResponsibleData, message: 'updateMany' });
+    } catch (error) {
+      next(error);
+    }
+  };
   public deleteResponsible = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const responsibleId = Number(req.params.id);

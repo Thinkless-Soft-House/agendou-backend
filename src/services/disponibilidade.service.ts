@@ -60,6 +60,24 @@ class DisponibilidadeService extends Repository<DisponibilidadeEntity> {
     return updateAvailability;
   }
 
+  public async updateManyAvailability(availabilityDatas: DisponibilidadeUpdateDTO[]): Promise<Disponibilidade[]> {
+    if (isEmpty(availabilityDatas)) throw new HttpException(400, 'Usuário Data está vazio');
+
+    const list = [];
+    for (const availabilityData of availabilityDatas) {
+      const availabilityId = availabilityData.id;
+      const findAvailability: Disponibilidade = await DisponibilidadeEntity.findOne({ where: { id: availabilityId } });
+      if (!findAvailability) throw new HttpException(409, 'Responsável não existe');
+
+      await DisponibilidadeEntity.update(availabilityId, { ...availabilityData });
+
+      const updateAvailability: Disponibilidade = await DisponibilidadeEntity.findOne({ where: { id: availabilityId } });
+      list.push(updateAvailability);
+    }
+
+    return list;
+  }
+
   public async deleteAvailability(availabilityId: number): Promise<Disponibilidade> {
     if (isEmpty(availabilityId)) throw new HttpException(400, 'AvailabilityId está vazio');
 

@@ -60,6 +60,16 @@ class DisponibilidadeController {
       next(error);
     }
   };
+  public updateAvailabilityMany = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const availabilityData: DisponibilidadeUpdateDTO[] = req.body.disponibilidades;
+      const updateAvailabilityData: Disponibilidade[] = await this.disponibilidadeService.updateManyAvailability(availabilityData);
+
+      res.status(200).json({ data: updateAvailabilityData, message: 'updatedMany' });
+    } catch (error) {
+      next(error);
+    }
+  };
 
   public deleteAvailability = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

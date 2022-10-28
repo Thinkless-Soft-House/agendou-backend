@@ -1,10 +1,11 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, Like, Repository } from 'typeorm';
 import { HttpException } from '@exceptions/HttpException';
 import { isEmpty } from '@utils/util';
 import { EmpresaEntity } from '@/entities/empresa.entity';
 import { Empresa } from '@/interfaces/empresa.interface';
 import { EmpresaCreateDTO, EmpresaUpdateDTO } from '@/dtos/empresa.dto';
 import { PaginationConfig } from '@/interfaces/utils.interface';
+import { isNull } from 'util';
 
 @EntityRepository()
 class EmpresaService extends Repository<EmpresaEntity> {
@@ -27,6 +28,28 @@ class EmpresaService extends Repository<EmpresaEntity> {
     const order = {};
     order[paginationConfig.orderColumn] = paginationConfig.order;
     const [results, total]: [Empresa[], number] = await EmpresaEntity.findAndCount({ where: { categoriaId: categoryId } });
+
+    return {
+      data: results,
+      total,
+    };
+  }
+
+  public async findCompanyByFilter(paginationConfig: PaginationConfig, haveRooms: boolean, nameEmpresa: string, categoryId: number) {
+    // if (isEmpty(categoryId)) throw new HttpException(400, 'CompanyId está vazio');
+    const order = {};
+    order[paginationConfig.orderColumn] = paginationConfig.order;
+    console.log('here', categoryId);
+    const where = {};
+    if (nameEmpresa !== null) where['nome'] = Like('%' + nameEmpresa + '%');
+    if (categoryId !== null) where['categoriaId'] = categoryId;
+    console.log('my where', where);
+    const [results, total]: [Empresa[], number] = await EmpresaEntity.findAndCount({
+      where,
+      take: paginationConfig.take,
+      skip: paginationConfig.skip,
+      order,
+    });
 
     return {
       data: results,

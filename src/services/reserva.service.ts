@@ -69,6 +69,28 @@ class ReservaService extends Repository<ReservaEntity> {
     return results;
   }
 
+  public async findBookingByFilter(paginationConfig: PaginationConfig, usuarioId: number, empresaId: number, active: number) {
+    // if (isEmpty(categoryId)) throw new HttpException(400, 'CompanyId está vazio');
+    const order = {};
+    order[paginationConfig.orderColumn] = paginationConfig.order;
+    const where = {};
+    if (empresaId !== null) where['empresaId'] = empresaId;
+    if (usuarioId !== null) where['usuarioId'] = usuarioId;
+    // if (active !== null) where['ativo'] = active;
+    console.log('my where', where);
+    const [results, total]: [Reserva[], number] = await ReservaEntity.findAndCount({
+      where,
+      take: paginationConfig.take,
+      skip: paginationConfig.skip,
+      order,
+    });
+
+    return {
+      data: results,
+      total,
+    };
+  }
+
   public async createBooking(bookingData: ReservaCreateDTO): Promise<Reserva> {
     if (isEmpty(bookingData)) throw new HttpException(400, 'bookingData is empty');
 

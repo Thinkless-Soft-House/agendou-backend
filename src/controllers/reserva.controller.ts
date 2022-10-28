@@ -43,6 +43,25 @@ class ReservaController {
     }
   };
 
+  public getBookingByFilter = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const paginationConfig: PaginationConfig = createPaginationConfig(req);
+
+      const companyId = +(req.query.empresaId as string) || null;
+      const userId = +(req.query.usuarioId as string) || null;
+      const status = +(req.query.usuarioId as string) || null;
+
+      const findOneCompanyData: {
+        data: Reserva[];
+        total: number;
+      } = await this.reservaService.findBookingByFilter(paginationConfig, userId, companyId, status);
+
+      res.status(200).json({ data: findOneCompanyData, message: 'findByFilter' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public createBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const bookingData: ReservaCreateDTO = req.body;

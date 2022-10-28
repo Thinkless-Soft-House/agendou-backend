@@ -61,6 +61,26 @@ class UsersController {
     }
   };
 
+  public getUserByFilter = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const paginationConfig: PaginationConfig = createPaginationConfig(req);
+
+      const username = (req.query.nomeUsuario as string) || null;
+      const email = (req.query.login as string) || null;
+      const companyId = +(req.query.empresaId as string) || null;
+      const permissionId = +(req.query.permissaoId as string) || null;
+
+      const findOneCompanyData: {
+        data: Usuario[];
+        total: number;
+      } = await this.usuarioService.findUserByFilter(paginationConfig, username, email, companyId, permissionId);
+
+      res.status(200).json({ data: findOneCompanyData, message: 'findByFilter' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: UsuarioCreateDTO = req.body;

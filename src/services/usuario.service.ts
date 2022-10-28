@@ -1,5 +1,5 @@
 import { hash } from 'bcrypt';
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, Like, Repository } from 'typeorm';
 import { HttpException } from '@exceptions/HttpException';
 import { isEmpty } from '@utils/util';
 import { UsuarioEntity } from '@/entities/usuario.entity';
@@ -63,6 +63,29 @@ class UsuarioService extends Repository<UsuarioEntity> {
       order,
       take: paginationConfig.take,
       skip: paginationConfig.skip,
+    });
+
+    return {
+      data: results,
+      total,
+    };
+  }
+
+  public async findUserByFilter(paginationConfig: PaginationConfig, nomeUsuario: string, email: string, empresaId: number, permissaoId: number) {
+    // if (isEmpty(categoryId)) throw new HttpException(400, 'CompanyId está vazio');
+    const order = {};
+    order[paginationConfig.orderColumn] = paginationConfig.order;
+    const where = {};
+    if (nomeUsuario !== null) where['nome'] = Like('%' + nomeUsuario + '%');
+    if (email !== null) where['login'] = Like('%' + email + '%');
+    if (empresaId !== null) where['empresaId'] = empresaId;
+    if (permissaoId !== null) where['permissaoId'] = permissaoId;
+    console.log('my where', where);
+    const [results, total]: [Usuario[], number] = await UsuarioEntity.findAndCount({
+      where,
+      take: paginationConfig.take,
+      skip: paginationConfig.skip,
+      order,
     });
 
     return {

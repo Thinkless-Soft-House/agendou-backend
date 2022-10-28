@@ -45,6 +45,25 @@ class EmpresaController {
     }
   };
 
+  public getCompanyByFilter = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const paginationConfig: PaginationConfig = createPaginationConfig(req);
+
+      const categoryId = Number(req.query.categoriaId) || null;
+      const haveRooms = !!(req.query.possuiSala as string) || null;
+      const companyName = (req.query.nomeEmpresa as string) || null;
+
+      const findOneCompanyData: {
+        data: Empresa[];
+        total: number;
+      } = await this.empresaService.findCompanyByFilter(paginationConfig, haveRooms, companyName, categoryId);
+
+      res.status(200).json({ data: findOneCompanyData, message: 'findOneByCategory' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public createCompany = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const companyData: EmpresaCreateDTO = req.body;

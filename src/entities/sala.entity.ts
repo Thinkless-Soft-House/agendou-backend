@@ -25,7 +25,6 @@ export class SalaEntity extends BaseEntity implements Sala {
   @ManyToOne(() => EmpresaEntity, empresa => empresa.salas, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
-    eager: true,
   })
   @JoinColumn([{ name: 'SAL_EMP_ID', referencedColumnName: 'id' }])
   empresa: EmpresaEntity;

@@ -9,14 +9,14 @@ import { PaginationConfig } from '@/interfaces/utils.interface';
 @EntityRepository()
 class SalaService extends Repository<SalaEntity> {
   public async findAllRomm(): Promise<Sala[]> {
-    const romms: Sala[] = await SalaEntity.find();
+    const romms: Sala[] = await SalaEntity.find({ relations: ['empresa'] });
     return romms;
   }
 
   public async findRommById(rommId: number): Promise<Sala> {
     if (isEmpty(rommId)) throw new HttpException(400, 'RommId está vazio');
 
-    const findRomm: Sala = await SalaEntity.findOne({ where: { id: rommId } });
+    const findRomm: Sala = await SalaEntity.findOne({ where: { id: rommId }, relations: ['empresa'] });
     if (!findRomm) throw new HttpException(409, 'Sala não existe');
 
     return findRomm;

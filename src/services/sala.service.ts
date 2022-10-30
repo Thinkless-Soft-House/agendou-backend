@@ -1,4 +1,4 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, Like, Repository } from 'typeorm';
 import { HttpException } from '@exceptions/HttpException';
 import { isEmpty } from '@utils/util';
 import { SalaEntity } from '@/entities/sala.entity';
@@ -35,6 +35,33 @@ class SalaService extends Repository<SalaEntity> {
 
     const [results, total]: [Sala[], number] = await SalaEntity.findAndCount({
       where: { empresaId: companyId },
+      order,
+      take: paginationConfig.take,
+      skip: paginationConfig.skip,
+    });
+
+    return {
+      data: results,
+      total,
+    };
+  }
+
+  public async findRommByFilter(
+    paginationConfig: PaginationConfig,
+    salaName: string,
+    empresaId: number,
+  ): Promise<{
+    data: Sala[];
+    total: number;
+  }> {
+    const order = {};
+    order[paginationConfig.orderColumn] = paginationConfig.order;
+    const where = {};
+    if (salaName !== null) where['nome'] = Like('%' + salaName + '%');
+    if (empresaId !== null) where['empresaId'] = empresaId;
+
+    const [results, total]: [Sala[], number] = await SalaEntity.findAndCount({
+      where,
       order,
       take: paginationConfig.take,
       skip: paginationConfig.skip,

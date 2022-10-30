@@ -45,6 +45,24 @@ class SalaController {
     }
   };
 
+  public getRoomByFilter = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const paginationConfig: PaginationConfig = createPaginationConfig(req);
+
+      const roomName = (req.query.nomeSala as string) || null;
+      const companyId = +(req.query.empresaId as string) || null;
+
+      const findOneCompanyData: {
+        data: Sala[];
+        total: number;
+      } = await this.salaService.findRommByFilter(paginationConfig, roomName, companyId);
+
+      res.status(200).json({ data: findOneCompanyData, message: 'findByFilter' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public createRomm = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const rommData: SalaCreateDTO = req.body;

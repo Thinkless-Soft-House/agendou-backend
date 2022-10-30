@@ -58,7 +58,7 @@ class EmpresaController {
         total: number;
       } = await this.empresaService.findCompanyByFilter(paginationConfig, haveRooms, companyName, categoryId);
 
-      res.status(200).json({ data: findOneCompanyData, message: 'findOneByCategory' });
+      res.status(200).json({ data: findOneCompanyData, message: 'getCompanyByFilter' });
     } catch (error) {
       next(error);
     }

@@ -8,6 +8,7 @@ export interface Status {
 }
 
 export enum StatusEnum {
+  _,
   Aguardando,
   Confirmado,
   Cancelado,

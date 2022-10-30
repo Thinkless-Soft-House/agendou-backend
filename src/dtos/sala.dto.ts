@@ -8,6 +8,7 @@ export class SalaCreateDTO {
   nome: string;
   @IsBoolean()
   multiplasMarcacoes: boolean;
+  @IsOptional()
   @IsString()
   foto: string;
 

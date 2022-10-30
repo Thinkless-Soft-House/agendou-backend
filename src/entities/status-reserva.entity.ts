@@ -1,5 +1,5 @@
 import { StatusReserva } from '@/interfaces/status-reserva.interface';
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ReservaEntity } from './reserva.entity';
 import { StatusEntity } from './status.entity';
 
@@ -12,6 +12,8 @@ export class StatusReservaEntity extends BaseEntity implements StatusReserva {
   reservaId: number;
   @Column({ name: 'STARES_STA_ID' })
   statusId: number;
+  @CreateDateColumn({ name: 'STARES_STA_DATE' })
+  date: number;
 
   @ManyToOne(() => ReservaEntity, reserva => reserva.statusReserva, {
     onDelete: 'NO ACTION',

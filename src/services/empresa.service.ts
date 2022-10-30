@@ -37,23 +37,33 @@ class EmpresaService extends Repository<EmpresaEntity> {
 
   public async findCompanyByFilter(paginationConfig: PaginationConfig, haveRooms: boolean, nameEmpresa: string, categoryId: number) {
     // if (isEmpty(categoryId)) throw new HttpException(400, 'CompanyId está vazio');
-    const order = {};
-    order[paginationConfig.orderColumn] = paginationConfig.order;
-    console.log('here', categoryId);
-    const where = {};
-    if (nameEmpresa !== null) where['nome'] = Like('%' + nameEmpresa + '%');
-    if (categoryId !== null) where['categoriaId'] = categoryId;
-    console.log('my where', where);
-    const [results, total]: [Empresa[], number] = await EmpresaEntity.findAndCount({
-      where,
-      take: paginationConfig.take,
-      skip: paginationConfig.skip,
-      order,
-    });
+    console.log('here', paginationConfig);
+    let where = '';
+    if (nameEmpresa !== null) where += `where e.EMP_NOME LIKE '%${nameEmpresa}%'`;
+    if (categoryId !== null) where += where === '' ? `where e.EMP_CATEMP_ID = ${categoryId}` : ' AND e.EMP_CATEMP_ID = ${categoryId}';
+    console.log(
+      `select ${this.mapRawToEntity()}, count(s.SAL_ID) as QUANTIDADE_SALAS from dev.EMPRESA as e
+    ${haveRooms ? 'inner' : 'left'} join dev.SALA as s ON e.EMP_ID = s.SAL_EMP_ID
+      ${where}
+      group by e.EMP_NOME
+      order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)} ${paginationConfig.order}
+    limit ${paginationConfig.take} offset ${paginationConfig.skip}`,
+    );
+    const results = await EmpresaEntity.query(`select ${this.mapRawToEntity()}, count(s.SAL_ID) as QUANTIDADE_SALAS from dev.EMPRESA as e
+    ${haveRooms ? 'inner' : 'left'} join dev.SALA as s ON e.EMP_ID = s.SAL_EMP_ID
+      ${where}
+      group by e.EMP_NOME
+      order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)} ${paginationConfig.order}
+    limit ${paginationConfig.take} offset ${paginationConfig.skip}`);
+
+    const total = await EmpresaEntity.query(`select COUNT(distinct EMP_ID) AS total FROM dev.EMPRESA AS e
+    ${haveRooms ? 'inner' : 'left'} join dev.SALA as s ON e.EMP_ID = s.SAL_EMP_ID
+      ${where}
+      `);
 
     return {
       data: results,
-      total,
+      total: +total[0].total,
     };
   }
 
@@ -85,6 +95,62 @@ class EmpresaService extends Repository<EmpresaEntity> {
 
     await EmpresaEntity.delete({ id: companyId });
     return findCompany;
+  }
+
+  private mapRawToEntity() {
+    return `
+    e.EMP_ID as id,
+    e.EMP_LOGOURL as logo,
+    e.EMP_NOME as nome,
+    e.EMP_TELEFONE as telefone,
+    e.EMP_CPFCNPJ as cpfCnpj,
+    e.EMP_MUNICIPIO as municipio,
+    e.EMP_ESTADO as estado,
+    e.EMP_PAIS as pais,
+    e.EMP_ENDERECO as endereco,
+    e.EMP_NUMEROENDERECO as numeroEndereco,
+    e.EMP_CEP as cep,
+    e.EMP_CATEMP_ID as categoriaId,
+    e.EMP_USERINCLUI as userCreated,
+    e.EMP_DTAINCLUI as dateCreated,
+    e.EMP_USERALTERA as userUpdated,
+    e.EMP_DTAALTERA as dateUpdated
+    `;
+  }
+  private getOneRawNameOfEntityName(entity: string) {
+    return entity === 'id'
+      ? `e.EMP_ID`
+      : entity === 'logo'
+      ? `e.EMP_LOGOURL`
+      : entity === 'nome'
+      ? `e.EMP_NOME`
+      : entity === 'telefone'
+      ? `e.EMP_TELEFONE`
+      : entity === 'cpfCnpj'
+      ? `e.EMP_CPFCNPJ`
+      : entity === 'municipio'
+      ? `e.EMP_MUNICIPIO`
+      : entity === 'estado'
+      ? `e.EMP_ESTADO`
+      : entity === 'pais'
+      ? `e.EMP_PAIS`
+      : entity === 'endereco'
+      ? `e.EMP_ENDERECO`
+      : entity === 'numeroEndereco'
+      ? `e.EMP_NUMEROENDERECO`
+      : entity === 'cep'
+      ? `e.EMP_CEP`
+      : entity === 'categoriaId'
+      ? `e.EMP_CATEMP_ID`
+      : entity === 'userCreated'
+      ? `e.EMP_USERINCLUI`
+      : entity === 'dateCreated'
+      ? `e.EMP_DTAINCLUI`
+      : entity === 'userUpdated'
+      ? `e.EMP_USERALTERA`
+      : entity === 'dateUpdated'
+      ? `e.EMP_DTAALTERA`
+      : '';
   }
 }
 

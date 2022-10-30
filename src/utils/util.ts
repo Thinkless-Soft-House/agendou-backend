@@ -33,7 +33,7 @@ export const checkHour = (hoursA: { start: string; end: string }, hoursB: { star
     return false;
   }
   // Checar se o end do B esta entre o start e o end do A e depois do start do B
-  if (!(bMinutesEnd >= aMinutesStart && bMinutesEnd <= aMinutesEnd && bMinutesEnd > bMinutesStart)) {
+  if (!(bMinutesEnd > aMinutesStart && bMinutesEnd < aMinutesEnd && bMinutesEnd > bMinutesStart)) {
     return false;
   }
 

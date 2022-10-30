@@ -49,12 +49,18 @@ class ReservaController {
 
       const companyId = +(req.query.empresaId as string) || null;
       const userId = +(req.query.usuarioId as string) || null;
-      const status = +(req.query.usuarioId as string) || null;
+      const status = (req.query.status as string) || null;
+      const salaId = +(req.query.salaId as string) || null;
+      const dia = +(req.query.dia as string) || null;
+      const hInicio = (req.query.hinicio as string) || null;
+      const hFim = (req.query.hfim as string) || null;
+      const data = (req.query.data as string) || null;
+      const statusList = !!status ? status.split(',') : [];
 
       const findOneCompanyData: {
         data: Reserva[];
         total: number;
-      } = await this.reservaService.findBookingByFilter(paginationConfig, userId, companyId, status);
+      } = await this.reservaService.findBookingByFilter(paginationConfig, userId, companyId, statusList, salaId, dia, hInicio, hFim, data);
 
       res.status(200).json({ data: findOneCompanyData, message: 'findByFilter' });
     } catch (error) {

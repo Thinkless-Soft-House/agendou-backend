@@ -5,9 +5,12 @@ import { SalaEntity } from '@/entities/sala.entity';
 import { Sala } from '@/interfaces/sala.interface';
 import { SalaCreateDTO, SalaUpdateDTO } from '@/dtos/sala.dto';
 import { PaginationConfig } from '@/interfaces/utils.interface';
+import EmpresaService from './empresa.service';
 
 @EntityRepository()
 class SalaService extends Repository<SalaEntity> {
+  empresaService = new EmpresaService();
+
   public async findAllRomm(): Promise<Sala[]> {
     const romms: Sala[] = await SalaEntity.find({ relations: ['empresa'] });
     return romms;
@@ -62,6 +65,7 @@ class SalaService extends Repository<SalaEntity> {
 
     const [results, total]: [Sala[], number] = await SalaEntity.findAndCount({
       where,
+      relations: ['empresa'],
       order,
       take: paginationConfig.take,
       skip: paginationConfig.skip,

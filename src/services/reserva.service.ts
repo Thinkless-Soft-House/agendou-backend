@@ -135,22 +135,47 @@ class ReservaService extends Repository<ReservaEntity> {
         select S2.STA_TIPO from STATUS as S2
           where
             S2.STA_ID = SR.STARES_STA_ID
-      ) as status
+      ) as status,
+      ${this.mapRawToUserEntity()},
+      ${this.mapRawToPersonEntity()},
+      ${this.mapRawToCompanyEntity()}
       FROM RESERVA AS R
       INNER JOIN STATUS_RESERVA AS SR on SR.STARES_RES_ID = R.RES_ID
       INNER JOIN SALA AS S on S.SAL_ID = R.RES_SAL_ID
+      INNER JOIN USUARIO AS U on U.USU_ID = R.RES_USU_ID
+      INNER JOIN PESSOA AS P on U.USU_PES_ID = P.PES_ID
+      INNER JOIN EMPRESA AS E on U.USU_EMP_ID = E.EMP_ID
       ${where}
       order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)} ${paginationConfig.order}
     limit ${paginationConfig.take} offset ${paginationConfig.skip}`;
 
     console.log('query =>', query);
-    const results = await ReservaEntity.query(query);
+    const rawData: any[] = await ReservaEntity.query(query);
+    const results = rawData.map(item => {
+      const ret: any = {
+        usuario: {},
+        pessoa: {},
+        empresa: {},
+      };
+      const entries = Object.entries(item);
+      entries.forEach(([prop, value]) => {
+        if (prop.includes('usu_')) {
+          ret.usuario[prop.replace('usu_', '')] = value;
+        } else if (prop.includes('pes_')) {
+          ret.pessoa[prop.replace('pes_', '')] = value;
+        } else if (prop.includes('emp_')) {
+          ret.empresa[prop.replace('emp_', '')] = value;
+        } else {
+          ret[prop] = value;
+        }
+      });
+
+      return ret;
+    });
 
     const total = await ReservaEntity.query(`SELECT
     count(R.RES_ID) as total
     FROM RESERVA AS R
-    INNER JOIN STATUS_RESERVA AS SR on SR.STARES_RES_ID = R.RES_ID
-    INNER JOIN SALA AS S on S.SAL_ID = R.RES_SAL_ID
     ${where}
       `);
 
@@ -243,6 +268,65 @@ class ReservaService extends Repository<ReservaEntity> {
     R.RES_DIASEMANAINDEX as diaSemanaIndex,
     R.RES_SAL_ID as salaId,
     R.RES_USU_ID as usuarioId
+    `;
+  }
+
+  private mapRawToUserEntity() {
+    return `
+    U.USU_ID as usu_id,
+    U.USU_LOGIN as usu_login,
+    U.USU_SENHA as usu_senha,
+    U.USU_STATUS as usu_status,
+    U.USU_RESETCODE as usu_resetPasswordCode,
+    U.USU_PUSHTOKEN as usu_pushToken,
+    U.USU_USERINCLUI as usu_userCreated,
+    U.USU_DTAINCLUI as usu_dateCreated,
+    U.USU_USERALTERA as usu_userUpdated,
+    U.USU_DTAALTERA as usu_dateUpdated,
+    U.USU_PER_ID as usu_permissaoId,
+    U.USU_EMP_ID as usu_empresaId,
+    U.USU_PES_ID as usu_pessoaId
+    `;
+  }
+  private mapRawToPersonEntity() {
+    return `
+    P.PES_ID as pes_id,
+    P.PES_NAME as pes_nome,
+    P.PES_CPFCNPJ as pes_cpfCnpj,
+    P.PES_FUNCAO as pes_funcao,
+    P.PES_MUNICIPIO as pes_municipio,
+    P.PES_ESTADO as pes_estado,
+    P.PES_PAIS as pes_pais,
+    P.PES_ENDERECO as pes_endereco,
+    P.PES_NUMERO as pes_numero,
+    P.PES_TELEFONE as pes_telefone,
+    P.PES_CEP as pes_cep,
+    P.PES_DATANASCIMENTO as pes_dataNascimento,
+    P.PES_FOTO as pes_foto,
+    P.PES_USUINCLUI as pes_userCreated,
+    P.PES_DTAINCLUI as pes_dateCreated,
+    P.PES_USUALTERA as pes_userUpdated,
+    P.PES_DTAALTERA as pes_dateUpdated
+    `;
+  }
+  private mapRawToCompanyEntity() {
+    return `
+    E.EMP_ID as emp_id,
+    E.EMP_LOGOURL as emp_logo,
+    E.EMP_NOME as emp_nome,
+    E.EMP_TELEFONE as emp_telefone,
+    E.EMP_CPFCNPJ as emp_cpfCnpj,
+    E.EMP_MUNICIPIO as emp_municipio,
+    E.EMP_ESTADO as emp_estado,
+    E.EMP_PAIS as emp_pais,
+    E.EMP_ENDERECO as emp_endereco,
+    E.EMP_NUMEROENDERECO as emp_numeroEndereco,
+    E.EMP_CEP as emp_cep,
+    E.EMP_CATEMP_ID as emp_categoriaId,
+    E.EMP_USERINCLUI as emp_userCreated,
+    E.EMP_DTAINCLUI as emp_dateCreated,
+    E.EMP_USERALTERA as emp_userUpdated,
+    E.EMP_DTAALTERA as emp_dateUpdated
     `;
   }
 

@@ -43,9 +43,9 @@ class EmpresaService extends Repository<EmpresaEntity> {
     if (categoryId !== null) where += where === '' ? `where e.EMP_CATEMP_ID = ${categoryId}` : ` AND e.EMP_CATEMP_ID = ${categoryId}`;
 
     const query = `select ${this.mapRawToEntity()}, count(s.SAL_ID) as QUANTIDADE_SALAS
-    ${categoryId !== null ? ', ce.CATEMP_DESCRICAO as categoriaNome' : ''}
+    , ce.CATEMP_DESCRICAO as categoriaNome
     from dev.EMPRESA as e
-    ${categoryId !== null ? 'inner join dev.CATEGORIA_EMPRESA as ce ON e.EMP_CATEMP_ID = ce.CATEMP_ID' : ''}
+    inner join dev.CATEGORIA_EMPRESA as ce ON e.EMP_CATEMP_ID = ce.CATEMP_ID
     ${haveRooms ? 'inner' : 'left'} join dev.SALA as s ON e.EMP_ID = s.SAL_EMP_ID
       ${where}
       group by e.EMP_NOME

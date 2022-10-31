@@ -77,7 +77,7 @@ class ReservaService extends Repository<ReservaEntity> {
     paginationConfig: PaginationConfig,
     usuarioId: number,
     empresaId: number,
-    active: string[],
+    status: string[],
     salaId: number,
     dia: number,
     hInicio: string,
@@ -86,19 +86,19 @@ class ReservaService extends Repository<ReservaEntity> {
   ): Promise<{ data: Reserva[]; total: number }> {
     // if (isEmpty(categoryId)) throw new HttpException(400, 'CompanyId está vazio');
     console.log('here', paginationConfig);
-    console.log('active', active);
+    console.log('active', status);
     let where = '';
 
-    if (active !== null && active.length > 0)
+    if (status !== null && status.length > 0)
       where +=
         where === ''
-          ? `where SR.STARES_STA_ID IN (${active.join(', ')}) AND
+          ? `where SR.STARES_STA_ID IN (${status.map(e => +e).join(', ')}) AND
             (
               select MAX(SR2.STARES_STA_DATE) from STATUS_RESERVA as SR2
               where
                 SR2.STARES_RES_ID = R.RES_ID
             ) = SR.STARES_STA_DATE`
-          : ` AND SR.STARES_STA_ID IN (${active.join(', ')}) AND
+          : ` AND SR.STARES_STA_ID IN (${status.map(e => +e).join(', ')}) AND
           (
             select MAX(SR2.STARES_STA_DATE) from STATUS_RESERVA as SR2
             where
@@ -138,13 +138,14 @@ class ReservaService extends Repository<ReservaEntity> {
       ) as status,
       ${this.mapRawToUserEntity()},
       ${this.mapRawToPersonEntity()},
-      ${this.mapRawToCompanyEntity()}
+      ${this.mapRawToCompanyEntity()},
+      S.SAL_NOME as salaNome
       FROM RESERVA AS R
-      INNER JOIN STATUS_RESERVA AS SR on SR.STARES_RES_ID = R.RES_ID
       INNER JOIN SALA AS S on S.SAL_ID = R.RES_SAL_ID
       INNER JOIN USUARIO AS U on U.USU_ID = R.RES_USU_ID
       INNER JOIN PESSOA AS P on U.USU_PES_ID = P.PES_ID
       INNER JOIN EMPRESA AS E on U.USU_EMP_ID = E.EMP_ID
+      INNER JOIN STATUS_RESERVA AS SR on SR.STARES_RES_ID = R.RES_ID
       ${where}
       order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)} ${paginationConfig.order}
     limit ${paginationConfig.take} offset ${paginationConfig.skip}`;
@@ -176,6 +177,7 @@ class ReservaService extends Repository<ReservaEntity> {
     const total = await ReservaEntity.query(`SELECT
     count(R.RES_ID) as total
     FROM RESERVA AS R
+    INNER JOIN STATUS_RESERVA AS SR on SR.STARES_RES_ID = R.RES_ID
     ${where}
       `);
 

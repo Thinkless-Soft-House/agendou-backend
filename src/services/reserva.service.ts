@@ -87,23 +87,19 @@ class ReservaService extends Repository<ReservaEntity> {
     // if (isEmpty(categoryId)) throw new HttpException(400, 'CompanyId está vazio');
     console.log('here', paginationConfig);
     console.log('active', status);
-    let where = '';
+    let where = `where (
+      select MAX(SR2.STARES_STA_DATE) from STATUS_RESERVA as SR2
+      where
+        SR2.STARES_RES_ID = R.RES_ID
+    ) = SR.STARES_STA_DATE`;
 
     if (status !== null && status.length > 0)
       where +=
         where === ''
-          ? `where SR.STARES_STA_ID IN (${status.map(e => +e).join(', ')}) AND
-            (
-              select MAX(SR2.STARES_STA_DATE) from STATUS_RESERVA as SR2
-              where
-                SR2.STARES_RES_ID = R.RES_ID
-            ) = SR.STARES_STA_DATE`
-          : ` AND SR.STARES_STA_ID IN (${status.map(e => +e).join(', ')}) AND
-          (
-            select MAX(SR2.STARES_STA_DATE) from STATUS_RESERVA as SR2
-            where
-              SR2.STARES_RES_ID = R.RES_ID
-          ) = SR.STARES_STA_DATE`;
+          ? `where SR.STARES_STA_ID IN (${status.map(e => +e).join(', ')})
+            `
+          : ` AND SR.STARES_STA_ID IN (${status.map(e => +e).join(', ')})
+          `;
     if (empresaId !== null) where += where === '' ? `where S.SAL_EMP_ID = ${empresaId}` : ` AND S.SAL_EMP_ID = ${empresaId}`;
     if (usuarioId !== null) where += where === '' ? `where R.RES_USU_ID = ${usuarioId}` : ` AND R.RES_USU_ID = ${usuarioId}`;
     if (salaId !== null) where += where === '' ? `where R.RES_SAL_ID = ${salaId}` : ` AND R.RES_SAL_ID = ${salaId}`;
@@ -144,7 +140,7 @@ class ReservaService extends Repository<ReservaEntity> {
       INNER JOIN SALA AS S on S.SAL_ID = R.RES_SAL_ID
       INNER JOIN USUARIO AS U on U.USU_ID = R.RES_USU_ID
       INNER JOIN PESSOA AS P on U.USU_PES_ID = P.PES_ID
-      INNER JOIN EMPRESA AS E on U.USU_EMP_ID = E.EMP_ID
+      INNER JOIN EMPRESA AS E on S.SAL_EMP_ID = E.EMP_ID
       INNER JOIN STATUS_RESERVA AS SR on SR.STARES_RES_ID = R.RES_ID
       ${where}
       order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)} ${paginationConfig.order}

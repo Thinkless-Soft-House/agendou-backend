@@ -26,6 +26,16 @@ class DisponibilidadeController {
       next(error);
     }
   };
+  public getAvailabilityByRoom = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const roomId = Number(req.params.room);
+      const findOneAvailabilityData: Disponibilidade[] = await this.disponibilidadeService.findAvailabilityByRoom(roomId);
+
+      res.status(200).json({ data: findOneAvailabilityData, message: 'findByRoom' });
+    } catch (error) {
+      next(error);
+    }
+  };
 
   public createAvailability = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

@@ -27,6 +27,17 @@ class StatusReservaController {
     }
   };
 
+  public getBookingStatusByBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const bookingId = Number(req.params.booking);
+      const findOneBookingStatusData: StatusReserva[] = await this.statusReservaService.findBookingStatusByBooking(bookingId);
+
+      res.status(200).json({ data: findOneBookingStatusData, message: 'findByBooking' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public createBookingStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const bookingStatusData: StatusReservaCreateDTO = req.body;

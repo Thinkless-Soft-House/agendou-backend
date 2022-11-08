@@ -30,14 +30,14 @@ class ReservaController {
     }
   };
 
-  public getBookingByRommAndDate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getBookingByRoomAndDate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const rommId = Number(req.params.id);
+      const roomId = Number(req.params.id);
       const month = Number(req.params.mes);
       const year = Number(req.params.ano);
-      const findBookings: Reserva[] = await this.reservaService.findBookingByRommAndDate(rommId, month, year);
+      const findBookings: Reserva[] = await this.reservaService.findBookingByRoomAndDate(roomId, month, year);
 
-      res.status(200).json({ data: findBookings, message: 'findBookingByRommAndDate' });
+      res.status(200).json({ data: findBookings, message: 'findBookingByRoomAndDate' });
     } catch (error) {
       next(error);
     }

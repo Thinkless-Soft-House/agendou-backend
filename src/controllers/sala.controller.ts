@@ -8,38 +8,38 @@ import { createPaginationConfig } from '@/utils/util';
 class SalaController {
   public salaService = new SalaService();
 
-  public getRomm = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getRoom = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const findAllRommData: Sala[] = await this.salaService.findAllRomm();
+      const findAllRoomData: Sala[] = await this.salaService.findAllRoom();
 
-      res.status(200).json({ data: findAllRommData, message: 'findAll' });
+      res.status(200).json({ data: findAllRoomData, message: 'findAll' });
     } catch (error) {
       next(error);
     }
   };
 
-  public getRommById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getRoomById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const rommId = Number(req.params.id);
-      const findOneRommData: Sala = await this.salaService.findRommById(rommId);
+      const roomId = Number(req.params.id);
+      const findOneRoomData: Sala = await this.salaService.findRoomById(roomId);
 
-      res.status(200).json({ data: findOneRommData, message: 'findOne' });
+      res.status(200).json({ data: findOneRoomData, message: 'findOne' });
     } catch (error) {
       next(error);
     }
   };
 
-  public getRommByCompany = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getRoomByCompany = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const companyId = Number(req.params.id);
       const paginationConfig: PaginationConfig = createPaginationConfig(req);
 
-      const findRommsForCompany: {
+      const findRoomsForCompany: {
         data: Sala[];
         total: number;
-      } = await this.salaService.findRommByCompany(companyId, paginationConfig);
+      } = await this.salaService.findRoomByCompany(companyId, paginationConfig);
 
-      res.status(200).json({ data: findRommsForCompany, message: 'findByCompany' });
+      res.status(200).json({ data: findRoomsForCompany, message: 'findByCompany' });
     } catch (error) {
       next(error);
     }
@@ -55,7 +55,7 @@ class SalaController {
       const findOneCompanyData: {
         data: Sala[];
         total: number;
-      } = await this.salaService.findRommByFilter(paginationConfig, roomName, companyId);
+      } = await this.salaService.findRoomByFilter(paginationConfig, roomName, companyId);
 
       res.status(200).json({ data: findOneCompanyData, message: 'findByFilter' });
     } catch (error) {
@@ -63,35 +63,35 @@ class SalaController {
     }
   };
 
-  public createRomm = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public createRoom = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const rommData: SalaCreateDTO = req.body;
-      const createRommData: Sala = await this.salaService.createRomm(rommData);
+      const roomData: SalaCreateDTO = req.body;
+      const createRoomData: Sala = await this.salaService.createRoom(roomData);
 
-      res.status(201).json({ data: createRommData, message: 'created' });
+      res.status(201).json({ data: createRoomData, message: 'created' });
     } catch (error) {
       next(error);
     }
   };
 
-  public updateRomm = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public updateRoom = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const rommId = Number(req.params.id);
-      const rommData: SalaUpdateDTO = req.body;
-      const updateRommData: Sala = await this.salaService.updateRomm(rommId, rommData);
+      const roomId = Number(req.params.id);
+      const roomData: SalaUpdateDTO = req.body;
+      const updateRoomData: Sala = await this.salaService.updateRoom(roomId, roomData);
 
-      res.status(200).json({ data: updateRommData, message: 'updated' });
+      res.status(200).json({ data: updateRoomData, message: 'updated' });
     } catch (error) {
       next(error);
     }
   };
 
-  public deleteRomm = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public deleteRoom = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const rommId = Number(req.params.id);
-      const deleteRommData: Sala = await this.salaService.deleteRomm(rommId);
+      const roomId = Number(req.params.id);
+      const deleteRoomData: Sala = await this.salaService.deleteRoom(roomId);
 
-      res.status(200).json({ data: deleteRommData, message: 'deleted' });
+      res.status(200).json({ data: deleteRoomData, message: 'deleted' });
     } catch (error) {
       next(error);
     }

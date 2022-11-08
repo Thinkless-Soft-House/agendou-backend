@@ -11,28 +11,28 @@ import EmpresaService from './empresa.service';
 class SalaService extends Repository<SalaEntity> {
   empresaService = new EmpresaService();
 
-  public async findAllRomm(): Promise<Sala[]> {
-    const romms: Sala[] = await SalaEntity.find({ relations: ['empresa'] });
-    return romms;
+  public async findAllRoom(): Promise<Sala[]> {
+    const rooms: Sala[] = await SalaEntity.find({ relations: ['empresa'] });
+    return rooms;
   }
 
-  public async findRommById(rommId: number): Promise<Sala> {
-    if (isEmpty(rommId)) throw new HttpException(400, 'RommId está vazio');
+  public async findRoomById(roomId: number): Promise<Sala> {
+    if (isEmpty(roomId)) throw new HttpException(400, 'RoomId está vazio');
 
-    const findRomm: Sala = await SalaEntity.findOne({ where: { id: rommId }, relations: ['empresa'] });
-    if (!findRomm) throw new HttpException(409, 'Sala não existe');
+    const findRoom: Sala = await SalaEntity.findOne({ where: { id: roomId }, relations: ['empresa'] });
+    if (!findRoom) throw new HttpException(409, 'Sala não existe');
 
-    return findRomm;
+    return findRoom;
   }
 
-  public async findRommByCompany(
+  public async findRoomByCompany(
     companyId: number,
     paginationConfig: PaginationConfig,
   ): Promise<{
     data: Sala[];
     total: number;
   }> {
-    if (isEmpty(companyId)) throw new HttpException(400, 'RommId está vazio');
+    if (isEmpty(companyId)) throw new HttpException(400, 'RoomId está vazio');
     const order = {};
     order[paginationConfig.orderColumn] = paginationConfig.order;
 
@@ -49,7 +49,7 @@ class SalaService extends Repository<SalaEntity> {
     };
   }
 
-  public async findRommByFilter(
+  public async findRoomByFilter(
     paginationConfig: PaginationConfig,
     salaName: string,
     empresaId: number,
@@ -77,34 +77,34 @@ class SalaService extends Repository<SalaEntity> {
     };
   }
 
-  public async createRomm(rommData: SalaCreateDTO): Promise<Sala> {
-    if (isEmpty(rommData)) throw new HttpException(400, 'rommData is empty');
+  public async createRoom(roomData: SalaCreateDTO): Promise<Sala> {
+    if (isEmpty(roomData)) throw new HttpException(400, 'roomData is empty');
 
-    const createRommData: Sala = await SalaEntity.create({ ...rommData }).save();
+    const createRoomData: Sala = await SalaEntity.create({ ...roomData }).save();
 
-    return createRommData;
+    return createRoomData;
   }
 
-  public async updateRomm(rommId: number, rommData: SalaUpdateDTO): Promise<Sala> {
-    if (isEmpty(rommData)) throw new HttpException(400, 'Usuário Data está vazio');
+  public async updateRoom(roomId: number, roomData: SalaUpdateDTO): Promise<Sala> {
+    if (isEmpty(roomData)) throw new HttpException(400, 'Usuário Data está vazio');
 
-    const findRomm: Sala = await SalaEntity.findOne({ where: { id: rommId } });
-    if (!findRomm) throw new HttpException(409, 'Sala não existe');
+    const findRoom: Sala = await SalaEntity.findOne({ where: { id: roomId } });
+    if (!findRoom) throw new HttpException(409, 'Sala não existe');
 
-    await SalaEntity.update(rommId, { ...rommData });
+    await SalaEntity.update(roomId, { ...roomData });
 
-    const updateRomm: Sala = await SalaEntity.findOne({ where: { id: rommId } });
-    return updateRomm;
+    const updateRoom: Sala = await SalaEntity.findOne({ where: { id: roomId } });
+    return updateRoom;
   }
 
-  public async deleteRomm(rommId: number): Promise<Sala> {
-    if (isEmpty(rommId)) throw new HttpException(400, 'RommId está vazio');
+  public async deleteRoom(roomId: number): Promise<Sala> {
+    if (isEmpty(roomId)) throw new HttpException(400, 'RoomId está vazio');
 
-    const findRomm: Sala = await SalaEntity.findOne({ where: { id: rommId } });
-    if (!findRomm) throw new HttpException(409, 'Sala não existe');
+    const findRoom: Sala = await SalaEntity.findOne({ where: { id: roomId } });
+    if (!findRoom) throw new HttpException(409, 'Sala não existe');
 
-    await SalaEntity.delete({ id: rommId });
-    return findRomm;
+    await SalaEntity.delete({ id: roomId });
+    return findRoom;
   }
 }
 

@@ -16,7 +16,7 @@ class PessoaService extends Repository<PessoaEntity> {
     if (isEmpty(personId)) throw new HttpException(400, 'PersonId está vazio');
 
     const findPerson: Pessoa = await PessoaEntity.findOne({ where: { id: personId } });
-    if (!findPerson) throw new HttpException(409, 'Usuario não existe');
+    if (!findPerson) throw new HttpException(409, 'Pessoa não existe');
 
     return findPerson;
   }
@@ -33,7 +33,7 @@ class PessoaService extends Repository<PessoaEntity> {
     if (isEmpty(personData)) throw new HttpException(400, 'Usuário Data está vazio');
 
     const findPerson: Pessoa = await PessoaEntity.findOne({ where: { id: personId } });
-    if (!findPerson) throw new HttpException(409, 'Responsável não existe');
+    if (!findPerson) throw new HttpException(409, 'Pessoa não existe');
 
     await PessoaEntity.update(personId, { ...personData });
 
@@ -45,7 +45,7 @@ class PessoaService extends Repository<PessoaEntity> {
     if (isEmpty(personId)) throw new HttpException(400, 'PersonId está vazio');
 
     const findPerson: Pessoa = await PessoaEntity.findOne({ where: { id: personId } });
-    if (!findPerson) throw new HttpException(409, 'Responsável não existe');
+    if (!findPerson) throw new HttpException(409, 'Pessoa não existe');
 
     await PessoaEntity.delete({ id: personId });
     return findPerson;

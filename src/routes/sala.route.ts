@@ -15,13 +15,13 @@ class SalaRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}`, this.salaController.getRomm);
-    this.router.get(`${this.path}/:id(\\d+)`, this.salaController.getRommById);
-    this.router.get(`${this.path}/empresa/:id(\\d+)`, this.salaController.getRommByCompany);
+    this.router.get(`${this.path}`, this.salaController.getRoom);
+    this.router.get(`${this.path}/:id(\\d+)`, this.salaController.getRoomById);
+    this.router.get(`${this.path}/empresa/:id(\\d+)`, this.salaController.getRoomByCompany);
     this.router.get(`${this.path}/filter`, this.salaController.getRoomByFilter);
-    this.router.post(`${this.path}`, validationMiddleware(SalaCreateDTO, 'body'), this.salaController.createRomm);
-    this.router.put(`${this.path}/:id(\\d+)`, validationMiddleware(SalaUpdateDTO, 'body', true), this.salaController.updateRomm);
-    this.router.delete(`${this.path}/:id(\\d+)`, this.salaController.deleteRomm);
+    this.router.post(`${this.path}`, validationMiddleware(SalaCreateDTO, 'body'), this.salaController.createRoom);
+    this.router.put(`${this.path}/:id(\\d+)`, validationMiddleware(SalaUpdateDTO, 'body', true), this.salaController.updateRoom);
+    this.router.delete(`${this.path}/:id(\\d+)`, this.salaController.deleteRoom);
   }
 }
 

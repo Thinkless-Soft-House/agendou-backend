@@ -31,15 +31,47 @@ class ReservaService extends Repository<ReservaEntity> {
 
   public async findBookingById(bookingId: number): Promise<Reserva> {
     if (isEmpty(bookingId)) throw new HttpException(400, 'BookingId está vazio');
+    const query = `
+    SELECT
+      ${this.mapRawToEntity()},
+      SR.STARES_STA_ID as statusId,
+      S.SAL_EMP_ID as empresaId,
+      (
+        select S2.STA_ID as statusId from STATUS as S2
+          where
+            (
+                select SR2.STARES_STA_ID from STATUS_RESERVA as SR2
+                  where
+                    (
+                      select MAX(SR3.STARES_STA_DATE) from STATUS_RESERVA as SR3
+                    ) = SR2.STARES_STA_DATE and SR2.STARES_RES_ID = R.RES_ID
+            ) = S2.STA_ID
+        ) as statusId,
+      ${this.mapRawToUserEntity()},
+      ${this.mapRawToPersonEntity()},
+      ${this.mapRawToCompanyEntity()},
+      S.SAL_NOME as salaNome
+      FROM RESERVA AS R
+      INNER JOIN SALA AS S on S.SAL_ID = R.RES_SAL_ID
+      INNER JOIN USUARIO AS U on U.USU_ID = R.RES_USU_ID
+      INNER JOIN PESSOA AS P on U.USU_PES_ID = P.PES_ID
+      INNER JOIN EMPRESA AS E on S.SAL_EMP_ID = E.EMP_ID
+      INNER JOIN STATUS_RESERVA AS SR on SR.STARES_RES_ID = R.RES_ID
+        where R.RES_ID = ${bookingId}
+    limit 1`;
 
-    const findBooking: Reserva = await ReservaEntity.findOne({ where: { id: bookingId } });
-    if (!findBooking) throw new HttpException(409, 'Usuario não existe');
+    console.log('query =>', query);
+    const rawData: any[] = await ReservaEntity.query(query);
+    const result: Reserva[] = this.mapRawDataToNestedObject(rawData);
+    const booking = result[0];
 
-    return findBooking;
+    if (!booking) throw new HttpException(409, 'Usuario não existe');
+
+    return booking;
   }
 
-  public async findBookingByRommAndDate(rommId: number, month: number, year: number): Promise<Reserva[]> {
-    if (isEmpty(rommId)) throw new HttpException(400, 'CompanyId está vazio');
+  public async findBookingByRoomAndDate(roomId: number, month: number, year: number): Promise<Reserva[]> {
+    if (isEmpty(roomId)) throw new HttpException(400, 'CompanyId está vazio');
 
     console.log('month', month);
     console.log('year', year);
@@ -62,12 +94,12 @@ class ReservaService extends Repository<ReservaEntity> {
       milliseconds: 1,
     });
 
-    console.log('romm', rommId);
+    console.log('room', roomId);
     console.log('startDate', startDate);
     console.log('endDate', endDate);
 
     const results: Reserva[] = await ReservaEntity.find({
-      where: { salaId: rommId, date: Between(startDate, endDate) },
+      where: { salaId: roomId, date: Between(startDate, endDate) },
     });
 
     return results;
@@ -148,27 +180,7 @@ class ReservaService extends Repository<ReservaEntity> {
 
     console.log('query =>', query);
     const rawData: any[] = await ReservaEntity.query(query);
-    const results = rawData.map(item => {
-      const ret: any = {
-        usuario: {},
-        pessoa: {},
-        empresa: {},
-      };
-      const entries = Object.entries(item);
-      entries.forEach(([prop, value]) => {
-        if (prop.includes('usu_')) {
-          ret.usuario[prop.replace('usu_', '')] = value;
-        } else if (prop.includes('pes_')) {
-          ret.pessoa[prop.replace('pes_', '')] = value;
-        } else if (prop.includes('emp_')) {
-          ret.empresa[prop.replace('emp_', '')] = value;
-        } else {
-          ret[prop] = value;
-        }
-      });
-
-      return ret;
-    });
+    const results = this.mapRawDataToNestedObject(rawData);
 
     const total = await ReservaEntity.query(`SELECT
     count(R.RES_ID) as total
@@ -350,6 +362,30 @@ class ReservaService extends Repository<ReservaEntity> {
       : entity === 'usuarioId'
       ? 'R.RES_USU_ID'
       : '';
+  }
+
+  private mapRawDataToNestedObject(rawData: any[]): any {
+    return rawData.map(item => {
+      const ret: any = {
+        usuario: {},
+        pessoa: {},
+        empresa: {},
+      };
+      const entries = Object.entries(item);
+      entries.forEach(([prop, value]) => {
+        if (prop.includes('usu_')) {
+          ret.usuario[prop.replace('usu_', '')] = value;
+        } else if (prop.includes('pes_')) {
+          ret.pessoa[prop.replace('pes_', '')] = value;
+        } else if (prop.includes('emp_')) {
+          ret.empresa[prop.replace('emp_', '')] = value;
+        } else {
+          ret[prop] = value;
+        }
+      });
+
+      return ret;
+    });
   }
 }
 

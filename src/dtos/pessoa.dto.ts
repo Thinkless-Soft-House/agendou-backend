@@ -63,7 +63,7 @@ export class PessoaUpdateDTO {
   cep: number;
   @IsOptional()
   @IsString()
-  dataNascimento: number;
+  dataNascimento: string;
 
   @IsOptional()
   @IsString()

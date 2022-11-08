@@ -21,6 +21,15 @@ class StatusReservaService extends Repository<StatusReservaEntity> {
     return findBookingStatus;
   }
 
+  public async findBookingStatusByBooking(bookingId: number): Promise<StatusReserva[]> {
+    if (isEmpty(bookingId)) throw new HttpException(400, 'BookingStatusId está vazio');
+
+    const findBookingStatus: StatusReserva[] = await StatusReservaEntity.find({ where: { reservaId: bookingId } });
+    if (!findBookingStatus) throw new HttpException(409, 'BookingStatus não existe');
+
+    return findBookingStatus;
+  }
+
   public async createBookingStatus(bookingStatusData: StatusReservaCreateDTO): Promise<StatusReserva> {
     if (isEmpty(bookingStatusData)) throw new HttpException(400, 'bookingStatusData is empty');
 

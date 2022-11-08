@@ -45,6 +45,10 @@ export class UsuarioUpdateDTO {
   @IsOptional()
   @IsNumber()
   permissaoId: number;
+
+  @IsOptional()
+  @IsNumber()
+  empresaId: number;
 }
 
 export class UsuarioLoginDTO {

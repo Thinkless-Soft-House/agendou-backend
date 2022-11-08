@@ -17,6 +17,7 @@ class StatusReservaRoute implements Routes {
   private initializeRoutes() {
     this.router.get(`${this.path}`, this.statusReservaController.getBookingStatusStatus);
     this.router.get(`${this.path}/:id(\\d+)`, this.statusReservaController.getBookingStatusById);
+    this.router.get(`${this.path}/reserva/:booking(\\d+)`, this.statusReservaController.getBookingStatusByBooking);
     this.router.post(`${this.path}`, validationMiddleware(StatusReservaCreateDTO, 'body'), this.statusReservaController.createBookingStatus);
     this.router.put(
       `${this.path}/:id(\\d+)`,

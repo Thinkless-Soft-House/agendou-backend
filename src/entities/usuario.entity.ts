@@ -22,7 +22,7 @@ export class UsuarioEntity extends BaseEntity implements Usuario {
   @PrimaryGeneratedColumn({ name: 'USU_ID' })
   id: number;
 
-  @Column({ name: 'USU_LOGIN' })
+  @Column({ name: 'USU_LOGIN', unique: true })
   login: string;
   @Column({ name: 'USU_SENHA' })
   senha: string;

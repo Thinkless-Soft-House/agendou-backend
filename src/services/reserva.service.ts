@@ -115,6 +115,8 @@ class ReservaService extends Repository<ReservaEntity> {
     hInicio: string,
     hFim: string,
     date: string,
+    nome: string,
+    login: string,
   ): Promise<{ data: Reserva[]; total: number }> {
     // if (isEmpty(categoryId)) throw new HttpException(400, 'CompanyId está vazio');
     console.log('here', paginationConfig);
@@ -138,6 +140,8 @@ class ReservaService extends Repository<ReservaEntity> {
     if (dia !== null) where += where === '' ? `where R.RES_DIASEMANAINDEX = ${dia}` : ` AND R.RES_DIASEMANAINDEX = ${dia}`;
     if (hInicio !== null) where += where === '' ? `where R.RES_HRINICIO = '${hInicio}'` : ` AND R.RES_HRINICIO = '${hInicio}'`;
     if (hFim !== null) where += where === '' ? `where R.RES_HRFIM = '${hFim}'` : ` AND R.RES_HRFIM = '${hFim}'`;
+    if (nome !== null) where += where === '' ? `where P.PES_NOME = '${nome}'` : ` AND P.PES_NOME = '${nome}'`;
+    if (login !== null) where += where === '' ? `where U.USU_LOGIN = '${login}'` : ` AND U.USU_LOGIN = '${login}'`;
     if (date !== null) {
       const formatDate = format(new Date(date), 'dd/MM/y');
       where +=
@@ -234,6 +238,8 @@ class ReservaService extends Repository<ReservaEntity> {
       bookingData.horaInicio,
       bookingData.horaFim,
       bookingData.date,
+      null,
+      null,
     );
     const findBooking: Reserva = data[0];
 

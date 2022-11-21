@@ -142,8 +142,8 @@ class ReservaService extends Repository<ReservaEntity> {
     if (texto !== null)
       where +=
         where === ''
-          ? `where P.PES_NOME LIKE %'${texto}'% OR U.USU_LOGIN LIKE %'${texto}'%`
-          : ` AND P.PES_NOME LIKE %'${texto}'% OR U.USU_LOGIN LIKE %'${texto}'%`;
+          ? `where (P.PES_NAME LIKE '%${texto}%' OR U.USU_LOGIN LIKE '%${texto}%')`
+          : ` AND (P.PES_NAME LIKE '%${texto}%' OR U.USU_LOGIN LIKE '%${texto}%')`;
     if (date !== null) {
       const formatDate = format(new Date(date), 'dd/MM/y');
       where +=
@@ -189,18 +189,18 @@ class ReservaService extends Repository<ReservaEntity> {
     const results = this.mapRawDataToNestedObject(rawData);
 
     const total = await ReservaEntity.query(`SELECT
-    count(R.RES_ID) as total
-    FROM RESERVA AS R
-    INNER JOIN SALA AS S on S.SAL_ID = R.RES_SAL_ID
-    INNER JOIN USUARIO AS U on U.USU_ID = R.RES_USU_ID
-    INNER JOIN PESSOA AS P on U.USU_PES_ID = P.PES_ID
-    INNER JOIN EMPRESA AS E on U.USU_EMP_ID = E.EMP_ID
-    INNER JOIN STATUS_RESERVA AS SR on SR.STARES_RES_ID = R.RES_ID
+    count(RES_ID) as total
+      FROM RESERVA AS R
+      INNER JOIN SALA AS S on S.SAL_ID = R.RES_SAL_ID
+      INNER JOIN USUARIO AS U on U.USU_ID = R.RES_USU_ID
+      INNER JOIN PESSOA AS P on U.USU_PES_ID = P.PES_ID
+      INNER JOIN EMPRESA AS E on S.SAL_EMP_ID = E.EMP_ID
+      INNER JOIN STATUS_RESERVA AS SR on SR.STARES_RES_ID = R.RES_ID
     ${where}
       `);
 
     // ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)}
-
+    console.log('total', total);
     return {
       data: results,
       total: +total[0].total,

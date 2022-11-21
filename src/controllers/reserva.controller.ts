@@ -55,26 +55,14 @@ class ReservaController {
       const hInicio = (req.query.hinicio as string) || null;
       const hFim = (req.query.hfim as string) || null;
       const data = (req.query.data as string) || null;
-      const nome = (req.query.nome as string) || null;
-      const login = (req.query.email as string) || null;
+      const texto = (req.query.texto as string) || null;
+
       const statusList = !!status ? status.split(',') : [];
 
       const findOneCompanyData: {
         data: Reserva[];
         total: number;
-      } = await this.reservaService.findBookingByFilter(
-        paginationConfig,
-        userId,
-        companyId,
-        statusList,
-        salaId,
-        dia,
-        hInicio,
-        hFim,
-        data,
-        nome,
-        login,
-      );
+      } = await this.reservaService.findBookingByFilter(paginationConfig, userId, companyId, statusList, salaId, dia, hInicio, hFim, data, texto);
 
       res.status(200).json({ data: findOneCompanyData, message: 'findByFilter' });
     } catch (error) {

@@ -11,11 +11,14 @@ import { set, format } from 'date-fns';
 import StatusReservaService from './status-reserva.service';
 import { StatusReserva } from '@/interfaces/status-reserva.interface';
 import { StatusEnum } from '@/interfaces/status.interface';
+import ResponsavelService from './responsavel.service';
+import { sendBookingClientEmail, sendBookingCompanyEmail } from '@/utils/sendEmail';
 
 @EntityRepository()
 class ReservaService extends Repository<ReservaEntity> {
   disponibilidadeService: DisponibilidadeService = new DisponibilidadeService();
   statusReservaService: StatusReservaService = new StatusReservaService();
+  responsavelService: ResponsavelService = new ResponsavelService();
 
   public async findAllBooking(paginationConfig: PaginationConfig): Promise<Reserva[]> {
     const order = {};
@@ -253,6 +256,51 @@ class ReservaService extends Repository<ReservaEntity> {
       reservaId: createBookingData.id,
       statusId: StatusEnum.Aguardando,
     });
+
+    const { data: bookingCreatedFinder } = await this.findBookingByFilter(
+      paginationConfig,
+      null,
+      null,
+      ['1', '2'],
+      bookingData.salaId,
+      bookingData.diaSemanaIndex,
+      bookingData.horaInicio,
+      bookingData.horaFim,
+      bookingData.date,
+      null,
+    );
+    const bookingCreated: any = bookingCreatedFinder[0];
+    console.log('bookingCreated', bookingCreated);
+
+    const clientTemplateData: {
+      company: string;
+      room: string;
+      date: string;
+      hour: string;
+    } = {
+      company: bookingCreated.empresa.nome,
+      room: bookingCreated.salaNome,
+      date: format(new Date(bookingCreated.date), 'dd/MM/y'),
+      hour: bookingCreated.horaInicio + ' - ' + bookingCreated.horaFim,
+    };
+    await sendBookingClientEmail(bookingCreated.usuario.login, clientTemplateData);
+
+    const companyTemplateData: {
+      client: string;
+      clientEmail: string;
+      room: string;
+      date: string;
+      hour: string;
+    } = {
+      client: bookingCreated.pessoa.nome,
+      clientEmail: bookingCreated.usuario.login,
+      room: bookingCreated.salaNome,
+      date: format(new Date(bookingCreated.date), 'dd/MM/y'),
+      hour: bookingCreated.horaInicio + ' - ' + bookingCreated.horaFim,
+    };
+    const resps = await this.responsavelService.findAllResponsibleByRommWithUsers(bookingData.salaId);
+    const dests = resps.map(el => el.usuario.login);
+    await sendBookingCompanyEmail(dests[0], companyTemplateData);
 
     return createBookingData;
   }

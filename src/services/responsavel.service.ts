@@ -12,6 +12,11 @@ class ResponsavelService extends Repository<ResponsavelEntity> {
     return responsibles;
   }
 
+  public async findAllResponsibleByRommWithUsers(roomId: number): Promise<Responsavel[]> {
+    const responsibles: Responsavel[] = await ResponsavelEntity.find({ where: { salaId: roomId }, relations: ['usuario'] });
+    return responsibles;
+  }
+
   public async findResponsibleById(responsibleId: number): Promise<Responsavel> {
     if (isEmpty(responsibleId)) throw new HttpException(400, 'ResponsibleId está vazio');
 

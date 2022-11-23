@@ -16,7 +16,7 @@ export class StatusReservaEntity extends BaseEntity implements StatusReserva {
   date: number;
 
   @ManyToOne(() => ReservaEntity, reserva => reserva.statusReserva, {
-    onDelete: 'NO ACTION',
+    onDelete: 'CASCADE',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'STARES_RES_ID', referencedColumnName: 'id' }])

@@ -283,6 +283,7 @@ class ReservaService extends Repository<ReservaEntity> {
       date: format(new Date(bookingCreated.date), 'dd/MM/y'),
       hour: bookingCreated.horaInicio + ' - ' + bookingCreated.horaFim,
     };
+    console.log('clientTemplateData', clientTemplateData);
     await sendBookingClientEmail(bookingCreated.usuario.login, clientTemplateData);
 
     const companyTemplateData: {
@@ -298,6 +299,8 @@ class ReservaService extends Repository<ReservaEntity> {
       date: format(new Date(bookingCreated.date), 'dd/MM/y'),
       hour: bookingCreated.horaInicio + ' - ' + bookingCreated.horaFim,
     };
+    console.log('companyTemplateData', companyTemplateData);
+
     const resps = await this.responsavelService.findAllResponsibleByRommWithUsers(bookingData.salaId);
     const dests = resps.map(el => el.usuario.login);
     await sendBookingCompanyEmail(dests[0], companyTemplateData);

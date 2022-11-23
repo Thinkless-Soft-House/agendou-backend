@@ -51,10 +51,11 @@ export const sendBookingClientEmail = async (
   },
 ) => {
   const templateWithCode = bookingClientTemplate
-    .replace('{{EMPRESA}}', data.company.toString())
-    .replace('{{SALA}}', data.room.toString())
-    .replace('{{DIA}}', data.date.toString())
-    .replace('{{HORARIO}}', data.hour.toString());
+    .replace('{{EMPRESA}}', data.company)
+    .replace('{{EMPRESA}}', data.company)
+    .replace('{{SALA}}', data.room)
+    .replace('{{DIA}}', data.date)
+    .replace('{{HORARIO}}', data.hour);
   const url = AWS_SES_URL + '/sendSingleEmail';
   console.log('url ses', url);
   try {

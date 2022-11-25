@@ -50,6 +50,11 @@ class ReservaService extends Repository<ReservaEntity> {
                     ) = SR2.STARES_STA_DATE and SR2.STARES_RES_ID = R.RES_ID
             ) = S2.STA_ID
         ) as statusId,
+        (
+          select S2.STA_TIPO from STATUS as S2
+            where
+              S2.STA_ID = SR.STARES_STA_ID
+        ) as status,
       ${this.mapRawToUserEntity()},
       ${this.mapRawToPersonEntity()},
       ${this.mapRawToCompanyEntity()},
@@ -63,7 +68,7 @@ class ReservaService extends Repository<ReservaEntity> {
         where R.RES_ID = ${bookingId}
     limit 1`;
 
-    console.log('query =>', query);
+    // console.log('query =>', query);
     const rawData: any[] = await ReservaEntity.query(query);
     const result: Reserva[] = this.mapRawDataToNestedObject(rawData);
     const booking = result[0];
@@ -121,8 +126,8 @@ class ReservaService extends Repository<ReservaEntity> {
     texto: string,
   ): Promise<{ data: Reserva[]; total: number }> {
     // if (isEmpty(categoryId)) throw new HttpException(400, 'CompanyId está vazio');
-    console.log('here', paginationConfig);
-    console.log('active', status);
+    // console.log('here', paginationConfig);
+    // console.log('active', status);
     let where = `where (
       select MAX(SR2.STARES_STA_DATE) from STATUS_RESERVA as SR2
       where
@@ -187,7 +192,7 @@ class ReservaService extends Repository<ReservaEntity> {
       order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)} ${paginationConfig.order}
     limit ${paginationConfig.take} offset ${paginationConfig.skip}`;
 
-    console.log('query =>', query);
+    // console.log('query =>', query);
     const rawData: any[] = await ReservaEntity.query(query);
     const results = this.mapRawDataToNestedObject(rawData);
 
@@ -203,7 +208,7 @@ class ReservaService extends Repository<ReservaEntity> {
       `);
 
     // ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)}
-    console.log('total', total);
+    // console.log('total', total);
     return {
       data: results,
       total: +total[0].total,
@@ -216,6 +221,9 @@ class ReservaService extends Repository<ReservaEntity> {
 
     // Check Disponibilidade dia
     const availabilityDay = await this.disponibilidadeService.findAvailabilityByDay(bookingData.diaSemanaIndex);
+    if (isEmpty(availabilityDay)) throw new HttpException(400, 'Disponibilidade não encontrada');
+
+    console.log('Disponibilidade encontrada!');
 
     // Se existe, checar horario
     const hourValidate = checkHour(
@@ -224,6 +232,7 @@ class ReservaService extends Repository<ReservaEntity> {
     );
     // Se fora do horario, erro 404
     if (!hourValidate) throw new HttpException(409, 'Horario da reserva não compatível com a do dia escolhido');
+    console.log('Hora valida!');
 
     const paginationConfig: PaginationConfig = {
       take: 1,
@@ -250,29 +259,22 @@ class ReservaService extends Repository<ReservaEntity> {
     // Se não, erro 500 com mensagem
     if (findBooking) throw new HttpException(400, 'Duplicidade de reservas');
 
+    console.log('Sem duplicidade!');
+
     const createBookingData: Reserva = await ReservaEntity.create({ ...bookingData }).save();
+    console.log('Nova reserva criada!');
+
     // Criar novo status = Aguardando
     await this.statusReservaService.createBookingStatus({
       reservaId: createBookingData.id,
       statusId: StatusEnum.Aguardando,
     });
+    console.log('Status = Aguardando criado!');
 
-    const { data: bookingCreatedFinder } = await this.findBookingByFilter(
-      paginationConfig,
-      null,
-      null,
-      ['1', '2'],
-      bookingData.salaId,
-      bookingData.diaSemanaIndex,
-      bookingData.horaInicio,
-      bookingData.horaFim,
-      bookingData.date,
-      null,
-    );
-    const bookingCreated: any = bookingCreatedFinder[0];
+    const bookingCreated: any = await this.findBookingById(createBookingData.id);
+
+    console.log('bookingCreated', bookingCreated);
     if (bookingCreated) {
-      console.log('bookingCreated', bookingCreated);
-
       const clientTemplateData: {
         company: string;
         room: string;

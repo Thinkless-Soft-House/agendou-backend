@@ -103,7 +103,8 @@ export const sendBookingCompanyEmail = async (
 ) => {
   const templateWithCode = bookingCompanyTemplate
     .replace('{{CLIENTE}}', data.client.toString())
-    .replace('{{CLIENTE_EMAIL}}', data.clientEmail.toString())
+    .replace('{{CLIENTE}}', data.client.toString())
+    .replace('{{EMAIL_CLIENTE}}', data.clientEmail.toString())
     .replace('{{SALA}}', data.room.toString())
     .replace('{{DIA}}', data.date.toString())
     .replace('{{HORARIO}}', data.hour.toString());

@@ -369,7 +369,7 @@ export const bookingClientTemplate = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.
                             "
                           >
                             <singleline>
-                              <div mc:edit Simpli>Visita agendada!</div>
+                              <div mc:edit Simpli>Reserva agendada!</div>
                             </singleline>
                           </td>
                         </tr>
@@ -391,7 +391,7 @@ export const bookingClientTemplate = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.
                             "
                           >
                             <singleline>
-                              <div mc:edit Simpli>Sua visita foi agendada com sucesso!</div>
+                              <div mc:edit Simpli>Seu agendamento foi feito com sucesso!</div>
                             </singleline>
                           </td>
                         </tr>
@@ -423,7 +423,7 @@ export const bookingClientTemplate = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.
                           >
                             <singleline>
                               <div mc:edit Simpli>
-                                Abaixo seguem os dados da sua visita à {{EMPRESA}}
+                              Abaixo seguem os dados do seu agendamento à {{EMPRESA}}
                               </div>
                             </singleline>
                           </td>

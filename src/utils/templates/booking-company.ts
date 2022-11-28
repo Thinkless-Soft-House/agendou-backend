@@ -359,9 +359,9 @@ export const bookingCompanyTemplate = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4
                             style="
                               font-family: 'Catamaran', Arial, Helvetica,
                                 sans-serif;
-                              font-size: 12px;
+                              font-size: 18px;
                               line-height: 24px;
-                              font-weight: 900;
+                              font-weight: 700;
                               font-style: normal;
                               color: #1898c2;
                               text-decoration: none;
@@ -369,8 +369,17 @@ export const bookingCompanyTemplate = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4
                             "
                           >
                             <singleline>
-                              <div mc:edit Simpli>Visita agendada!</div>
+                              <div mc:edit Simpli>Novo agendamento!</div>
                             </singleline>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            height="30"
+                            style="font-size: 30px; line-height: 30px"
+                            Simpli
+                          >
+                            &nbsp;
                           </td>
                         </tr>
                         <tr>
@@ -381,8 +390,8 @@ export const bookingCompanyTemplate = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4
                             style="
                               font-family: 'Catamaran', Arial, Helvetica,
                                 sans-serif;
-                              font-size: 48px;
-                              line-height: 54px;
+                                font-size: 30px;
+                              line-height: 30px;
                               font-weight: 700;
                               font-style: normal;
                               color: #333333;
@@ -391,7 +400,9 @@ export const bookingCompanyTemplate = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4
                             "
                           >
                             <singleline>
-                              <div mc:edit Simpli>Uma visita foi agendada na sua empresa!</div>
+                              <div mc:edit Simpli>
+                                Novo agendamento para a sua empresa!
+                              </div>
                             </singleline>
                           </td>
                         </tr>
@@ -412,7 +423,7 @@ export const bookingCompanyTemplate = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4
                             style="
                               font-family: 'Catamaran', Arial, Helvetica,
                                 sans-serif;
-                              font-size: 16px;
+                                font-size: 16px;
                               line-height: 26px;
                               font-weight: 300;
                               font-style: normal;
@@ -423,7 +434,8 @@ export const bookingCompanyTemplate = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4
                           >
                             <singleline>
                               <div mc:edit Simpli>
-                                Abaixo seguem os dados da visita do cliente {{CLIENTE}}
+                                Abaixo seguem os dados do agendamento do cliente
+                                {{CLIENTE}}
                               </div>
                             </singleline>
                           </td>
@@ -500,12 +512,17 @@ export const bookingCompanyTemplate = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4
                                         "
                                       >
                                         <singleline>
-                                          <div mc:edit Simpli style="margin-left: 20px">
-                                            Cliente: {{CLIENTE}} <br>
-                                            Email do Cliente: {{EMAIL_CLIENTE}} <br>
-                                            Sala: {{SALA}} <br>
-                                            Dia: {{DIA}} <br>
-                                            Horário: {{HORARIO}} <br>
+                                          <div
+                                            mc:edit
+                                            Simpli
+                                            style="margin-left: 20px"
+                                          >
+                                            Cliente: {{CLIENTE}} <br />
+                                            Email do Cliente: {{EMAIL_CLIENTE}}
+                                            <br />
+                                            Sala: {{SALA}} <br />
+                                            Dia: {{DIA}} <br />
+                                            Horário: {{HORARIO}} <br />
                                           </div>
                                         </singleline>
                                       </td>

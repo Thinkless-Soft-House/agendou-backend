@@ -1,4 +1,3 @@
-import { compare, hash } from 'bcrypt';
 import { sign, verify } from 'jsonwebtoken';
 import { EntityRepository, Repository } from 'typeorm';
 import { SECRET_KEY } from '@config';
@@ -7,7 +6,7 @@ import { UsuarioEntity } from '@entities/usuario.entity';
 import { HttpException } from '@exceptions/HttpException';
 import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
 import { Usuario } from '@interfaces/usuario.interface';
-import { isEmpty } from '@utils/util';
+import { comparePassword, isEmpty, setPassword } from '@utils/util';
 import { sendForgotPasswordEmail } from '@/utils/sendEmail';
 
 @EntityRepository()
@@ -18,7 +17,8 @@ class AuthService extends Repository<UsuarioEntity> {
     const findUser: Usuario = await UsuarioEntity.findOne({ where: { login: userData.login } });
     if (findUser) throw new HttpException(409, `This email ${userData.login} already exists`);
 
-    const hashedPassword = await hash(userData.senha, 10);
+    // const hashedPassword = await hash(userData.senha, 10);
+    const hashedPassword = setPassword(userData.senha);
     const createUserData: Usuario = await UsuarioEntity.create({ ...userData, senha: hashedPassword }).save();
     return createUserData;
   }
@@ -29,7 +29,8 @@ class AuthService extends Repository<UsuarioEntity> {
     const findUser: Usuario = await UsuarioEntity.findOne({ where: { login: userData.login } });
     if (!findUser) throw new HttpException(409, `This email ${userData.login} was not found`);
 
-    const isPasswordMatching: boolean = await compare(userData.senha, findUser.senha);
+    // const isPasswordMatching: boolean = await compare(userData.senha, findUser.senha);
+    const isPasswordMatching: boolean = comparePassword(userData.senha, findUser.senha);
     if (!isPasswordMatching) throw new HttpException(409, 'Password not matching');
 
     const tokenData = this.createToken(findUser);
@@ -59,7 +60,8 @@ class AuthService extends Repository<UsuarioEntity> {
     const findUser: Usuario = await UsuarioEntity.findOne({ where: { login: email } });
     if (!findUser) throw new HttpException(409, 'Usuario com esse email não existe');
     if (findUser.resetPasswordCode !== code) throw new HttpException(409, 'Código informado está incorreto');
-    const hashedPassword = await hash(newPassword, 10);
+    // const hashedPassword = await hash(newPassword, 10);
+    const hashedPassword = setPassword(newPassword);
 
     await UsuarioEntity.update(findUser.id, { ...findUser, senha: hashedPassword, resetPasswordCode: null });
     const updateUser: Usuario = await UsuarioEntity.findOne({ where: { id: findUser.id } });

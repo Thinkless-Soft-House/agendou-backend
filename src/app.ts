@@ -46,7 +46,10 @@ class App {
   }
 
   private connectToDatabase() {
-    createConnection(dbConnection);
+    createConnection(dbConnection)
+      .then(() => logger.info('📦 Connected to database'))
+      .catch(error => logger.error(error))
+      .finally(() => logger.info('📦 Database connection closed'));
   }
 
   private initializeMiddlewares() {

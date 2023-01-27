@@ -21,6 +21,7 @@ export interface Usuario {
 
   empresaId: number;
   permissaoId: number;
+  pessoaId: number;
 
   empresa: EmpresaEntity;
   permissao: PermissaoEntity;

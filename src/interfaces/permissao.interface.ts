@@ -8,8 +8,9 @@ export interface Permissao {
 }
 
 export enum PermissaoEnum {
-  Cliente = 1,
-  Administrador = 2,
-  Empresario = 3,
-  Funcionario = 4,
+  _,
+  Cliente,
+  Administrador,
+  Empresario,
+  Funcionario,
 }

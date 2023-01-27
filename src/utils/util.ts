@@ -1,5 +1,6 @@
 import { PaginationConfig } from '@/interfaces/utils.interface';
 import { Request } from 'express';
+import * as crypto from 'crypto';
 
 /**
  * @method isEmpty
@@ -19,6 +20,16 @@ export const isEmpty = (value: string | number | object): boolean => {
   } else {
     return false;
   }
+};
+
+export const setPassword = (password: string): string => {
+  const hash = crypto.createHash('sha256');
+  hash.update(password);
+  return hash.digest('hex');
+};
+
+export const comparePassword = (password: string, hashedPassword: string): boolean => {
+  return crypto.timingSafeEqual(Buffer.from(crypto.createHash('sha256').update(password).digest('hex'), 'hex'), Buffer.from(hashedPassword, 'hex'));
 };
 
 export const checkHour = (hoursA: { start: string; end: string }, hoursB: { start: string; end: string }) => {

@@ -68,18 +68,16 @@ export class UsuarioEntity extends BaseEntity implements Usuario {
   @JoinColumn([{ name: 'USU_PER_ID', referencedColumnName: 'id' }])
   permissao: PermissaoEntity;
 
-  @OneToOne(() => PessoaEntity, { cascade: true, eager: true })
+  @OneToOne(() => PessoaEntity, pessoa => pessoa.pessoa, { cascade: true, eager: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'USU_PES_ID', referencedColumnName: 'id' })
   pessoa: PessoaEntity;
 
   @OneToMany(() => ResponsavelEntity, responsavel => responsavel.usuario, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
+    cascade: true,
   })
   responsavel: ResponsavelEntity[];
   @OneToMany(() => ReservaEntity, reserva => reserva.usuario, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
+    cascade: true,
   })
   reservas: ReservaEntity[];
 }

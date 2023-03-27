@@ -1,4 +1,5 @@
 import { PaginationConfig } from '@/interfaces/utils.interface';
+import { parse, isBefore, isAfter, isWithinInterval } from 'date-fns';
 import { Request } from 'express';
 import * as crypto from 'crypto';
 
@@ -32,23 +33,26 @@ export const comparePassword = (password: string, hashedPassword: string): boole
   return crypto.timingSafeEqual(Buffer.from(crypto.createHash('sha256').update(password).digest('hex'), 'hex'), Buffer.from(hashedPassword, 'hex'));
 };
 
-export const checkHour = (hoursA: { start: string; end: string }, hoursB: { start: string; end: string }) => {
-  const aMinutesStart = +hoursA.start.split(':')[0] * 60 + +hoursA.start.split(':')[1];
-  const aMinutesEnd = +hoursA.end.split(':')[0] * 60 + +hoursA.end.split(':')[1];
+export const checkHour = (rangeA: { start: string; end: string }, rangeB: { start: string; end: string }) => {
+  const startA = parse(rangeA.start, 'HH:mm', new Date());
+  const endA = parse(rangeA.end, 'HH:mm', new Date());
+  const startB = parse(rangeB.start, 'HH:mm', new Date());
+  const endB = parse(rangeB.end, 'HH:mm', new Date());
 
-  const bMinutesStart = +hoursB.start.split(':')[0] * 60 + +hoursB.start.split(':')[1];
-  const bMinutesEnd = +hoursB.end.split(':')[0] * 60 + +hoursB.end.split(':')[1];
-
-  // Checar se o start do B esta entre o start e o end do A
-  if (!(bMinutesStart >= aMinutesStart && bMinutesStart <= aMinutesEnd)) {
-    return false;
-  }
-  // Checar se o end do B esta entre o start e o end do A e depois do start do B
-  if (!(bMinutesEnd > aMinutesStart && bMinutesEnd < aMinutesEnd && bMinutesEnd > bMinutesStart)) {
+  if (endB <= startB) {
     return false;
   }
 
-  return true;
+  return isWithinInterval(startB, { start: startA, end: endA }) && isWithinInterval(endB, { start: startA, end: endA });
+};
+
+export const checkDiffInterval = (rangeA: { start: string; end: string }, rangeB: { start: string; end: string }) => {
+  const startA = parse(rangeA.start, 'HH:mm', new Date());
+  const endA = parse(rangeA.end, 'HH:mm', new Date());
+  const startB = parse(rangeB.start, 'HH:mm', new Date());
+  const endB = parse(rangeB.end, 'HH:mm', new Date());
+
+  return isBefore(endA, startB) || isAfter(startA, endB);
 };
 
 export const createPaginationConfig = (req: Request) => {
@@ -64,4 +68,12 @@ export const createPaginationConfig = (req: Request) => {
   };
 
   return paginationConfig;
+};
+
+export const parseDate = (date: string, delimiter = '/') => {
+  const dateSplited = date.split(delimiter);
+  console.log('dateSplited', dateSplited);
+  const dateParsed = new Date(+dateSplited[0], +dateSplited[1] - 1, +dateSplited[2]);
+  console.log('dateParsed', dateParsed);
+  return dateParsed.toISOString();
 };

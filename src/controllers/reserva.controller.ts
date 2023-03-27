@@ -73,6 +73,7 @@ class ReservaController {
   public createBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const bookingData: ReservaCreateDTO = req.body;
+      console.log('bookingData', JSON.stringify(bookingData));
       const createBookingData: Reserva = await this.reservaService.createBooking(bookingData);
 
       res.status(201).json({ data: createBookingData, message: 'created' });

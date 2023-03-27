@@ -1,6 +1,6 @@
 import { Between, EntityRepository, Repository } from 'typeorm';
 import { HttpException } from '@exceptions/HttpException';
-import { isEmpty, checkHour } from '@utils/util';
+import { isEmpty, checkHour, checkDiffInterval, parseDate } from '@utils/util';
 import { ReservaEntity } from '@/entities/reserva.entity';
 import { Reserva } from '@/interfaces/reserva.interface';
 import { ReservaCreateDTO, ReservaUpdateDTO } from '@/dtos/reserva.dto';
@@ -9,7 +9,6 @@ import { PaginationConfig } from '@/interfaces/utils.interface';
 
 import { set, format } from 'date-fns';
 import StatusReservaService from './status-reserva.service';
-import { StatusReserva } from '@/interfaces/status-reserva.interface';
 import { StatusEnum } from '@/interfaces/status.interface';
 import ResponsavelService from './responsavel.service';
 import { sendBookingClientEmail, sendBookingCompanyEmail } from '@/utils/sendEmail';
@@ -128,6 +127,7 @@ class ReservaService extends Repository<ReservaEntity> {
     // if (isEmpty(categoryId)) throw new HttpException(400, 'CompanyId está vazio');
     // console.log('here', paginationConfig);
     // console.log('active', status);
+    console.log('1');
     let where = `where (
       select MAX(SR2.STARES_STA_DATE) from STATUS_RESERVA as SR2
       where
@@ -153,7 +153,9 @@ class ReservaService extends Repository<ReservaEntity> {
           ? `where (P.PES_NAME LIKE '%${texto}%' OR U.USU_LOGIN LIKE '%${texto}%')`
           : ` AND (P.PES_NAME LIKE '%${texto}%' OR U.USU_LOGIN LIKE '%${texto}%')`;
     if (date !== null) {
+      console.log('1.1', date);
       const formatDate = format(new Date(date), 'dd/MM/y');
+      console.log('1.2', formatDate);
       where +=
         where === ''
           ? `where (
@@ -167,7 +169,7 @@ class ReservaService extends Repository<ReservaEntity> {
               SR3.STARES_RES_ID = R.RES_ID
           ) = '${formatDate}'`;
     }
-
+    console.log('2');
     const query = `
     SELECT
       ${this.mapRawToEntity()},
@@ -195,7 +197,7 @@ class ReservaService extends Repository<ReservaEntity> {
     // console.log('query =>', query);
     const rawData: any[] = await ReservaEntity.query(query);
     const results = this.mapRawDataToNestedObject(rawData);
-
+    console.log('3');
     const total = await ReservaEntity.query(`SELECT
     count(RES_ID) as total
       FROM RESERVA AS R
@@ -206,7 +208,7 @@ class ReservaService extends Repository<ReservaEntity> {
       INNER JOIN STATUS_RESERVA AS SR on SR.STARES_RES_ID = R.RES_ID
     ${where}
       `);
-
+    console.log('4');
     // ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)}
     // console.log('total', total);
     return {
@@ -235,7 +237,7 @@ class ReservaService extends Repository<ReservaEntity> {
     console.log('Hora valida!');
 
     const paginationConfig: PaginationConfig = {
-      take: 1,
+      take: 1000,
       skip: 0,
       orderColumn: 'id',
       order: 'ASC',
@@ -249,15 +251,21 @@ class ReservaService extends Repository<ReservaEntity> {
       ['1', '2'],
       bookingData.salaId,
       bookingData.diaSemanaIndex,
-      bookingData.horaInicio,
-      bookingData.horaFim,
-      bookingData.date,
+      null,
+      null,
+      parseDate(bookingData.date, '-'),
       null,
     );
-    const findBooking: Reserva = data[0];
+    for (let index = 0; index < data.length; index++) {
+      const element = data[index];
 
-    // Se não, erro 500 com mensagem
-    if (findBooking) throw new HttpException(400, 'Duplicidade de reservas');
+      const isValidInterval = checkDiffInterval(
+        { start: element.horaInicio, end: element.horaFim },
+        { start: bookingData.horaInicio, end: bookingData.horaFim },
+      );
+      // Se não, erro 500 com mensagem
+      if (!isValidInterval) throw new HttpException(400, 'Duplicidade de reservas');
+    }
 
     console.log('Sem duplicidade!');
 

@@ -1,5 +1,6 @@
 import { Pessoa } from '@/interfaces/pessoa.interface';
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { UsuarioEntity } from './usuario.entity';
 
 @Entity({ name: 'PESSOA' })
 export class PessoaEntity extends BaseEntity implements Pessoa {
@@ -42,4 +43,7 @@ export class PessoaEntity extends BaseEntity implements Pessoa {
   userUpdated: number;
   @UpdateDateColumn({ name: 'PES_DTAALTERA' })
   dateUpdated: Date;
+
+  @OneToOne(() => UsuarioEntity, usuario => usuario.pessoa, { onDelete: 'CASCADE' })
+  pessoa: UsuarioEntity;
 }

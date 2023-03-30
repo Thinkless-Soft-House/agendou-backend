@@ -1,4 +1,7 @@
-import { EntityRepository, Like, Repository } from 'typeorm';
+import { ReservaEntity } from '@/entities/reserva.entity';
+import { ResponsavelEntity } from '@/entities/responsavel.entity';
+import { DisponibilidadeEntity } from '@/entities/disponibilidade.entity';
+import { EntityRepository, getManager, Like, Repository } from 'typeorm';
 import { HttpException } from '@exceptions/HttpException';
 import { isEmpty } from '@utils/util';
 import { SalaEntity } from '@/entities/sala.entity';
@@ -103,7 +106,20 @@ class SalaService extends Repository<SalaEntity> {
     const findRoom: Sala = await SalaEntity.findOne({ where: { id: roomId } });
     if (!findRoom) throw new HttpException(409, 'Sala não existe');
 
-    await SalaEntity.delete({ id: roomId });
+    // Iniciar a transação
+    const manager = getManager();
+    manager.transaction(async transactionManager => {
+      // Deletar Disponibilidade
+      await transactionManager.delete(DisponibilidadeEntity, { salaId: roomId });
+      // Deletar Responsável
+      await transactionManager.delete(ResponsavelEntity, { salaId: roomId });
+      // Deletar Reserva
+      await transactionManager.delete(ReservaEntity, { salaId: roomId });
+
+      // Deletar Sala'
+      await transactionManager.delete(SalaEntity, roomId);
+    });
+
     return findRoom;
   }
 }

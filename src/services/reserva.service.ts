@@ -7,7 +7,7 @@ import { ReservaCreateDTO, ReservaUpdateDTO } from '@/dtos/reserva.dto';
 import DisponibilidadeService from './disponibilidade.service';
 import { PaginationConfig } from '@/interfaces/utils.interface';
 
-import { set, format } from 'date-fns';
+import { set, format, addHours } from 'date-fns';
 import StatusReservaService from './status-reserva.service';
 import { StatusEnum } from '@/interfaces/status.interface';
 import ResponsavelService from './responsavel.service';
@@ -154,20 +154,10 @@ class ReservaService extends Repository<ReservaEntity> {
           : ` AND (P.PES_NAME LIKE '%${texto}%' OR U.USU_LOGIN LIKE '%${texto}%')`;
     if (date !== null) {
       console.log('1.1', date);
-      const formatDate = format(new Date(date), 'dd/MM/y');
+      const formatDate = format(addHours(new Date(date), 3), 'dd/MM/y');
       console.log('1.2', formatDate);
       where +=
-        where === ''
-          ? `where (
-      select DATE_FORMAT(MAX(SR3.STARES_STA_DATE), '%d/%m/%Y') from STATUS_RESERVA as SR3
-      where
-        SR3.STARES_RES_ID = R.RES_ID
-    ) = '${formatDate}'`
-          : ` AND (
-            select DATE_FORMAT(MAX(SR3.STARES_STA_DATE), '%d/%m/%Y') from STATUS_RESERVA as SR3
-            where
-              SR3.STARES_RES_ID = R.RES_ID
-          ) = '${formatDate}'`;
+        where === '' ? `where DATE_FORMAT(R.RES_DATA, '%d/%m/%Y') = '${formatDate}'` : ` AND DATE_FORMAT(R.RES_DATA, '%d/%m/%Y') = '${formatDate}'`;
     }
     console.log('2');
     const query = `
@@ -194,7 +184,7 @@ class ReservaService extends Repository<ReservaEntity> {
       order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)} ${paginationConfig.order}
     limit ${paginationConfig.take} offset ${paginationConfig.skip}`;
 
-    // console.log('query =>', query);
+    console.log('query =>', query);
     const rawData: any[] = await ReservaEntity.query(query);
     const results = this.mapRawDataToNestedObject(rawData);
     console.log('3');
@@ -269,7 +259,9 @@ class ReservaService extends Repository<ReservaEntity> {
 
     console.log('Sem duplicidade!');
 
-    const createBookingData: Reserva = await ReservaEntity.create({ ...bookingData }).save();
+    const date = addHours(new Date(parseDate(bookingData.date, '-')), 6);
+    console.log('date parsed', date);
+    const createBookingData: Reserva = await ReservaEntity.create({ ...bookingData, date: date }).save();
     console.log('Nova reserva criada!');
 
     // Criar novo status = Aguardando

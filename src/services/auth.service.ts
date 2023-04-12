@@ -81,7 +81,7 @@ class AuthService extends Repository<UsuarioEntity> {
   public createToken(user: Usuario): TokenData {
     const dataStoredInToken: DataStoredInToken = { id: user.id };
     const secretKey: string = SECRET_KEY;
-    const expiresIn: number = 60 * 60;
+    const expiresIn = '7d';
 
     return { expiresIn, token: sign(dataStoredInToken, secretKey, { expiresIn }) };
   }

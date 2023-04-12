@@ -1,11 +1,14 @@
 import { hash } from 'bcrypt';
-import { EntityRepository, Like, Repository } from 'typeorm';
+import { EntityRepository, Like, Repository, getManager } from 'typeorm';
 import { HttpException } from '@exceptions/HttpException';
 import { isEmpty, setPassword } from '@utils/util';
 import { UsuarioEntity } from '@/entities/usuario.entity';
 import { Usuario } from '@/interfaces/usuario.interface';
 import { UsuarioCreateDTO, UsuarioUpdateDTO } from '@/dtos/usuario.dto';
 import { PaginationConfig } from '@/interfaces/utils.interface';
+import { PessoaEntity } from '@/entities/pessoa.entity';
+import { ResponsavelEntity } from '@/entities/responsavel.entity';
+import { ReservaEntity } from '@/entities/reserva.entity';
 
 @EntityRepository()
 class UsuarioService extends Repository<UsuarioEntity> {
@@ -110,11 +113,31 @@ class UsuarioService extends Repository<UsuarioEntity> {
     return updateUser;
   }
   public async deleteUser(userId: number): Promise<Usuario> {
-    if (isEmpty(userId)) throw new HttpException(400, 'UserId está vazio');
-    const findUser: Usuario = await UsuarioEntity.findOne({ where: { id: userId } });
-    if (!findUser) throw new HttpException(409, 'Usuário não existe');
-    await UsuarioEntity.delete({ id: userId });
-    return findUser;
+    try {
+      if (isEmpty(userId)) throw new HttpException(400, 'UserId está vazio');
+      const findUser: Usuario = await UsuarioEntity.findOne({ where: { id: userId } });
+      if (!findUser) throw new HttpException(409, 'Usuário não existe');
+
+      const manager = getManager();
+      manager.transaction(async transactionManager => {
+        // Deletar Pessoa
+        await transactionManager.delete(PessoaEntity, { id: findUser.pessoaId });
+
+        // Deletar Responsável
+        await transactionManager.delete(ResponsavelEntity, { usuarioId: userId });
+
+        // Deletar Reservas
+        await transactionManager.delete(ReservaEntity, { usuarioId: userId });
+
+        // Deletar Usuario'
+        await transactionManager.delete(UsuarioEntity, userId);
+      });
+
+      // await UsuarioEntity.delete({ id: userId });
+      return findUser;
+    } catch (error: any) {
+      throw new HttpException(500, error.message);
+    }
   }
 }
 

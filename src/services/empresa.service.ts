@@ -44,18 +44,18 @@ class EmpresaService extends Repository<EmpresaEntity> {
 
     const query = `select ${this.mapRawToEntity()}, count(s.SAL_ID) as QUANTIDADE_SALAS
     , ce.CATEMP_DESCRICAO as categoriaNome
-    from dev.EMPRESA as e
-    inner join dev.CATEGORIA_EMPRESA as ce ON e.EMP_CATEMP_ID = ce.CATEMP_ID
-    ${haveRooms ? 'inner' : 'left'} join dev.SALA as s ON e.EMP_ID = s.SAL_EMP_ID
+    from EMPRESA as e
+    inner join CATEGORIA_EMPRESA as ce ON e.EMP_CATEMP_ID = ce.CATEMP_ID
+    ${haveRooms ? 'inner' : 'left'} join SALA as s ON e.EMP_ID = s.SAL_EMP_ID
       ${where}
-      group by e.EMP_NOME
+      group by e.EMP_ID
       order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)} ${paginationConfig.order}
     limit ${paginationConfig.take} offset ${paginationConfig.skip}`;
     console.log('query', query);
     const results = await EmpresaEntity.query(query);
 
-    const total = await EmpresaEntity.query(`select COUNT(distinct EMP_ID) AS total FROM dev.EMPRESA AS e
-    ${haveRooms ? 'inner' : 'left'} join dev.SALA as s ON e.EMP_ID = s.SAL_EMP_ID
+    const total = await EmpresaEntity.query(`select COUNT(distinct EMP_ID) AS total FROM EMPRESA AS e
+    ${haveRooms ? 'inner' : 'left'} join SALA as s ON e.EMP_ID = s.SAL_EMP_ID
       ${where}
       `);
 

@@ -1,5 +1,5 @@
 import { PaginationConfig } from '@/interfaces/utils.interface';
-import { parse, isBefore, isAfter, isWithinInterval } from 'date-fns';
+import { parse, isBefore, isAfter, isWithinInterval, addMinutes } from 'date-fns';
 import { Request } from 'express';
 import * as crypto from 'crypto';
 
@@ -49,7 +49,7 @@ export const checkHour = (rangeA: { start: string; end: string }, rangeB: { star
 export const checkDiffInterval = (rangeA: { start: string; end: string }, rangeB: { start: string; end: string }) => {
   const startA = parse(rangeA.start, 'HH:mm', new Date());
   const endA = parse(rangeA.end, 'HH:mm', new Date());
-  const startB = parse(rangeB.start, 'HH:mm', new Date());
+  const startB = addMinutes(parse(rangeB.start, 'HH:mm', new Date()), 1);
   const endB = parse(rangeB.end, 'HH:mm', new Date());
 
   return isBefore(endA, startB) || isAfter(startA, endB);

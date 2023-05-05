@@ -150,8 +150,8 @@ class ReservaService extends Repository<ReservaEntity> {
     if (texto !== null)
       where +=
         where === ''
-          ? `where (P.PES_NAME LIKE '%${texto}%' OR U.USU_LOGIN LIKE '%${texto}%')`
-          : ` AND (P.PES_NAME LIKE '%${texto}%' OR U.USU_LOGIN LIKE '%${texto}%')`;
+          ? `where (P.PES_NAME LIKE '%${texto}%' OR U.USU_LOGIN LIKE '%${texto}%' OR E.EMP_NOME LIKE '%${texto}%')`
+          : ` AND (P.PES_NAME LIKE '%${texto}%' OR U.USU_LOGIN LIKE '%${texto}%' OR E.EMP_NOME LIKE '%${texto}%')`;
     if (date !== null) {
       console.log('1.1', date);
       const formatDate = format(addHours(new Date(date), 3), 'dd/MM/y');

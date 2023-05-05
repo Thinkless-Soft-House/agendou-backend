@@ -1,5 +1,5 @@
 import { PaginationConfig } from '@/interfaces/utils.interface';
-import { parse, isBefore, isAfter, isWithinInterval, addMinutes } from 'date-fns';
+import { parse, isBefore, isAfter, isWithinInterval, addMinutes, subMinutes, compareAsc } from 'date-fns';
 import { Request } from 'express';
 import * as crypto from 'crypto';
 
@@ -49,10 +49,30 @@ export const checkHour = (rangeA: { start: string; end: string }, rangeB: { star
 export const checkDiffInterval = (rangeA: { start: string; end: string }, rangeB: { start: string; end: string }) => {
   const startA = parse(rangeA.start, 'HH:mm', new Date());
   const endA = parse(rangeA.end, 'HH:mm', new Date());
-  const startB = addMinutes(parse(rangeB.start, 'HH:mm', new Date()), 1);
+  const startB = parse(rangeB.start, 'HH:mm', new Date());
   const endB = parse(rangeB.end, 'HH:mm', new Date());
 
-  return isBefore(endA, startB) || isAfter(startA, endB);
+  // Checar se o startA é diferente que o startB
+  if (compareAsc(startA, startB) !== 0) {
+    // Checar se o startA é menor que o startB
+    if (compareAsc(startA, startB) === -1) {
+      // Checar se o endA é menor ou igual ao startB e maior que o startA
+      if ((compareAsc(endA, startB) === -1 || compareAsc(endA, startB) === 0) && compareAsc(endA, startA) === 1) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      // Checar se o endB é menor ou igual ao startA
+      if (compareAsc(endB, startA) === -1 || compareAsc(endB, startA) === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  } else {
+    return false;
+  }
 };
 
 export const createPaginationConfig = (req: Request) => {

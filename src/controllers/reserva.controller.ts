@@ -104,6 +104,20 @@ class ReservaController {
       next(error);
     }
   };
+
+  public generateReport = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const body: {
+        empresaId?: number;
+        usuarioId: number;
+      } = req.body;
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+      res.status(200).json({ ok: true });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export default ReservaController;

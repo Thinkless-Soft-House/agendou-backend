@@ -39,6 +39,20 @@ class AuthService extends Repository<UsuarioEntity> {
     return { cookie, findUser };
   }
 
+  public async loginWithKey(userData: { login: string; key: string }): Promise<{ cookie: string; findUser: Usuario }> {
+    if (isEmpty(userData)) throw new HttpException(400, 'userData is empty');
+
+    const findUser: Usuario = await UsuarioEntity.findOne({ where: { login: userData.login } });
+    if (!findUser) throw new HttpException(409, `This email ${userData.login} was not found`);
+
+    // const isPasswordMatching: boolean = await compare(userData.senha, findUser.senha);
+
+    const tokenData = this.createToken(findUser);
+    const cookie = this.createCookie(tokenData);
+
+    return { cookie, findUser };
+  }
+
   public async forgotPassword(email: string): Promise<Usuario> {
     if (isEmpty(email)) throw new HttpException(400, 'userEmail is empty');
 

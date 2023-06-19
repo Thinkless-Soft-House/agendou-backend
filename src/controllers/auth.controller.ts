@@ -3,6 +3,7 @@ import { UsuarioCreateDTO, UsuarioLoginDTO } from '@dtos/usuario.dto';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import { Usuario } from '@interfaces/usuario.interface';
 import AuthService from '@services/auth.service';
+import { HttpException } from '@/exceptions/HttpException';
 
 class AuthController {
   public authService = new AuthService();
@@ -21,6 +22,22 @@ class AuthController {
   public logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: UsuarioLoginDTO = req.body;
+      const { cookie, findUser } = await this.authService.login(userData);
+
+      res.setHeader('Set-Cookie', [cookie]);
+      res.status(200).json({ data: findUser, message: 'login' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public logInWithKey = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userData: { login: string; key: string } = req.body;
+
+      if (userData.key !== process.env.KEY) {
+        throw new HttpException(401, 'Chave inválida');
+      }
       const { cookie, findUser } = await this.authService.login(userData);
 
       res.setHeader('Set-Cookie', [cookie]);

@@ -36,9 +36,10 @@ class AuthController {
       const userData: { login: string; key: string } = req.body;
 
       if (userData.key !== process.env.KEY) {
+        console.log('Chave inválida');
         throw new HttpException(401, 'Chave inválida');
       }
-      const { cookie, findUser } = await this.authService.login(userData);
+      const { cookie, findUser } = await this.authService.loginWithKey(userData);
 
       res.setHeader('Set-Cookie', [cookie]);
       res.status(200).json({ data: findUser, message: 'login' });

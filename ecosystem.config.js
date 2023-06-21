@@ -65,6 +65,7 @@ module.exports = {
         ORIGIN: '*',
         CREDENTIALS: 'true',
         URL_LAMBDA: 'https://3btojc1td5.execute-api.us-east-1.amazonaws.com',
+        KEY: 'fjmdkshwr4uy8ht90v453ou113616850tu',
       },
     },
   ],

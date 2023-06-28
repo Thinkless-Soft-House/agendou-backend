@@ -3,7 +3,12 @@ import { ReservaCreateDTO, ReservaUpdateDTO } from '@dtos/reserva.dto';
 import { Reserva } from '@interfaces/reserva.interface';
 import ReservaService from '@/services/reserva.service';
 import { PaginationConfig } from '@/interfaces/utils.interface';
-import { createPaginationConfig } from '@/utils/util';
+import { createCSV, createPaginationConfig } from '@/utils/util';
+import { RequestWithUser } from '@/interfaces/auth.interface';
+
+import * as fs from 'fs';
+import { sendGenerateReportEmail } from '@/utils/sendEmail';
+import { format } from 'date-fns';
 
 class ReservaController {
   public reservaService = new ReservaService();
@@ -105,15 +110,78 @@ class ReservaController {
     }
   };
 
-  public generateReport = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public downloadReport = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const filename = req.params.filename;
+      const path = `./files/reports/${filename}`;
+
+      // Verifique se o arquivo existe antes de tentar enviá-lo
+      fs.access(path, fs.constants.F_OK, err => {
+        if (err) {
+          console.log(`${path} ${err ? 'does not exist' : 'exists'}`);
+          res.status(404).json({ message: 'Arquivo não encontrado.' });
+        } else {
+          res.download(path); // Configura a resposta para baixar o arquivo
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public generateReport = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       const body: {
-        empresaId?: number;
         usuarioId: number;
+        start: string;
+        end: string;
       } = req.body;
+      const paginationConfig: PaginationConfig = createPaginationConfig(req);
+      paginationConfig.take = 1000000;
 
-      await new Promise(resolve => setTimeout(resolve, 500));
-      res.status(200).json({ ok: true });
+      // const usuarioId = +(body.usuarioId as number) || null;
+      const dataInicio = (body.start as string) || null;
+      const dataFim = (body.end as string) || null;
+
+      // Pegar o usuario e seu tipo
+      const empresaId = req.user.permissaoId === 3 ? req.user.empresaId : null;
+
+      const findOneCompanyData: {
+        data: Reserva[];
+        total: number;
+      } = await this.reservaService.findBookingByFilterBetweenDates(
+        paginationConfig,
+        null,
+        empresaId,
+        null,
+        null,
+        null,
+        null,
+        null,
+        dataInicio,
+        dataFim,
+        null,
+      );
+
+      const fileConfig = {
+        filename: 'Relatório_Collegato_Datas' + format(new Date(dataInicio), 'dd-MM-yyyy') + '_a_' + format(new Date(dataFim), 'dd-MM-yyyy') + '.csv',
+        path: './files/reports/',
+        save: true,
+      };
+      const reportData = await this.reservaService.createReportData(findOneCompanyData.data);
+      createCSV(reportData, fileConfig);
+
+      // Constrói a URL base usando req.protocol e req.get('host')
+      const baseUrl = req.protocol + '://' + req.get('host');
+
+      // Constrói a URL completa para o arquivo
+      const fileUrl = `${baseUrl}/reserva/report/download/${fileConfig.filename}`;
+
+      // Chama a função para enviar o email com a URL do arquivo
+      const email = await sendGenerateReportEmail(req.user.login, fileUrl);
+      console.log('email', email);
+      res.status(200).json({ ok: true, message: 'Relatório gerado com sucesso.', email });
+      return;
     } catch (error) {
       next(error);
     }

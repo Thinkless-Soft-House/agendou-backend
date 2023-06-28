@@ -208,6 +208,106 @@ class ReservaService extends Repository<ReservaEntity> {
     };
   }
 
+  public async findBookingByFilterBetweenDates(
+    paginationConfig: PaginationConfig,
+    usuarioId: number,
+    empresaId: number,
+    status: string[],
+    salaId: number,
+    dia: number,
+    hInicio: string,
+    hFim: string,
+    dataInicio: string,
+    dataFim: string,
+    texto: string,
+  ): Promise<{ data: Reserva[]; total: number }> {
+    // if (isEmpty(categoryId)) throw new HttpException(400, 'CompanyId está vazio');
+    // console.log('here', paginationConfig);
+    // console.log('active', status);
+    console.log('1');
+    let where = `where (
+      select MAX(SR2.STARES_STA_DATE) from STATUS_RESERVA as SR2
+      where
+        SR2.STARES_RES_ID = R.RES_ID
+    ) = SR.STARES_STA_DATE`;
+
+    if (status !== null && status.length > 0)
+      where +=
+        where === ''
+          ? `where SR.STARES_STA_ID IN (${status.map(e => +e).join(', ')})
+            `
+          : ` AND SR.STARES_STA_ID IN (${status.map(e => +e).join(', ')})
+          `;
+    if (empresaId !== null) where += where === '' ? `where S.SAL_EMP_ID = ${empresaId}` : ` AND S.SAL_EMP_ID = ${empresaId}`;
+    if (usuarioId !== null) where += where === '' ? `where R.RES_USU_ID = ${usuarioId}` : ` AND R.RES_USU_ID = ${usuarioId}`;
+    if (salaId !== null) where += where === '' ? `where R.RES_SAL_ID = ${salaId}` : ` AND R.RES_SAL_ID = ${salaId}`;
+    if (dia !== null) where += where === '' ? `where R.RES_DIASEMANAINDEX = ${dia}` : ` AND R.RES_DIASEMANAINDEX = ${dia}`;
+    if (hInicio !== null) where += where === '' ? `where R.RES_HRINICIO = '${hInicio}'` : ` AND R.RES_HRINICIO = '${hInicio}'`;
+    if (hFim !== null) where += where === '' ? `where R.RES_HRFIM = '${hFim}'` : ` AND R.RES_HRFIM = '${hFim}'`;
+    if (texto !== null)
+      where +=
+        where === ''
+          ? `where (P.PES_NAME LIKE '%${texto}%' OR U.USU_LOGIN LIKE '%${texto}%' OR E.EMP_NOME LIKE '%${texto}%')`
+          : ` AND (P.PES_NAME LIKE '%${texto}%' OR U.USU_LOGIN LIKE '%${texto}%' OR E.EMP_NOME LIKE '%${texto}%')`;
+    if (dataInicio !== null && dataFim !== null) {
+      console.log('1.1', dataInicio, dataFim);
+      const formatDataInicio = format(addHours(new Date(dataInicio), 3), 'dd/MM/y');
+      const formatDataFim = format(addHours(new Date(dataFim), 3), 'dd/MM/y');
+      console.log('1.2', formatDataInicio, formatDataFim);
+      where +=
+        where === ''
+          ? `where DATE_FORMAT(R.RES_DATA, '%d/%m/%Y') BETWEEN '${formatDataInicio}' AND '${formatDataFim}'`
+          : ` AND DATE_FORMAT(R.RES_DATA, '%d/%m/%Y') BETWEEN '${formatDataInicio}' AND '${formatDataFim}'`;
+    }
+    console.log('2');
+    const query = `
+    SELECT
+      ${this.mapRawToEntity()},
+      SR.STARES_STA_ID as statusId,
+      S.SAL_EMP_ID as empresaId,
+      (
+        select S2.STA_TIPO from STATUS as S2
+          where
+            S2.STA_ID = SR.STARES_STA_ID
+      ) as status,
+      ${this.mapRawToUserEntity()},
+      ${this.mapRawToPersonEntity()},
+      ${this.mapRawToCompanyEntity()},
+      S.SAL_NOME as salaNome
+      FROM RESERVA AS R
+      INNER JOIN SALA AS S on S.SAL_ID = R.RES_SAL_ID
+      INNER JOIN USUARIO AS U on U.USU_ID = R.RES_USU_ID
+      INNER JOIN PESSOA AS P on U.USU_PES_ID = P.PES_ID
+      INNER JOIN EMPRESA AS E on S.SAL_EMP_ID = E.EMP_ID
+      INNER JOIN STATUS_RESERVA AS SR on SR.STARES_RES_ID = R.RES_ID
+      ${where}
+      order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)} ${paginationConfig.order}
+    limit ${paginationConfig.take} offset ${paginationConfig.skip}`;
+
+    console.log('query =>', query);
+    const rawData: any[] = await ReservaEntity.query(query);
+    const results = this.mapRawDataToNestedObject(rawData);
+    console.log('3');
+    const total = await ReservaEntity.query(`SELECT
+    count(RES_ID) as total
+      FROM RESERVA AS R
+      INNER JOIN SALA AS S on S.SAL_ID = R.RES_SAL_ID
+      INNER JOIN USUARIO AS U on U.USU_ID = R.RES_USU_ID
+      INNER JOIN PESSOA AS P on U.USU_PES_ID = P.PES_ID
+      INNER JOIN EMPRESA AS E on S.SAL_EMP_ID = E.EMP_ID
+      INNER JOIN STATUS_RESERVA AS SR on SR.STARES_RES_ID = R.RES_ID
+    ${where}
+      `);
+    console.log('4');
+    // ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)}
+    // console.log('total', total);
+    return {
+      data: results,
+      total: +total[0].total,
+      // total: 0,
+    };
+  }
+
   public async createBooking(bookingData: ReservaCreateDTO): Promise<Reserva> {
     if (isEmpty(bookingData)) throw new HttpException(400, 'bookingData is empty');
 
@@ -447,6 +547,20 @@ class ReservaService extends Repository<ReservaEntity> {
       });
 
       return ret;
+    });
+  }
+
+  public async createReportData(data: any[]): Promise<any[]> {
+    return data.map(item => {
+      return {
+        'Data da Reserva': format(new Date(item.date), 'dd/MM/y'),
+        'Hora Início': item.horaInicio,
+        'Hora Fim': item.horaFim,
+        Sala: item.salaNome,
+        Empresa: item.empresa.nome,
+        Usuário: item.usuario.login,
+        Status: item.status,
+      };
     });
   }
 }

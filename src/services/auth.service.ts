@@ -34,6 +34,7 @@ class AuthService extends Repository<UsuarioEntity> {
     if (!isPasswordMatching) throw new HttpException(409, 'Password not matching');
 
     const tokenData = this.createToken(findUser);
+    console.log('tokenData', tokenData);
     const cookie = this.createCookie(tokenData);
 
     return { cookie, findUser };
@@ -95,7 +96,7 @@ class AuthService extends Repository<UsuarioEntity> {
   public createToken(user: Usuario): TokenData {
     const dataStoredInToken: DataStoredInToken = { id: user.id };
     const secretKey: string = SECRET_KEY;
-    const expiresIn = '7d';
+    const expiresIn = '7 days';
 
     return { expiresIn, token: sign(dataStoredInToken, secretKey, { expiresIn }) };
   }

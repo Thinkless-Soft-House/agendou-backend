@@ -3,6 +3,9 @@ import { parse, isBefore, isAfter, isWithinInterval, addMinutes, subMinutes, com
 import { Request } from 'express';
 import * as crypto from 'crypto';
 
+import * as Papa from 'papaparse';
+import * as fs from 'fs';
+
 /**
  * @method isEmpty
  * @param {String | Number | Object} value
@@ -96,4 +99,36 @@ export const parseDate = (date: string, delimiter = '/') => {
   const dateParsed = new Date(+dateSplited[0], +dateSplited[1] - 1, +dateSplited[2]);
   console.log('dateParsed', dateParsed);
   return dateParsed.toISOString();
+};
+
+export const createCSV = (data: any[], fileConfig: { filename?: string; path?: string; save: boolean }) => {
+  if (!fileConfig || !fileConfig.save) {
+    console.log('Não é necessário salvar o arquivo');
+    return;
+  }
+
+  const csv = Papa.unparse(data);
+
+  if (!fileConfig.filename) {
+    fileConfig.filename = 'default_' + new Date().getTime() + '.csv';
+  }
+
+  if (!fileConfig.path) {
+    fileConfig.path = './';
+  }
+
+  fs.mkdirSync(fileConfig.path, { recursive: true });
+
+  // Checar se o arquivo já existe, se sim adicionar um timestamp
+  if (fs.existsSync(`${fileConfig.path}${fileConfig.filename}`)) {
+    fileConfig.filename = fileConfig.filename.split('.')[0] + '_' + new Date().getTime() + '.csv';
+  }
+
+  fs.writeFile(`${fileConfig.path}${fileConfig.filename}`, csv, function (err) {
+    if (err) {
+      console.log('Erro ao salvar o arquivo:', err);
+    } else {
+      console.log(`Arquivo salvo como ${fileConfig.filename} em ${fileConfig.path}`);
+    }
+  });
 };

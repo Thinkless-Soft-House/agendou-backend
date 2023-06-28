@@ -4,6 +4,7 @@ import ReservaController from '@controllers/reserva.controller';
 import { Routes } from '@interfaces/routes.interface';
 import validationMiddleware from '@middlewares/validation.middleware';
 import { ReservaCreateDTO, ReservaUpdateDTO } from '@/dtos/reserva.dto';
+import authMiddleware from '@/middlewares/auth.middleware';
 
 class ReservaRoute implements Routes {
   public path = '/reserva';
@@ -19,8 +20,9 @@ class ReservaRoute implements Routes {
     this.router.get(`${this.path}/:id(\\d+)`, this.reservaController.getBookingById);
     this.router.get(`${this.path}/sala/mes/:id(\\d+)/:mes(\\d+)/:ano(\\d+)`, this.reservaController.getBookingByRoomAndDate);
     this.router.get(`${this.path}/filter`, this.reservaController.getBookingByFilter);
+    this.router.get(`${this.path}/report/download/:filename`, this.reservaController.downloadReport);
     this.router.post(`${this.path}`, validationMiddleware(ReservaCreateDTO, 'body'), this.reservaController.createBooking);
-    this.router.post(`${this.path}/report`, this.reservaController.generateReport);
+    this.router.post(`${this.path}/report`, authMiddleware, this.reservaController.generateReport);
     this.router.put(`${this.path}/:id(\\d+)`, validationMiddleware(ReservaUpdateDTO, 'body', true), this.reservaController.updateBooking);
     this.router.delete(`${this.path}/:id(\\d+)`, this.reservaController.deleteBooking);
   }

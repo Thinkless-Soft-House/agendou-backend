@@ -163,13 +163,16 @@ class ReservaController {
         null,
       );
 
+      console.log('Quantidade encontrada => ', findOneCompanyData.data.length);
+      console.log('Quantidade encontrada => ', findOneCompanyData.total);
+
       const fileConfig = {
         filename: 'Relatório_Collegato_Datas' + format(new Date(dataInicio), 'dd-MM-yyyy') + '_a_' + format(new Date(dataFim), 'dd-MM-yyyy') + '.csv',
         path: './files/reports/',
         save: true,
       };
       const reportData = await this.reservaService.createReportData(findOneCompanyData.data);
-      createCSV(reportData, fileConfig);
+      // createCSV(reportData, fileConfig);
 
       // Constrói a URL base usando req.protocol e req.get('host')
       const baseUrl = req.protocol + '://' + req.get('host');
@@ -181,6 +184,7 @@ class ReservaController {
       const email = await sendGenerateReportEmail(req.user.login, fileUrl);
       console.log('email', email);
       res.status(200).json({ ok: true, message: 'Relatório gerado com sucesso.', email });
+      // res.status(200).json({ ok: true, message: 'Relatório gerado com sucesso.' });
       return;
     } catch (error) {
       next(error);

@@ -250,14 +250,12 @@ class ReservaService extends Repository<ReservaEntity> {
           ? `where (P.PES_NAME LIKE '%${texto}%' OR U.USU_LOGIN LIKE '%${texto}%' OR E.EMP_NOME LIKE '%${texto}%')`
           : ` AND (P.PES_NAME LIKE '%${texto}%' OR U.USU_LOGIN LIKE '%${texto}%' OR E.EMP_NOME LIKE '%${texto}%')`;
     if (dataInicio !== null && dataFim !== null) {
-      console.log('1.1', dataInicio, dataFim);
-      const formatDataInicio = format(addHours(new Date(dataInicio), 3), 'dd/MM/y');
-      const formatDataFim = format(addHours(new Date(dataFim), 3), 'dd/MM/y');
-      console.log('1.2', formatDataInicio, formatDataFim);
+      const formatDataInicio = format(addHours(new Date(dataInicio), 3), 'yyyy-MM-dd 00:00:00');
+      const formatDataFim = format(addHours(new Date(dataFim), 3), 'yyyy-MM-dd 23:59:59');
       where +=
         where === ''
-          ? `where DATE_FORMAT(R.RES_DATA, '%d/%m/%Y') BETWEEN '${formatDataInicio}' AND '${formatDataFim}'`
-          : ` AND DATE_FORMAT(R.RES_DATA, '%d/%m/%Y') BETWEEN '${formatDataInicio}' AND '${formatDataFim}'`;
+          ? `where R.RES_DATA BETWEEN '${formatDataInicio}' AND '${formatDataFim}'`
+          : ` AND R.RES_DATA BETWEEN '${formatDataInicio}' AND '${formatDataFim}'`;
     }
     console.log('2');
     const query = `

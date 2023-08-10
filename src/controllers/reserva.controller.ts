@@ -172,7 +172,7 @@ class ReservaController {
         save: true,
       };
       const reportData = await this.reservaService.createReportData(findOneCompanyData.data);
-      // createCSV(reportData, fileConfig);
+      createCSV(reportData, fileConfig);
 
       // Constrói a URL base usando req.protocol e req.get('host')
       const baseUrl = req.protocol + '://' + req.get('host');

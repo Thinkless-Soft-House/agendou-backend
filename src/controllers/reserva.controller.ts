@@ -205,10 +205,10 @@ class ReservaController {
       const fileUrl = `${baseUrl}/reserva/report/download/${fileConfig.filename}`;
 
       // Chama a função para enviar o email com a URL do arquivo
-      // const email = await sendGenerateReportEmail(req.user.login, fileUrl);
-      // console.log('email', email);
-      // res.status(200).json({ ok: true, message: 'Relatório gerado com sucesso.', email });
-      res.status(200).json({ ok: true, message: 'Relatório gerado com sucesso.' });
+      const email = await sendGenerateReportEmail(req.user.login, fileUrl);
+      console.log('email', email);
+      res.status(200).json({ ok: true, message: 'Relatório gerado com sucesso.', email });
+      // res.status(200).json({ ok: true, message: 'Relatório gerado com sucesso.' });
       return;
     } catch (error) {
       next(error);

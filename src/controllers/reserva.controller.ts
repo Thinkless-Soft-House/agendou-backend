@@ -162,7 +162,7 @@ class ReservaController {
         empresaId = req.body.empresaId || null;
       }
 
-      empresaId = 2;
+      // empresaId = 2;
 
       const findOneCompanyData: {
         data: Reserva[];

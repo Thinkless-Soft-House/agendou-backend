@@ -142,9 +142,27 @@ class ReservaController {
       // const usuarioId = +(body.usuarioId as number) || null;
       const dataInicio = (body.start as string) || null;
       const dataFim = (body.end as string) || null;
+      if (!dataInicio || !dataFim) {
+        res.status(400).json({ message: 'Informe a data de início e fim.' });
+        return;
+      }
 
       // Pegar o usuario e seu tipo
-      const empresaId = req.user.permissaoId === 3 ? req.user.empresaId : null;
+      console.log('Usuario que solicitou => ', req.user.id);
+      if (!req.user) {
+        res.status(400).json({ message: 'Usuário não encontrado.' });
+        return;
+      }
+
+      let empresaId = null;
+
+      if (req.user.permissaoId === 3) {
+        empresaId = req.user.empresaId || null;
+      } else if (req.user.permissaoId === 2) {
+        empresaId = req.body.empresaId || null;
+      }
+
+      empresaId = 2;
 
       const findOneCompanyData: {
         data: Reserva[];
@@ -167,7 +185,13 @@ class ReservaController {
       console.log('Quantidade encontrada => ', findOneCompanyData.total);
 
       const fileConfig = {
-        filename: 'Relatório_Collegato_Datas' + format(new Date(dataInicio), 'dd-MM-yyyy') + '_a_' + format(new Date(dataFim), 'dd-MM-yyyy') + '.csv',
+        filename:
+          `Relatório_Collegato_Cliente_${req.user.id}_Datas_` +
+          format(new Date(dataInicio), 'dd-MM-yyyy') +
+          '_a_' +
+          format(new Date(dataFim), 'dd-MM-yyyy') +
+          `_Criado_${format(new Date(), 'dd-MM-yyyy_HH:mm:ss')}` +
+          '.csv',
         path: './files/reports/',
         save: true,
       };
@@ -181,10 +205,10 @@ class ReservaController {
       const fileUrl = `${baseUrl}/reserva/report/download/${fileConfig.filename}`;
 
       // Chama a função para enviar o email com a URL do arquivo
-      const email = await sendGenerateReportEmail(req.user.login, fileUrl);
-      console.log('email', email);
-      res.status(200).json({ ok: true, message: 'Relatório gerado com sucesso.', email });
-      // res.status(200).json({ ok: true, message: 'Relatório gerado com sucesso.' });
+      // const email = await sendGenerateReportEmail(req.user.login, fileUrl);
+      // console.log('email', email);
+      // res.status(200).json({ ok: true, message: 'Relatório gerado com sucesso.', email });
+      res.status(200).json({ ok: true, message: 'Relatório gerado com sucesso.' });
       return;
     } catch (error) {
       next(error);

@@ -184,7 +184,7 @@ class ReservaService extends Repository<ReservaEntity> {
       order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)} ${paginationConfig.order}
     limit ${paginationConfig.take} offset ${paginationConfig.skip}`;
 
-    console.log('query =>', query);
+    // console.log('query =>', query);
     const rawData: any[] = await ReservaEntity.query(query);
     const results = this.mapRawDataToNestedObject(rawData);
     console.log('3');
@@ -282,7 +282,7 @@ class ReservaService extends Repository<ReservaEntity> {
       order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)} ${paginationConfig.order}
     limit ${paginationConfig.take} offset ${paginationConfig.skip}`;
 
-    console.log('query =>', query);
+    // console.log('query =>', query);
     const rawData: any[] = await ReservaEntity.query(query);
     const results = this.mapRawDataToNestedObject(rawData);
     console.log('3');

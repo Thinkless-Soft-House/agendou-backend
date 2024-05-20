@@ -21,19 +21,20 @@ module.exports = {
       error: './logs/error.log', // pm2 error log file
       env: {
         // environment variable
-        PORT: 3300,
+        PORT: 3000,
         NODE_ENV: 'production',
-        DB_HOST: 'collegato-app.c604sv7jbxkd.us-east-1.rds.amazonaws.com',
-        DB_PORT: '3306',
-        DB_USER: 'admin',
-        DB_PASSWORD: 'caiocaio',
-        DB_DATABASE: 'dev',
+        DB_HOST: 'aws-0-sa-east-1.pooler.supabase.com',
+        DB_PORT: '5432',
+        DB_USER: 'postgres.pgcijumytcljunqihrsp',
+        DB_PASSWORD: 'Xbbh1YH2WWjWliZu',
+        DB_DATABASE: 'postgres',
         SECRET_KEY: 'secretKey',
         LOG_FORMAT: 'dev',
         LOG_DIR: '../logs',
         ORIGIN: '*',
         CREDENTIALS: 'true',
         URL_LAMBDA: 'https://3btojc1td5.execute-api.us-east-1.amazonaws.com',
+        KEY: 'fjmdkshwr4uy8ht90v453ou113616850tu',
       },
     },
     {

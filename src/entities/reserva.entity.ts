@@ -25,21 +25,34 @@ export class ReservaEntity extends BaseEntity implements Reserva {
   @Column({ name: 'RES_USU_ID' })
   usuarioId: number;
 
-  @ManyToOne(() => SalaEntity, sala => sala.reservas, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
-    eager: true,
-  })
+  @ManyToOne(
+    () => {
+      const { SalaEntity } = require('./sala.entity');
+      return SalaEntity;
+    },
+    (sala: any) => sala.reservas,
+    {
+      onDelete: 'NO ACTION',
+      onUpdate: 'NO ACTION',
+    },
+  )
   @JoinColumn([{ name: 'RES_SAL_ID', referencedColumnName: 'id' }])
-  sala: SalaEntity;
+  sala: any; // Use 'any' para evitar problemas de tipo
 
-  @ManyToOne(() => UsuarioEntity, usuario => usuario.reservas, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
-    eager: true,
-  })
+  @ManyToOne(
+    () => {
+      const { UsuarioEntity } = require('./usuario.entity');
+      return UsuarioEntity;
+    },
+    (usuario: any) => usuario.reservas,
+    {
+      onDelete: 'NO ACTION',
+      onUpdate: 'NO ACTION',
+      eager: true,
+    },
+  )
   @JoinColumn([{ name: 'RES_USU_ID', referencedColumnName: 'id' }])
-  usuario: UsuarioEntity;
+  usuario: any;
 
   @OneToMany(() => StatusReservaEntity, statusReserva => statusReserva.reserva, {
     onDelete: 'NO ACTION',

@@ -44,6 +44,13 @@ export class PessoaEntity extends BaseEntity implements Pessoa {
   @UpdateDateColumn({ name: 'PES_DTAALTERA' })
   dateUpdated: Date;
 
-  @OneToOne(() => UsuarioEntity, usuario => usuario.pessoa, { onDelete: 'CASCADE' })
-  pessoa: UsuarioEntity;
+  @OneToOne(
+    () => {
+      const { UsuarioEntity } = require('./usuario.entity');
+      return UsuarioEntity;
+    },
+    (usuario: any) => usuario.pessoa,
+    { onDelete: 'CASCADE' },
+  )
+  pessoa: any;
 }

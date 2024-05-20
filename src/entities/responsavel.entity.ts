@@ -12,17 +12,31 @@ export class ResponsavelEntity extends BaseEntity implements Responsavel {
   @Column({ name: 'RESP_USU_ID' })
   usuarioId: number;
 
-  @ManyToOne(() => SalaEntity, sala => sala.responsavel, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
-  })
+  @ManyToOne(
+    () => {
+      const { SalaEntity } = require('./sala.entity');
+      return SalaEntity;
+    },
+    (sala: any) => sala.responsavel,
+    {
+      onDelete: 'NO ACTION',
+      onUpdate: 'NO ACTION',
+    },
+  )
   @JoinColumn([{ name: 'RESP_SAL_ID', referencedColumnName: 'id' }])
-  sala: SalaEntity;
+  sala: any;
 
-  @ManyToOne(() => UsuarioEntity, usuario => usuario.responsavel, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
-  })
+  @ManyToOne(
+    () => {
+      const { UsuarioEntity } = require('./usuario.entity');
+      return UsuarioEntity;
+    },
+    (usuario: any) => usuario.responsavel,
+    {
+      onDelete: 'NO ACTION',
+      onUpdate: 'NO ACTION',
+    },
+  )
   @JoinColumn([{ name: 'RESP_USU_ID', referencedColumnName: 'id' }])
-  usuario: UsuarioEntity;
+  usuario: any;
 }

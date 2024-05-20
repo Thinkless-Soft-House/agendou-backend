@@ -15,12 +15,19 @@ export class StatusReservaEntity extends BaseEntity implements StatusReserva {
   @CreateDateColumn({ name: 'STARES_STA_DATE' })
   date: number;
 
-  @ManyToOne(() => ReservaEntity, reserva => reserva.statusReserva, {
-    onDelete: 'CASCADE',
-    onUpdate: 'NO ACTION',
-  })
+  @ManyToOne(
+    () => {
+      const { ReservaEntity } = require('./reserva.entity');
+      return ReservaEntity;
+    },
+    (reserva: any) => reserva.statusReservas,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'NO ACTION',
+    },
+  )
   @JoinColumn([{ name: 'STARES_RES_ID', referencedColumnName: 'id' }])
-  reserva: ReservaEntity;
+  reserva: any;
 
   @ManyToOne(() => StatusEntity, status => status.statusReserva, {
     onDelete: 'NO ACTION',

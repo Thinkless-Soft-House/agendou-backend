@@ -22,12 +22,19 @@ export class SalaEntity extends BaseEntity implements Sala {
   @Column({ name: 'SAL_EMP_ID' })
   empresaId: number;
 
-  @ManyToOne(() => EmpresaEntity, empresa => empresa.salas, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
-  })
+  @ManyToOne(
+    () => {
+      const { EmpresaEntity } = require('./empresa.entity');
+      return EmpresaEntity;
+    },
+    (empresa: any) => empresa.salas,
+    {
+      onDelete: 'NO ACTION',
+      onUpdate: 'NO ACTION',
+    },
+  )
   @JoinColumn([{ name: 'SAL_EMP_ID', referencedColumnName: 'id' }])
-  empresa: EmpresaEntity;
+  empresa: any;
 
   @OneToMany(() => ResponsavelEntity, responsavel => responsavel.sala, {
     onDelete: 'NO ACTION',

@@ -26,10 +26,17 @@ export class DisponibilidadeEntity extends BaseEntity implements Disponibilidade
   @Column({ name: 'DIS_SAL_ID' })
   salaId: number;
 
-  @ManyToOne(() => SalaEntity, sala => sala.disponibilidades, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
-  })
+  @ManyToOne(
+    () => {
+      const { SalaEntity } = require('./sala.entity');
+      return SalaEntity;
+    },
+    (sala: any) => sala.disponibilidades,
+    {
+      onDelete: 'NO ACTION',
+      onUpdate: 'NO ACTION',
+    },
+  )
   @JoinColumn([{ name: 'DIS_SAL_ID', referencedColumnName: 'id' }])
-  sala: SalaEntity;
+  sala: any; // Use 'any' para evitar problemas de tipo
 }

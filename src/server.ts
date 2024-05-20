@@ -14,10 +14,11 @@ import UsuarioRoute from './routes/usuario.route';
 import CategoriaEmpresaRoute from './routes/categoria-empresa.route';
 import PessoaRoute from './routes/pessoa.route';
 
-validateEnv();
+// validateEnv();
 
 const app = new App([
   new IndexRoute(),
+  new SalaRoute(),
   new AuthRoute(),
   new UsuarioRoute(),
   new EmpresaRoute(),
@@ -25,7 +26,6 @@ const app = new App([
   new DisponibilidadeRoute(),
   new ReservaRoute(),
   new ResponsavelRoute(),
-  new SalaRoute(),
   new StatusReservaRoute(),
   new StatusRoute(),
   new CategoriaEmpresaRoute(),

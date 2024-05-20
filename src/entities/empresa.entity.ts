@@ -8,7 +8,7 @@ import { UsuarioEntity } from './usuario.entity';
 export class EmpresaEntity extends BaseEntity implements Empresa {
   @PrimaryGeneratedColumn({ name: 'EMP_ID' })
   id: number;
-  @Column({ name: 'EMP_LOGOURL', nullable: true, type: 'longtext' })
+  @Column({ name: 'EMP_LOGOURL', nullable: true, type: 'text' })
   logo: string;
   @Column({ name: 'EMP_NOME', nullable: true })
   nome: string;

@@ -31,7 +31,7 @@ export class PessoaEntity extends BaseEntity implements Pessoa {
   @Column({ name: 'PES_DATANASCIMENTO', nullable: true })
   dataNascimento: string;
 
-  @Column({ name: 'PES_FOTO', nullable: true, type: 'longtext' })
+  @Column({ name: 'PES_FOTO', nullable: true, type: 'text' })
   foto: string;
 
   @Column({ name: 'PES_USUINCLUI', nullable: true })

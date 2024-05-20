@@ -46,6 +46,7 @@ class App {
   }
 
   private connectToDatabase() {
+    console.log(dbConnection);
     createConnection(dbConnection)
       .then(() => logger.info('📦 Connected to database'))
       .catch(error => logger.error(error))

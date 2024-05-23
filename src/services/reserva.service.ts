@@ -412,7 +412,7 @@ class ReservaService extends Repository<ReservaEntity> {
   }
 
   private mapRawToEntity() {
-    return `
+    const query = `
     R."RES_ID" as "id",
     R."RES_DATA" as "date",
     R."RES_HRINICIO" as "horaInicio",
@@ -422,6 +422,9 @@ class ReservaService extends Repository<ReservaEntity> {
     R."RES_SAL_ID" as "salaId",
     R."RES_USU_ID" as "usuarioId"
     `;
+
+    console.log('mapRawToEntity query', query);
+    return query;
   }
 
   private mapRawToUserEntity() {

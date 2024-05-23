@@ -96,56 +96,56 @@ class EmpresaService extends Repository<EmpresaEntity> {
 
   private mapRawToEntity() {
     return `
-    e."EMP_ID" as id,
-    e."EMP_LOGOURL" as logo,
-    e."EMP_NOME" as nome,
-    e."EMP_TELEFONE" as telefone,
-    e."EMP_CPFCNPJ" as cpfCnpj,
-    e."EMP_MUNICIPIO" as municipio,
-    e."EMP_ESTADO" as estado,
-    e."EMP_PAIS" as pais,
-    e."EMP_ENDERECO" as endereco,
-    e."EMP_NUMEROENDERECO" as numeroEndereco,
-    e."EMP_CEP" as cep,
-    e."EMP_CATEMP_ID" as categoriaId,
-    e."EMP_USERINCLUI" as userCreated,
-    e."EMP_DTAINCLUI" as dateCreated,
-    e."EMP_USERALTERA" as userUpdated,
-    e."EMP_DTAALTERA" as dateUpdated
+    e."EMP_ID" as "id",
+    e."EMP_LOGOURL" as "logo",
+    e."EMP_NOME" as "nome",
+    e."EMP_TELEFONE" as "telefone",
+    e."EMP_CPFCNPJ" as "cpfCnpj",
+    e."EMP_MUNICIPIO" as "municipio",
+    e."EMP_ESTADO" as "estado",
+    e."EMP_PAIS" as "pais",
+    e."EMP_ENDERECO" as "endereco",
+    e."EMP_NUMEROENDERECO" as "numeroEndereco",
+    e."EMP_CEP" as "cep",
+    e."EMP_CATEMP_ID" as "categoriaId",
+    e."EMP_USERINCLUI" as "userCreated",
+    e."EMP_DTAINCLUI" as "dateCreated",
+    e."EMP_USERALTERA" as "userUpdated",
+    e."EMP_DTAALTERA" as "dateUpdated"
     `;
   }
   private getOneRawNameOfEntityName(entity: string) {
-    return entity === 'id'
+    return entity === '"id"'
       ? `e."EMP_ID"`
-      : entity === 'logo'
+      : entity === '"logo"'
       ? `e."EMP_LOGOURL"`
-      : entity === 'nome'
+      : entity === '"nome"'
       ? `e."EMP_NOME"`
-      : entity === 'telefone'
+      : entity === '"telefone"'
       ? `e."EMP_TELEFONE"`
-      : entity === 'cpfCnpj'
+      : entity === '"cpfCnpj"'
       ? `e."EMP_CPFCNPJ"`
-      : entity === 'municipio'
+      : entity === '"municipio"'
       ? `e."EMP_MUNICIPIO"`
-      : entity === 'estado'
+      : entity === '"estado"'
       ? `e."EMP_ESTADO"`
-      : entity === 'pais'
+      : entity === '"pais"'
       ? `e."EMP_PAIS"`
-      : entity === 'endereco'
+      : entity === '"endereco"'
       ? `e."EMP_ENDERECO"`
-      : entity === 'numeroEndereco'
+      : entity === '"numeroEndereco"'
       ? `e."EMP_NUMEROENDERECO"`
-      : entity === 'cep'
+      : entity === '"cep"'
       ? `e."EMP_CEP"`
-      : entity === 'categoriaId'
+      : entity === '"categoriaId"'
       ? `e."EMP_CATEMP_ID"`
-      : entity === 'userCreated'
+      : entity === '"userCreated"'
       ? `e."EMP_USERINCLUI"`
-      : entity === 'dateCreated'
+      : entity === '"dateCreated"'
       ? `e."EMP_DTAINCLUI"`
-      : entity === 'userUpdated'
+      : entity === '"userUpdated"'
       ? `e."EMP_USERALTERA"`
-      : entity === 'dateUpdated'
+      : entity === '"dateUpdated"'
       ? `e."EMP_DTAALTERA"`
       : '';
   }

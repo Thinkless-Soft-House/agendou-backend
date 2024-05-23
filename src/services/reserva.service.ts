@@ -413,73 +413,73 @@ class ReservaService extends Repository<ReservaEntity> {
 
   private mapRawToEntity() {
     return `
-    R."RES_ID" as id,
-    R."RES_DATA" as date,
-    R."RES_HRINICIO" as horaInicio,
-    R."RES_HRFIM" as horaFim,
-    R."RES_OBSERVACAO" as observacao,
-    R."RES_DIASEMANAINDEX" as diaSemanaIndex,
-    R."RES_SAL_ID" as salaId,
-    R."RES_USU_ID" as usuarioId
+    R."RES_ID" as "id",
+    R."RES_DATA" as "date",
+    R."RES_HRINICIO" as "horaInicio",
+    R."RES_HRFIM" as "horaFim",
+    R."RES_OBSERVACAO" as "observacao",
+    R."RES_DIASEMANAINDEX" as "diaSemanaIndex",
+    R."RES_SAL_ID" as "salaId",
+    R."RES_USU_ID" as "usuarioId"
     `;
   }
 
   private mapRawToUserEntity() {
     return `
-    U."USU_ID" as usu_id,
-    U."USU_LOGIN" as usu_login,
-    U."USU_SENHA" as usu_senha,
-    U."USU_STATUS" as usu_status,
-    U."USU_RESETCODE" as usu_resetPasswordCode,
-    U."USU_PUSHTOKEN" as usu_pushToken,
-    U."USU_USERINCLUI" as usu_userCreated,
-    U."USU_DTAINCLUI" as usu_dateCreated,
-    U."USU_USERALTERA" as usu_userUpdated,
-    U."USU_DTAALTERA" as usu_dateUpdated,
-    U."USU_PER_ID" as usu_permissaoId,
-    U."USU_EMP_ID" as usu_empresaId,
-    U."USU_PES_ID" as usu_pessoaId
+    U."USU_ID" as "usu_id",
+    U."USU_LOGIN" as "usu_login",
+    U."USU_SENHA" as "usu_senha",
+    U."USU_STATUS" as "usu_status",
+    U."USU_RESETCODE" as "usu_resetPasswordCode",
+    U."USU_PUSHTOKEN" as "usu_pushToken",
+    U."USU_USERINCLUI" as "usu_userCreated",
+    U."USU_DTAINCLUI" as "usu_dateCreated",
+    U."USU_USERALTERA" as "usu_userUpdated",
+    U."USU_DTAALTERA" as "usu_dateUpdated",
+    U."USU_PER_ID" as "usu_permissaoId",
+    U."USU_EMP_ID" as "usu_empresaId",
+    U."USU_PES_ID" as "usu_pessoaId"
     `;
   }
   private mapRawToPersonEntity() {
     return `
-    P."PES_ID" as pes_id,
-    P."PES_NAME" as pes_nome,
-    P."PES_CPFCNPJ" as pes_cpfCnpj,
-    P."PES_FUNCAO" as pes_funcao,
-    P."PES_MUNICIPIO" as pes_municipio,
-    P."PES_ESTADO" as pes_estado,
-    P."PES_PAIS" as pes_pais,
-    P."PES_ENDERECO" as pes_endereco,
-    P."PES_NUMERO" as pes_numero,
-    P."PES_TELEFONE" as pes_telefone,
-    P."PES_CEP" as pes_cep,
-    P."PES_DATANASCIMENTO" as pes_dataNascimento,
-    P."PES_FOTO" as pes_foto,
-    P."PES_USUINCLUI" as pes_userCreated,
-    P."PES_DTAINCLUI" as pes_dateCreated,
-    P."PES_USUALTERA" as pes_userUpdated,
-    P."PES_DTAALTERA" as pes_dateUpdated
+    P."PES_ID" as "pes_id",
+    P."PES_NAME" as "pes_nome",
+    P."PES_CPFCNPJ" as "pes_cpfCnpj",
+    P."PES_FUNCAO" as "pes_funcao",
+    P."PES_MUNICIPIO" as "pes_municipio",
+    P."PES_ESTADO" as "pes_estado",
+    P."PES_PAIS" as "pes_pais",
+    P."PES_ENDERECO" as "pes_endereco",
+    P."PES_NUMERO" as "pes_numero",
+    P."PES_TELEFONE" as "pes_telefone",
+    P."PES_CEP" as "pes_cep",
+    P."PES_DATANASCIMENTO" as "pes_dataNascimento",
+    P."PES_FOTO" as "pes_foto",
+    P."PES_USUINCLUI" as "pes_userCreated",
+    P."PES_DTAINCLUI" as "pes_dateCreated",
+    P."PES_USUALTERA" as "pes_userUpdated",
+    P."PES_DTAALTERA" as "pes_dateUpdated"
     `;
   }
   private mapRawToCompanyEntity() {
     return `
-    E."EMP_ID" as emp_id,
-    E."EMP_LOGOURL" as emp_logo,
-    E."EMP_NOME" as emp_nome,
-    E."EMP_TELEFONE" as emp_telefone,
-    E."EMP_CPFCNPJ" as emp_cpfCnpj,
-    E."EMP_MUNICIPIO" as emp_municipio,
-    E."EMP_ESTADO" as emp_estado,
-    E."EMP_PAIS" as emp_pais,
-    E."EMP_ENDERECO" as emp_endereco,
-    E."EMP_NUMEROENDERECO" as emp_numeroEndereco,
-    E."EMP_CEP" as emp_cep,
-    E."EMP_CATEMP_ID" as emp_categoriaId,
-    E."EMP_USERINCLUI" as emp_userCreated,
-    E."EMP_DTAINCLUI" as emp_dateCreated,
-    E."EMP_USERALTERA" as emp_userUpdated,
-    E."EMP_DTAALTERA" as emp_dateUpdated
+    E."EMP_ID" as "emp_id",
+    E."EMP_LOGOURL" as "emp_logo",
+    E."EMP_NOME" as "emp_nome",
+    E."EMP_TELEFONE" as "emp_telefone",
+    E."EMP_CPFCNPJ" as "emp_cpfCnpj",
+    E."EMP_MUNICIPIO" as "emp_municipio",
+    E."EMP_ESTADO" as "emp_estado",
+    E."EMP_PAIS" as "emp_pais",
+    E."EMP_ENDERECO" as "emp_endereco",
+    E."EMP_NUMEROENDERECO" as "emp_numeroEndereco",
+    E."EMP_CEP" as "emp_cep",
+    E."EMP_CATEMP_ID" as "emp_categoriaId",
+    E."EMP_USERINCLUI" as "emp_userCreated",
+    E."EMP_DTAINCLUI" as "emp_dateCreated",
+    E."EMP_USERALTERA" as "emp_userUpdated",
+    E."EMP_DTAALTERA" as "emp_dateUpdated"
     `;
   }
 

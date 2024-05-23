@@ -41,56 +41,56 @@ jobs:
           target: development-build-stage
           push: true
           tags: ${{ secrets.DOCKERHUB_IMAGENAME }}:stage
-  deploy-on-gcp:
-    needs: build-and-push-image # Certifique-se de que o deploy só acontece após o build
-    if: github.ref == 'refs/heads/master'
-    permissions:
-      contents: 'read'
-      id-token: 'write'
+  # deploy-on-gcp:
+  #   needs: build-and-push-image # Certifique-se de que o deploy só acontece após o build
+  #   if: github.ref == 'refs/heads/master'
+  #   permissions:
+  #     contents: 'read'
+  #     id-token: 'write'
 
-    runs-on: ubuntu-latest
-    steps:
-      - uses: 'actions/checkout@v4'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: 'actions/checkout@v4'
 
-      - id: 'auth'
-        name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v2'
-        with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-      - id: 'hello-world'
-        name: 'Test connection'
-        uses: 'google-github-actions/ssh-compute@v1'
-        with:
-          instance_name: ${{ secrets.INSTANCE_NAME }}
-          zone: ${{ secrets.ZONE }}
-          ssh_private_key: '${{ secrets.GCP_SSH_PRIVATE_KEY }}'
-          command: 'echo Hello world'
-      - id: 'ssh-compute-refresh-docker-container'
-        name: Atualizar Docker Container
-        uses: google-github-actions/ssh-compute@v1
-        with:
-          instance_name: ${{ secrets.INSTANCE_NAME }}
-          zone: ${{ secrets.ZONE }}
-          ssh_private_key: '${{ secrets.GCP_SSH_PRIVATE_KEY }}'
-          command: |
-            docker pull ${{ secrets.DOCKERHUB_IMAGENAME }}:latest
-            docker stop ${{ secrets.CONTAINER_NAME }} || true
-            docker rm ${{ secrets.CONTAINER_NAME }} || true
-            docker run -d \
-            --name ${{ secrets.CONTAINER_NAME }} \
-            -p 3000:3000 \
-            -v $(pwd)/app-data:/usr/src/app \
-            -e PORT=${{ secrets.PORT }} \
-            -e DB_HOST=${{ secrets.DB_HOST }} \
-            -e DB_PORT=${{ secrets.DB_PORT }} \
-            -e DB_USER=${{ secrets.DB_USER }} \
-            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            -e DB_DATABASE=${{ secrets.DB_DATABASE }} \
-            -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
-            -e LOG_FORMAT=${{ secrets.LOG_FORMAT }} \
-            -e LOG_DIR=${{ secrets.LOG_DIR }} \
-            -e ORIGIN=${{ secrets.ORIGIN }} \
-            -e CREDENTIALS=${{ secrets.CREDENTIALS }} \
-            -e KEY=${{ secrets.KEY }} \
-            ${{ secrets.DOCKERHUB_IMAGENAME }}
+  #     - id: 'auth'
+  #       name: 'Authenticate to Google Cloud'
+  #       uses: 'google-github-actions/auth@v2'
+  #       with:
+  #         workload_identity_provider: ${{ secrets.WORKLOAD_PROVIDER }}
+  #         service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+  #     - id: 'hello-world'
+  #       name: 'Test connection'
+  #       uses: 'google-github-actions/ssh-compute@v1'
+  #       with:
+  #         instance_name: ${{ secrets.INSTANCE_NAME }}
+  #         zone: ${{ secrets.ZONE }}
+  #         ssh_private_key: '${{ secrets.GCP_SSH_PRIVATE_KEY }}'
+  #         command: 'echo Hello world'
+  #     - id: 'ssh-compute-refresh-docker-container'
+  #       name: Atualizar Docker Container
+  #       uses: google-github-actions/ssh-compute@v1
+  #       with:
+  #         instance_name: ${{ secrets.INSTANCE_NAME }}
+  #         zone: ${{ secrets.ZONE }}
+  #         ssh_private_key: '${{ secrets.GCP_SSH_PRIVATE_KEY }}'
+  #         command: |
+  #           docker pull ${{ secrets.DOCKERHUB_IMAGENAME }}:latest
+  #           docker stop ${{ secrets.CONTAINER_NAME }} || true
+  #           docker rm ${{ secrets.CONTAINER_NAME }} || true
+  #           docker run -d \
+  #           --name ${{ secrets.CONTAINER_NAME }} \
+  #           -p 3000:3000 \
+  #           -v $(pwd)/app-data:/usr/src/app \
+  #           -e PORT=${{ secrets.PORT }} \
+  #           -e DB_HOST=${{ secrets.DB_HOST }} \
+  #           -e DB_PORT=${{ secrets.DB_PORT }} \
+  #           -e DB_USER=${{ secrets.DB_USER }} \
+  #           -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+  #           -e DB_DATABASE=${{ secrets.DB_DATABASE }} \
+  #           -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
+  #           -e LOG_FORMAT=${{ secrets.LOG_FORMAT }} \
+  #           -e LOG_DIR=${{ secrets.LOG_DIR }} \
+  #           -e ORIGIN=${{ secrets.ORIGIN }} \
+  #           -e CREDENTIALS=${{ secrets.CREDENTIALS }} \
+  #           -e KEY=${{ secrets.KEY }} \
+  #           ${{ secrets.DOCKERHUB_IMAGENAME }}

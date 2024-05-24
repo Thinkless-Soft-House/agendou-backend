@@ -7,7 +7,7 @@ import { ReservaCreateDTO, ReservaUpdateDTO } from '@/dtos/reserva.dto';
 import DisponibilidadeService from './disponibilidade.service';
 import { PaginationConfig } from '@/interfaces/utils.interface';
 
-import { set, format, addHours } from 'date-fns';
+import { set, format, addHours, parse, parseISO } from 'date-fns';
 import StatusReservaService from './status-reserva.service';
 import { StatusEnum } from '@/interfaces/status.interface';
 import ResponsavelService from './responsavel.service';
@@ -148,7 +148,12 @@ class ReservaService extends Repository<ReservaEntity> {
           ? `where (P."PES_NAME" LIKE '%${texto}%' OR U."USU_LOGIN" LIKE '%${texto}%' OR E."EMP_NOME" LIKE '%${texto}%')`
           : ` AND (P."PES_NAME" LIKE '%${texto}%' OR U."USU_LOGIN" LIKE '%${texto}%' OR E."EMP_NOME" LIKE '%${texto}%')`;
     if (date !== null) {
-      const formatDate = format(addHours(new Date(date), 3), 'yyyy-MM-dd');
+      console.log('data', date);
+      const parsed = parse(date, 'dd/MM/yyyy', new Date());
+      console.log('date parsed', parsed);
+      const newDate = addHours(parsed, 3);
+      const formatDate = format(newDate, 'yyyy-MM-dd');
+      console.log('formatDate', formatDate);
       where +=
         where === '' ? `where to_char(R."RES_DATA", 'YYYY-MM-DD') = '${formatDate}'` : ` AND to_char(R."RES_DATA", 'YYYY-MM-DD') = '${formatDate}'`;
     }
@@ -174,7 +179,7 @@ class ReservaService extends Repository<ReservaEntity> {
       INNER JOIN "EMPRESA" AS E on S."SAL_EMP_ID" = E."EMP_ID"
       INNER JOIN "STATUS_RESERVA" AS SR on SR."STARES_RES_ID" = R."RES_ID"
       ${where}
-      order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)} ${paginationConfig.order}
+      order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn) || 'R."RES_ID"'} ${paginationConfig.order}
     limit ${paginationConfig.take} offset ${paginationConfig.skip}`;
 
     const rawData: any[] = await ReservaEntity.query(query);
@@ -234,12 +239,21 @@ class ReservaService extends Repository<ReservaEntity> {
           ? `where (P."PES_NAME" LIKE '%${texto}%' OR U."USU_LOGIN" LIKE '%${texto}%' OR E."EMP_NOME" LIKE '%${texto}%')`
           : ` AND (P."PES_NAME" LIKE '%${texto}%' OR U."USU_LOGIN" LIKE '%${texto}%' OR E."EMP_NOME" LIKE '%${texto}%')`;
     if (dataInicio !== null && dataFim !== null) {
-      const formatDataInicio = format(addHours(new Date(dataInicio), 3), 'yyyy-MM-dd 00:00:00');
-      const formatDataFim = format(addHours(new Date(dataFim), 3), 'yyyy-MM-dd 23:59:59');
+      const parsedInicio = parse(dataInicio, 'dd/MM/yyyy', new Date());
+      console.log('date parsed', parsedInicio);
+      const newDateInicio = addHours(parsedInicio, 3);
+      const formatDateInicio = format(newDateInicio, 'yyyy-MM-dd');
+      console.log('formatDate', formatDateInicio);
+
+      const parsedFim = parse(dataFim, 'dd/MM/yyyy', new Date());
+      console.log('date parsed', parsedFim);
+      const newDateFim = addHours(parsedFim, 3);
+      const formatDateFim = format(newDateFim, 'yyyy-MM-dd');
+      console.log('formatDate', formatDateFim);
       where +=
         where === ''
-          ? `where R."RES_DATA" BETWEEN '${formatDataInicio}' AND '${formatDataFim}'`
-          : ` AND R."RES_DATA" BETWEEN '${formatDataInicio}' AND '${formatDataFim}'`;
+          ? `where R."RES_DATA" BETWEEN '${formatDateInicio}' AND '${formatDateFim}'`
+          : ` AND R."RES_DATA" BETWEEN '${formatDateInicio}' AND '${formatDateFim}'`;
     }
 
     const query = `
@@ -263,7 +277,7 @@ class ReservaService extends Repository<ReservaEntity> {
       INNER JOIN "EMPRESA" AS E on S."SAL_EMP_ID" = E."EMP_ID"
       INNER JOIN "STATUS_RESERVA" AS SR on SR."STARES_RES_ID" = R."RES_ID"
       ${where}
-      order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)} ${paginationConfig.order}
+      order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn) || 'R."RES_ID"'} ${paginationConfig.order}
     limit ${paginationConfig.take} offset ${paginationConfig.skip}`;
 
     const rawData: any[] = await ReservaEntity.query(query);
@@ -503,7 +517,7 @@ class ReservaService extends Repository<ReservaEntity> {
       ? 'R."RES_SAL_ID"'
       : entity === 'usuarioId'
       ? 'R."RES_USU_ID"'
-      : '';
+      : 'R."RES_ID"';
   }
 
   private mapRawDataToNestedObject(rawData: any[]): any {

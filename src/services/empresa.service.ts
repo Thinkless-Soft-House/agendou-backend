@@ -48,7 +48,7 @@ class EmpresaService extends Repository<EmpresaEntity> {
     ${haveRooms ? 'inner' : 'left'} join "SALA" as s ON e."EMP_ID" = s."SAL_EMP_ID"
       ${where}
       group by e."EMP_ID", e."EMP_LOGOURL", e."EMP_NOME", e."EMP_TELEFONE", e."EMP_CPFCNPJ", e."EMP_MUNICIPIO", e."EMP_ESTADO", e."EMP_PAIS", e."EMP_ENDERECO", e."EMP_NUMEROENDERECO", e."EMP_CEP", e."EMP_CATEMP_ID", e."EMP_USERINCLUI", e."EMP_DTAINCLUI", e."EMP_USERALTERA", e."EMP_DTAALTERA", ce."CATEMP_DESCRICAO"
-      order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn)} ${paginationConfig.order}
+      order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn) || `e."EMP_ID"`} ${paginationConfig.order}
     limit ${paginationConfig.take} offset ${paginationConfig.skip}`;
     console.log('query', query);
     const results = await EmpresaEntity.query(query);
@@ -147,7 +147,7 @@ class EmpresaService extends Repository<EmpresaEntity> {
       ? `e."EMP_USERALTERA"`
       : entity === '"dateUpdated"'
       ? `e."EMP_DTAALTERA"`
-      : '';
+      : `e."EMP_ID"`;
   }
 }
 

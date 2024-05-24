@@ -69,7 +69,6 @@ jobs:
             docker run -d \
               --name ${{ secrets.CONTAINER_NAME }} \
               -p 3000:3000 \
-              -v $(pwd)/app-data:/usr/src/app \
               -e PORT=${{ secrets.PORT }} \
               -e DB_HOST=${{ secrets.DB_HOST }} \
               -e DB_PORT=${{ secrets.DB_PORT }} \

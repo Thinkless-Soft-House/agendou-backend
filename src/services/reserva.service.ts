@@ -324,6 +324,7 @@ class ReservaService extends Repository<ReservaEntity> {
       order: 'ASC',
     };
 
+    const dateToFilter = format(new Date(parseDate(bookingData.date, '-')), 'dd/MM/yyyy');
     // Testar se horario está vazio
     const { data } = await this.findBookingByFilter(
       paginationConfig,
@@ -334,7 +335,7 @@ class ReservaService extends Repository<ReservaEntity> {
       bookingData.diaSemanaIndex,
       null,
       null,
-      parseDate(bookingData.date, '-'),
+      dateToFilter,
       null,
     );
     for (let index = 0; index < data.length; index++) {
@@ -351,8 +352,9 @@ class ReservaService extends Repository<ReservaEntity> {
     console.log('Sem duplicidade!');
 
     const date = addHours(new Date(parseDate(bookingData.date, '-')), 6);
-    console.log('date parsed', date);
-    const createBookingData: Reserva = await ReservaEntity.create({ ...bookingData, date: date }).save();
+    const newBookingData = { ...bookingData, date: date };
+    console.log('Iniciando criação da reserva...', newBookingData);
+    const createBookingData: Reserva = await ReservaEntity.create(newBookingData).save();
     console.log('Nova reserva criada!');
 
     // Criar novo status = Aguardando
@@ -378,7 +380,7 @@ class ReservaService extends Repository<ReservaEntity> {
         hour: bookingCreated.horaInicio + ' - ' + bookingCreated.horaFim,
       };
       console.log('clientTemplateData', clientTemplateData);
-      await sendBookingClientEmail(bookingCreated.usuario.login, clientTemplateData);
+      // await sendBookingClientEmail(bookingCreated.usuario.login, clientTemplateData);
 
       const companyTemplateData: {
         client: string;

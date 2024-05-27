@@ -7,6 +7,7 @@ import { generateReportTemplate } from './templates/generate-report';
 const AWS_SES_URL = process.env.URL_LAMBDA;
 
 export const sendForgotPasswordEmail = async (email: string, code: number) => {
+  return;
   const templateWithCode = codeVerificationTemplate.replace('{{CODE}}', code.toString());
   const url = AWS_SES_URL + '/sendSingleEmail';
   console.log('url ses', url);
@@ -43,6 +44,7 @@ export const sendForgotPasswordEmail = async (email: string, code: number) => {
   }
 };
 export const sendGenerateReportEmail = async (email: string, path: string) => {
+  return;
   const templateWithCode = generateReportTemplate.replace('{{URL}}', path);
   const url = AWS_SES_URL + '/sendSingleEmail';
   console.log('url ses', url);
@@ -87,6 +89,7 @@ export const sendBookingClientEmail = async (
     hour: string;
   },
 ) => {
+  return;
   const templateWithCode = bookingClientTemplate
     .replace('{{EMPRESA}}', data.company)
     .replace('{{EMPRESA}}', data.company)
@@ -138,6 +141,7 @@ export const sendBookingCompanyEmail = async (
     hour: string;
   },
 ) => {
+  return;
   const templateWithCode = bookingCompanyTemplate
     .replace('{{CLIENTE}}', data.client.toString())
     .replace('{{CLIENTE}}', data.client.toString())

@@ -7,7 +7,7 @@ import { ReservaCreateDTO, ReservaUpdateDTO } from '@/dtos/reserva.dto';
 import DisponibilidadeService from './disponibilidade.service';
 import { PaginationConfig } from '@/interfaces/utils.interface';
 
-import { set, format, addHours, parse, parseISO } from 'date-fns';
+import { set, format, addHours, parse, parseISO, isValid } from 'date-fns';
 import StatusReservaService from './status-reserva.service';
 import { StatusEnum } from '@/interfaces/status.interface';
 import ResponsavelService from './responsavel.service';
@@ -148,14 +148,18 @@ class ReservaService extends Repository<ReservaEntity> {
           ? `where (P."PES_NAME" LIKE '%${texto}%' OR U."USU_LOGIN" LIKE '%${texto}%' OR E."EMP_NOME" LIKE '%${texto}%')`
           : ` AND (P."PES_NAME" LIKE '%${texto}%' OR U."USU_LOGIN" LIKE '%${texto}%' OR E."EMP_NOME" LIKE '%${texto}%')`;
     if (date !== null) {
-      console.log('data', date);
-      const parsed = parse(date, 'dd/MM/yyyy', new Date());
-      console.log('date parsed', parsed);
-      const newDate = addHours(parsed, 3);
-      const formatDate = format(newDate, 'yyyy-MM-dd');
-      console.log('formatDate', formatDate);
-      where +=
-        where === '' ? `where to_char(R."RES_DATA", 'YYYY-MM-DD') = '${formatDate}'` : ` AND to_char(R."RES_DATA", 'YYYY-MM-DD') = '${formatDate}'`;
+      let parsedDate = parse(date, 'dd/MM/yyyy', new Date());
+      if (!isValid(parsedDate)) {
+        parsedDate = parse(date, 'yyyy-MM-dd', new Date());
+      }
+      const parsed = isValid(parsedDate) ? parsedDate : null;
+
+      if (parsed) {
+        const newDate = addHours(parsed, 3);
+        const formatDate = format(newDate, 'yyyy-MM-dd');
+        where +=
+          where === '' ? `where to_char(R."RES_DATA", 'YYYY-MM-DD') = '${formatDate}'` : ` AND to_char(R."RES_DATA", 'YYYY-MM-DD') = '${formatDate}'`;
+      }
     }
 
     const query = `

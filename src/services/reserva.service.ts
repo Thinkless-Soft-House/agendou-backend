@@ -57,7 +57,7 @@ class ReservaService extends Repository<ReservaEntity> {
       ${this.mapRawToUserEntity()},
       ${this.mapRawToPersonEntity()},
       ${this.mapRawToCompanyEntity()},
-      S."SAL_NOME" as salaNome
+      S."SAL_NOME" as "salaNome"
       FROM "RESERVA" AS R
       INNER JOIN "SALA" AS S on S."SAL_ID" = R."RES_SAL_ID"
       INNER JOIN "USUARIO" AS U on U."USU_ID" = R."RES_USU_ID"
@@ -175,7 +175,7 @@ class ReservaService extends Repository<ReservaEntity> {
       ${this.mapRawToUserEntity()},
       ${this.mapRawToPersonEntity()},
       ${this.mapRawToCompanyEntity()},
-      S."SAL_NOME" as salaNome
+      S."SAL_NOME" as "salaNome"
       FROM "RESERVA" AS R
       INNER JOIN "SALA" AS S on S."SAL_ID" = R."RES_SAL_ID"
       INNER JOIN "USUARIO" AS U on U."USU_ID" = R."RES_USU_ID"
@@ -273,7 +273,7 @@ class ReservaService extends Repository<ReservaEntity> {
       ${this.mapRawToUserEntity()},
       ${this.mapRawToPersonEntity()},
       ${this.mapRawToCompanyEntity()},
-      S."SAL_NOME" as salaNome
+      S."SAL_NOME" as "salaNome"
       FROM "RESERVA" AS R
       INNER JOIN "SALA" AS S on S."SAL_ID" = R."RES_SAL_ID"
       INNER JOIN "USUARIO" AS U on U."USU_ID" = R."RES_USU_ID"
@@ -384,7 +384,7 @@ class ReservaService extends Repository<ReservaEntity> {
         hour: bookingCreated.horaInicio + ' - ' + bookingCreated.horaFim,
       };
       console.log('clientTemplateData', clientTemplateData);
-      // await sendBookingClientEmail(bookingCreated.usuario.login, clientTemplateData);
+      await sendBookingClientEmail(bookingCreated.usuario.login, clientTemplateData);
 
       const companyTemplateData: {
         client: string;

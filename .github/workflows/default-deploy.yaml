@@ -81,5 +81,6 @@ jobs:
               -e ORIGIN=${{ secrets.ORIGIN }} \
               -e CREDENTIALS=${{ secrets.CREDENTIALS }} \
               -e KEY=${{ secrets.KEY }} \
+              -e URL_LAMBDA=${{ secrets.URL_LAMBDA }} \
               ${{ secrets.DOCKERHUB_IMAGENAME }}:latest
 

@@ -6,17 +6,46 @@ import { codeVerificationTemplate } from './templates/code-verification';
 import { generateReportTemplate } from './templates/generate-report';
 const AWS_SES_URL = process.env.URL_LAMBDA;
 
+export interface EmailTemplateData {
+  [key: string]: string;
+}
+
+export enum EmailTemplateType {
+  // Auto provided
+  REQUEST_TEMPLATE = 'request-template',
+  DYNAMIC = 'dynamic',
+}
+
+export interface EmailFrom {
+  name: string;
+  prefix: string;
+}
+
+export interface EmailData {
+  fromName?: EmailFrom;
+  destination: string;
+  subject: string;
+
+  templateType: string;
+  template?: string;
+  templateData?: EmailTemplateData;
+}
+
 export const sendForgotPasswordEmail = async (email: string, code: number) => {
-  return;
   const templateWithCode = codeVerificationTemplate.replace('{{CODE}}', code.toString());
-  const url = AWS_SES_URL + '/sendSingleEmail';
+  const url = AWS_SES_URL + '/email/send';
   console.log('url ses', url);
   try {
     const { data } = await axios.post(url, {
       destination: email,
+      templateType: EmailTemplateType.REQUEST_TEMPLATE,
       template: templateWithCode,
       subject: 'Recuperação de senha - Collegato',
-    });
+      fromName: {
+        name: 'Collegato',
+        prefix: 'noreply',
+      },
+    } as EmailData);
 
     return data;
   } catch (error) {
@@ -44,16 +73,20 @@ export const sendForgotPasswordEmail = async (email: string, code: number) => {
   }
 };
 export const sendGenerateReportEmail = async (email: string, path: string) => {
-  return;
   const templateWithCode = generateReportTemplate.replace('{{URL}}', path);
-  const url = AWS_SES_URL + '/sendSingleEmail';
+  const url = AWS_SES_URL + '/email/send';
   console.log('url ses', url);
   try {
     const { data } = await axios.post(url, {
       destination: email,
+      templateType: EmailTemplateType.REQUEST_TEMPLATE,
       template: templateWithCode,
-      subject: 'Relatório gerado - Collegato',
-    });
+      subject: 'Relatório de uso - Collegato',
+      fromName: {
+        name: 'Collegato',
+        prefix: 'noreply',
+      },
+    } as EmailData);
 
     return data;
   } catch (error) {
@@ -89,21 +122,25 @@ export const sendBookingClientEmail = async (
     hour: string;
   },
 ) => {
-  return;
   const templateWithCode = bookingClientTemplate
     .replace('{{EMPRESA}}', data.company)
     .replace('{{EMPRESA}}', data.company)
     .replace('{{SALA}}', data.room)
     .replace('{{DIA}}', data.date)
     .replace('{{HORARIO}}', data.hour);
-  const url = AWS_SES_URL + '/sendSingleEmail';
+  const url = AWS_SES_URL + '/email/send';
   console.log('url ses', url);
   try {
     const { data } = await axios.post(url, {
       destination: email,
+      templateType: EmailTemplateType.REQUEST_TEMPLATE,
       template: templateWithCode,
       subject: 'Confirmação de reserva - Collegato',
-    });
+      fromName: {
+        name: 'Collegato',
+        prefix: 'noreply',
+      },
+    } as EmailData);
 
     return data;
   } catch (error) {
@@ -141,7 +178,6 @@ export const sendBookingCompanyEmail = async (
     hour: string;
   },
 ) => {
-  return;
   const templateWithCode = bookingCompanyTemplate
     .replace('{{CLIENTE}}', data.client.toString())
     .replace('{{CLIENTE}}', data.client.toString())
@@ -149,14 +185,19 @@ export const sendBookingCompanyEmail = async (
     .replace('{{SALA}}', data.room.toString())
     .replace('{{DIA}}', data.date.toString())
     .replace('{{HORARIO}}', data.hour.toString());
-  const url = AWS_SES_URL + '/sendSingleEmail';
+  const url = AWS_SES_URL + '/email/send';
   console.log('url ses', url);
   try {
     const { data } = await axios.post(url, {
       destination: email,
+      templateType: EmailTemplateType.REQUEST_TEMPLATE,
       template: templateWithCode,
-      subject: 'Confirmação de reserva - Collegato',
-    });
+      subject: 'Nova reserva - Collegato',
+      fromName: {
+        name: 'Collegato',
+        prefix: 'noreply',
+      },
+    } as EmailData);
 
     return data;
   } catch (error) {

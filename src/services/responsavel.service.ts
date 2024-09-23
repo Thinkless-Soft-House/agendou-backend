@@ -12,39 +12,40 @@ class ResponsavelService extends Repository<ResponsavelEntity> {
     return responsibles;
   }
 
-  public async findAllResponsibleByRommWithUsers(roomId: number): Promise<Responsavel[]> {
+  public async findAllResponsibleByRoomWithUsers(roomId: number): Promise<Responsavel[]> {
     const responsibles: Responsavel[] = await ResponsavelEntity.find({ where: { salaId: roomId }, relations: ['usuario'] });
     return responsibles;
   }
 
   public async findResponsibleById(responsibleId: number): Promise<Responsavel> {
-    if (isEmpty(responsibleId)) throw new HttpException(400, 'ResponsibleId está vazio');
+    if (isEmpty(responsibleId)) throw new HttpException(400, 'O ID do responsável está vazio');
 
     const findResponsible: Responsavel = await ResponsavelEntity.findOne({ where: { id: responsibleId } });
-    if (!findResponsible) throw new HttpException(409, 'Usuario não existe');
+    if (!findResponsible) throw new HttpException(409, 'Responsável não encontrado');
 
     return findResponsible;
   }
 
   public async createResponsible(responsibleData: ResponsavelCreateDTO): Promise<Responsavel> {
-    if (isEmpty(responsibleData)) throw new HttpException(400, 'responsibleData is empty');
+    if (isEmpty(responsibleData)) throw new HttpException(400, 'Os dados do responsável estão vazios');
 
     const createResponsibleData: Responsavel = await ResponsavelEntity.create({ ...responsibleData }).save();
 
     return createResponsibleData;
   }
+
   public async createManyResponsible(responsibleData: ResponsavelCreateDTO[]): Promise<Responsavel[]> {
-    if (isEmpty(responsibleData)) throw new HttpException(400, 'responsibleData is empty');
+    if (isEmpty(responsibleData)) throw new HttpException(400, 'Os dados do responsável estão vazios');
 
     const promises = responsibleData.map(async data => await ResponsavelEntity.create({ ...data }).save());
     return Promise.all(promises);
   }
 
   public async updateResponsible(responsibleId: number, responsibleData: ResponsavelUpdateDTO): Promise<Responsavel> {
-    if (isEmpty(responsibleData)) throw new HttpException(400, 'Usuário Data está vazio');
+    if (isEmpty(responsibleData)) throw new HttpException(400, 'Os dados do responsável estão vazios');
 
     const findResponsible: Responsavel = await ResponsavelEntity.findOne({ where: { id: responsibleId } });
-    if (!findResponsible) throw new HttpException(409, 'Responsável não existe');
+    if (!findResponsible) throw new HttpException(409, 'Responsável não encontrado');
 
     await ResponsavelEntity.update(responsibleId, { ...responsibleData });
 
@@ -53,13 +54,13 @@ class ResponsavelService extends Repository<ResponsavelEntity> {
   }
 
   public async updateManyResponsible(responsibleDatas: ResponsavelUpdateDTO[]): Promise<Responsavel[]> {
-    if (isEmpty(responsibleDatas)) throw new HttpException(400, 'Usuário Data está vazio');
+    if (isEmpty(responsibleDatas)) throw new HttpException(400, 'Os dados dos responsáveis estão vazios');
 
     const list = [];
     for (const responsibleData of responsibleDatas) {
       const responsibleId = responsibleData.id;
       const findResponsible: Responsavel = await ResponsavelEntity.findOne({ where: { id: responsibleId } });
-      if (!findResponsible) throw new HttpException(409, 'Responsável não existe');
+      if (!findResponsible) throw new HttpException(409, 'Responsável não encontrado');
 
       await ResponsavelEntity.update(responsibleId, { ...responsibleData });
 
@@ -71,10 +72,10 @@ class ResponsavelService extends Repository<ResponsavelEntity> {
   }
 
   public async deleteResponsible(responsibleId: number): Promise<Responsavel> {
-    if (isEmpty(responsibleId)) throw new HttpException(400, 'ResponsibleId está vazio');
+    if (isEmpty(responsibleId)) throw new HttpException(400, 'O ID do responsável está vazio');
 
     const findResponsible: Responsavel = await ResponsavelEntity.findOne({ where: { id: responsibleId } });
-    if (!findResponsible) throw new HttpException(409, 'Responsável não existe');
+    if (!findResponsible) throw new HttpException(409, 'Responsável não encontrado');
 
     await ResponsavelEntity.delete({ id: responsibleId });
     return findResponsible;

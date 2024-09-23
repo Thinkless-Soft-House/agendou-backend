@@ -20,10 +20,10 @@ class SalaService extends Repository<SalaEntity> {
   }
 
   public async findRoomById(roomId: number): Promise<Sala> {
-    if (isEmpty(roomId)) throw new HttpException(400, 'RoomId está vazio');
+    if (isEmpty(roomId)) throw new HttpException(400, 'O ID da sala está vazio');
 
     const findRoom: Sala = await SalaEntity.findOne({ where: { id: roomId }, relations: ['empresa'] });
-    if (!findRoom) throw new HttpException(409, 'Sala não existe');
+    if (!findRoom) throw new HttpException(409, 'Sala não encontrada');
 
     return findRoom;
   }
@@ -35,7 +35,7 @@ class SalaService extends Repository<SalaEntity> {
     data: Sala[];
     total: number;
   }> {
-    if (isEmpty(companyId)) throw new HttpException(400, 'RoomId está vazio');
+    if (isEmpty(companyId)) throw new HttpException(400, 'O ID da empresa está vazio');
     const order = {};
     order[paginationConfig.orderColumn] = paginationConfig.order;
 
@@ -81,7 +81,7 @@ class SalaService extends Repository<SalaEntity> {
   }
 
   public async createRoom(roomData: SalaCreateDTO): Promise<Sala> {
-    if (isEmpty(roomData)) throw new HttpException(400, 'roomData is empty');
+    if (isEmpty(roomData)) throw new HttpException(400, 'Os dados da sala estão vazios');
 
     const createRoomData: Sala = await SalaEntity.create({ ...roomData }).save();
 
@@ -89,10 +89,10 @@ class SalaService extends Repository<SalaEntity> {
   }
 
   public async updateRoom(roomId: number, roomData: SalaUpdateDTO): Promise<Sala> {
-    if (isEmpty(roomData)) throw new HttpException(400, 'Usuário Data está vazio');
+    if (isEmpty(roomData)) throw new HttpException(400, 'Os dados da sala estão vazios');
 
     const findRoom: Sala = await SalaEntity.findOne({ where: { id: roomId } });
-    if (!findRoom) throw new HttpException(409, 'Sala não existe');
+    if (!findRoom) throw new HttpException(409, 'Sala não encontrada');
 
     await SalaEntity.update(roomId, { ...roomData });
 
@@ -101,14 +101,14 @@ class SalaService extends Repository<SalaEntity> {
   }
 
   public async deleteRoom(roomId: number): Promise<Sala> {
-    if (isEmpty(roomId)) throw new HttpException(400, 'RoomId está vazio');
+    if (isEmpty(roomId)) throw new HttpException(400, 'O ID da sala está vazio');
 
     const findRoom: Sala = await SalaEntity.findOne({ where: { id: roomId } });
-    if (!findRoom) throw new HttpException(409, 'Sala não existe');
+    if (!findRoom) throw new HttpException(409, 'Sala não encontrada');
 
     // Iniciar a transação
     const manager = getManager();
-    manager.transaction(async transactionManager => {
+    await manager.transaction(async transactionManager => {
       // Deletar Disponibilidade
       await transactionManager.delete(DisponibilidadeEntity, { salaId: roomId });
       // Deletar Responsável
@@ -116,7 +116,7 @@ class SalaService extends Repository<SalaEntity> {
       // Deletar Reserva
       await transactionManager.delete(ReservaEntity, { salaId: roomId });
 
-      // Deletar Sala'
+      // Deletar Sala
       await transactionManager.delete(SalaEntity, roomId);
     });
 

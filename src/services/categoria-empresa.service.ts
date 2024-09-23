@@ -13,16 +13,16 @@ class CategoriaEmpresaService extends Repository<CategoriaEmpresaEntity> {
   }
 
   public async findCategoriaEmpresaById(categoriaEmpresaId: number): Promise<CategoriaEmpresa> {
-    if (isEmpty(categoriaEmpresaId)) throw new HttpException(400, 'CategoriaEmpresaId está vazio');
+    if (isEmpty(categoriaEmpresaId)) throw new HttpException(400, 'O ID da categoria da empresa está vazio');
 
     const findCategoriaEmpresa: CategoriaEmpresa = await CategoriaEmpresaEntity.findOne({ where: { id: categoriaEmpresaId } });
-    if (!findCategoriaEmpresa) throw new HttpException(409, 'Usuario não existe');
+    if (!findCategoriaEmpresa) throw new HttpException(409, 'Categoria da empresa não encontrada');
 
     return findCategoriaEmpresa;
   }
 
   public async createCategoriaEmpresa(categoriaEmpresaData: CategoriaEmpresaCreateDTO): Promise<CategoriaEmpresa> {
-    if (isEmpty(categoriaEmpresaData)) throw new HttpException(400, 'categoriaEmpresaData is empty');
+    if (isEmpty(categoriaEmpresaData)) throw new HttpException(400, 'Os dados da categoria da empresa estão vazios');
 
     const createCategoriaEmpresaData: CategoriaEmpresa = await CategoriaEmpresaEntity.create({ ...categoriaEmpresaData }).save();
 
@@ -30,10 +30,10 @@ class CategoriaEmpresaService extends Repository<CategoriaEmpresaEntity> {
   }
 
   public async updateCategoriaEmpresa(categoriaEmpresaId: number, categoriaEmpresaData: CategoriaEmpresaUpdateDTO): Promise<CategoriaEmpresa> {
-    if (isEmpty(categoriaEmpresaData)) throw new HttpException(400, 'Usuário Data está vazio');
+    if (isEmpty(categoriaEmpresaData)) throw new HttpException(400, 'Os dados da categoria da empresa estão vazios');
 
     const findCategoriaEmpresa: CategoriaEmpresa = await CategoriaEmpresaEntity.findOne({ where: { id: categoriaEmpresaId } });
-    if (!findCategoriaEmpresa) throw new HttpException(409, 'CategoriaEmpresa não existe');
+    if (!findCategoriaEmpresa) throw new HttpException(409, 'Categoria da empresa não encontrada');
 
     await CategoriaEmpresaEntity.update(categoriaEmpresaId, { ...categoriaEmpresaData });
 
@@ -42,10 +42,10 @@ class CategoriaEmpresaService extends Repository<CategoriaEmpresaEntity> {
   }
 
   public async deleteCategoriaEmpresa(categoriaEmpresaId: number): Promise<CategoriaEmpresa> {
-    if (isEmpty(categoriaEmpresaId)) throw new HttpException(400, 'CategoriaEmpresaId está vazio');
+    if (isEmpty(categoriaEmpresaId)) throw new HttpException(400, 'O ID da categoria da empresa está vazio');
 
     const findCategoriaEmpresa: CategoriaEmpresa = await CategoriaEmpresaEntity.findOne({ where: { id: categoriaEmpresaId } });
-    if (!findCategoriaEmpresa) throw new HttpException(409, 'CategoriaEmpresa não existe');
+    if (!findCategoriaEmpresa) throw new HttpException(409, 'Categoria da empresa não encontrada');
 
     await CategoriaEmpresaEntity.delete({ id: categoriaEmpresaId });
     return findCategoriaEmpresa;

@@ -1,11 +1,10 @@
-import { EntityRepository, Like, Repository } from 'typeorm';
+import { EntityRepository, Repository } from 'typeorm';
 import { HttpException } from '@exceptions/HttpException';
 import { isEmpty } from '@utils/util';
 import { EmpresaEntity } from '@/entities/empresa.entity';
 import { Empresa } from '@/interfaces/empresa.interface';
 import { EmpresaCreateDTO, EmpresaUpdateDTO } from '@/dtos/empresa.dto';
 import { PaginationConfig } from '@/interfaces/utils.interface';
-import { isNull } from 'util';
 
 @EntityRepository()
 class EmpresaService extends Repository<EmpresaEntity> {
@@ -15,16 +14,16 @@ class EmpresaService extends Repository<EmpresaEntity> {
   }
 
   public async findCompanyById(companyId: number): Promise<Empresa> {
-    if (isEmpty(companyId)) throw new HttpException(400, 'CompanyId está vazio');
+    if (isEmpty(companyId)) throw new HttpException(400, 'O ID da empresa está vazio');
 
     const findCompany: Empresa = await EmpresaEntity.findOne({ where: { id: companyId } });
-    if (!findCompany) throw new HttpException(409, 'Empresa não existe');
+    if (!findCompany) throw new HttpException(409, 'Empresa não encontrada');
 
     return findCompany;
   }
 
   public async findCompanyByCategory(categoryId: number, paginationConfig: PaginationConfig) {
-    if (isEmpty(categoryId)) throw new HttpException(400, 'CompanyId está vazio');
+    if (isEmpty(categoryId)) throw new HttpException(400, 'O ID da categoria está vazio');
     const order = {};
     order[paginationConfig.orderColumn] = paginationConfig.order;
     const [results, total]: [Empresa[], number] = await EmpresaEntity.findAndCount({ where: { categoriaId: categoryId } });
@@ -36,7 +35,7 @@ class EmpresaService extends Repository<EmpresaEntity> {
   }
 
   public async findCompanyByFilter(paginationConfig: PaginationConfig, haveRooms: boolean, nameEmpresa: string, categoryId: number) {
-    console.log('here', paginationConfig);
+    console.log('aqui', paginationConfig);
     let where = '';
     if (nameEmpresa !== null) where += `where e."EMP_NOME" LIKE '%${nameEmpresa}%'`;
     if (categoryId !== null) where += where === '' ? `where e."EMP_CATEMP_ID" = ${categoryId}` : ` AND e."EMP_CATEMP_ID" = ${categoryId}`;
@@ -65,7 +64,7 @@ class EmpresaService extends Repository<EmpresaEntity> {
   }
 
   public async createCompany(companyData: EmpresaCreateDTO): Promise<Empresa> {
-    if (isEmpty(companyData)) throw new HttpException(400, 'companyData is empty');
+    if (isEmpty(companyData)) throw new HttpException(400, 'Os dados da empresa estão vazios');
 
     const createCompanyData: Empresa = await EmpresaEntity.create({ ...companyData }).save();
 
@@ -73,10 +72,10 @@ class EmpresaService extends Repository<EmpresaEntity> {
   }
 
   public async updateCompany(companyId: number, companyData: EmpresaUpdateDTO): Promise<Empresa> {
-    if (isEmpty(companyData)) throw new HttpException(400, 'Usuário Data está vazio');
+    if (isEmpty(companyData)) throw new HttpException(400, 'Os dados da empresa estão vazios');
 
     const findCompany: Empresa = await EmpresaEntity.findOne({ where: { id: companyId } });
-    if (!findCompany) throw new HttpException(409, 'Empresa não existe');
+    if (!findCompany) throw new HttpException(409, 'Empresa não encontrada');
 
     await EmpresaEntity.update(companyId, { ...companyData });
 
@@ -85,10 +84,10 @@ class EmpresaService extends Repository<EmpresaEntity> {
   }
 
   public async deleteCompany(companyId: number): Promise<Empresa> {
-    if (isEmpty(companyId)) throw new HttpException(400, 'CompanyId está vazio');
+    if (isEmpty(companyId)) throw new HttpException(400, 'O ID da empresa está vazio');
 
     const findCompany: Empresa = await EmpresaEntity.findOne({ where: { id: companyId } });
-    if (!findCompany) throw new HttpException(409, 'Empresa não existe');
+    if (!findCompany) throw new HttpException(409, 'Empresa não encontrada');
 
     await EmpresaEntity.delete({ id: companyId });
     return findCompany;
@@ -114,6 +113,7 @@ class EmpresaService extends Repository<EmpresaEntity> {
     e."EMP_DTAALTERA" as "dateUpdated"
     `;
   }
+
   private getOneRawNameOfEntityName(entity: string) {
     return entity === '"id"'
       ? `e."EMP_ID"`

@@ -13,16 +13,16 @@ class StatusService extends Repository<StatusEntity> {
   }
 
   public async findStatusById(statusId: number): Promise<Status> {
-    if (isEmpty(statusId)) throw new HttpException(400, 'StatusId está vazio');
+    if (isEmpty(statusId)) throw new HttpException(400, 'O ID do status está vazio');
 
     const findStatus: Status = await StatusEntity.findOne({ where: { id: statusId } });
-    if (!findStatus) throw new HttpException(409, 'Usuario não existe');
+    if (!findStatus) throw new HttpException(409, 'Status não encontrado');
 
     return findStatus;
   }
 
   public async createStatus(statusData: StatusCreateDTO): Promise<Status> {
-    if (isEmpty(statusData)) throw new HttpException(400, 'statusData is empty');
+    if (isEmpty(statusData)) throw new HttpException(400, 'Os dados do status estão vazios');
 
     const createStatusData: Status = await StatusEntity.create({ ...statusData }).save();
 
@@ -30,10 +30,10 @@ class StatusService extends Repository<StatusEntity> {
   }
 
   public async updateStatus(statusId: number, statusData: StatusUpdateDTO): Promise<Status> {
-    if (isEmpty(statusData)) throw new HttpException(400, 'Usuário Data está vazio');
+    if (isEmpty(statusData)) throw new HttpException(400, 'Os dados do status estão vazios');
 
     const findStatus: Status = await StatusEntity.findOne({ where: { id: statusId } });
-    if (!findStatus) throw new HttpException(409, 'Status não existe');
+    if (!findStatus) throw new HttpException(409, 'Status não encontrado');
 
     await StatusEntity.update(statusId, { ...statusData });
 
@@ -42,10 +42,10 @@ class StatusService extends Repository<StatusEntity> {
   }
 
   public async deleteStatus(statusId: number): Promise<Status> {
-    if (isEmpty(statusId)) throw new HttpException(400, 'StatusId está vazio');
+    if (isEmpty(statusId)) throw new HttpException(400, 'O ID do status está vazio');
 
     const findStatus: Status = await StatusEntity.findOne({ where: { id: statusId } });
-    if (!findStatus) throw new HttpException(409, 'Status não existe');
+    if (!findStatus) throw new HttpException(409, 'Status não encontrado');
 
     await StatusEntity.delete({ id: statusId });
     return findStatus;

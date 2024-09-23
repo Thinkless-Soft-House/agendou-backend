@@ -16,12 +16,14 @@ class UsuarioService extends Repository<UsuarioEntity> {
     const users: Usuario[] = await UsuarioEntity.find();
     return users;
   }
+
   public async findUserById(userId: number): Promise<Usuario> {
-    if (isEmpty(userId)) throw new HttpException(400, 'UserId está vazio');
+    if (isEmpty(userId)) throw new HttpException(400, 'O ID do usuário está vazio');
     const findUser: Usuario = await UsuarioEntity.findOne({ where: { id: userId } });
-    if (!findUser) throw new HttpException(409, 'Usuario não existe');
+    if (!findUser) throw new HttpException(409, 'Usuário não encontrado');
     return findUser;
   }
+
   public async findUserByCompany(
     companyId: number,
     paginationConfig: PaginationConfig,
@@ -29,7 +31,7 @@ class UsuarioService extends Repository<UsuarioEntity> {
     data: Usuario[];
     total: number;
   }> {
-    if (isEmpty(companyId)) throw new HttpException(400, 'CompanyId está vazio');
+    if (isEmpty(companyId)) throw new HttpException(400, 'O ID da empresa está vazio');
     const order = {};
     order[paginationConfig.orderColumn] = paginationConfig.order;
     const [results, total]: [Usuario[], number] = await UsuarioEntity.findAndCount({
@@ -43,6 +45,7 @@ class UsuarioService extends Repository<UsuarioEntity> {
       total,
     };
   }
+
   public async findUserByPermission(
     permissionId: number,
     paginationConfig: PaginationConfig,
@@ -50,7 +53,7 @@ class UsuarioService extends Repository<UsuarioEntity> {
     data: Usuario[];
     total: number;
   }> {
-    if (isEmpty(permissionId)) throw new HttpException(400, 'PermissionId está vazio');
+    if (isEmpty(permissionId)) throw new HttpException(400, 'O ID da permissão está vazio');
     const order = {};
     order[paginationConfig.orderColumn] = paginationConfig.order;
     const [results, total]: [Usuario[], number] = await UsuarioEntity.findAndCount({
@@ -64,8 +67,8 @@ class UsuarioService extends Repository<UsuarioEntity> {
       total,
     };
   }
+
   public async findUserByFilter(paginationConfig: PaginationConfig, nomeUsuario: string, email: string, empresaId: number, permissaoId: number) {
-    // if (isEmpty(categoryId)) throw new HttpException(400, 'CompanyId está vazio');
     const order = {};
     order[paginationConfig.orderColumn] = paginationConfig.order;
     const where = {};
@@ -73,7 +76,7 @@ class UsuarioService extends Repository<UsuarioEntity> {
     if (email !== null) where['login'] = Like('%' + email + '%');
     if (empresaId !== null) where['empresaId'] = empresaId;
     if (permissaoId !== null) where['permissaoId'] = permissaoId;
-    console.log('my where', where);
+
     const [results, total]: [Usuario[], number] = await UsuarioEntity.findAndCount({
       where,
       take: paginationConfig.take,
@@ -85,59 +88,55 @@ class UsuarioService extends Repository<UsuarioEntity> {
       total,
     };
   }
+
   public async createUser(userData: UsuarioCreateDTO): Promise<Usuario> {
-    if (isEmpty(userData)) throw new HttpException(400, 'userData is empty');
+    if (isEmpty(userData)) throw new HttpException(400, 'Os dados do usuário estão vazios');
     const findUser: Usuario = await UsuarioEntity.findOne({ where: { login: userData.login } });
     if (findUser) throw new HttpException(409, `O Login ${userData.login} já existe`);
-    // const hashedPassword = await hash(userData.senha, 10);
-    // const hashedPassword = userData.senha;
+
     const hashedPassword = setPassword(userData.senha);
-    console.log('user', userData);
     const createUserData: Usuario = await UsuarioEntity.create({ ...userData, senha: hashedPassword }).save();
     return createUserData;
   }
+
   public async updatePushNotificationToken(userId: number, token: string): Promise<Usuario> {
-    if (isEmpty(userId)) throw new HttpException(400, 'Usuário Data está vazio');
+    if (isEmpty(userId)) throw new HttpException(400, 'O ID do usuário está vazio');
     const findUser: Usuario = await UsuarioEntity.findOne({ where: { id: userId } });
-    if (!findUser) throw new HttpException(409, 'Usuário não existe');
+    if (!findUser) throw new HttpException(409, 'Usuário não encontrado');
+
     await UsuarioEntity.update(userId, { ...findUser, pushToken: token });
     const updateUser: Usuario = await UsuarioEntity.findOne({ where: { id: userId } });
     return updateUser;
   }
+
   public async updateUser(userId: number, userData: UsuarioUpdateDTO): Promise<Usuario> {
-    if (isEmpty(userData)) throw new HttpException(400, 'Usuário Data está vazio');
+    if (isEmpty(userData)) throw new HttpException(400, 'Os dados do usuário estão vazios');
     const findUser: Usuario = await UsuarioEntity.findOne({ where: { id: userId } });
-    if (!findUser) throw new HttpException(409, 'Usuário não existe');
+    if (!findUser) throw new HttpException(409, 'Usuário não encontrado');
+
     await UsuarioEntity.update(userId, { ...userData, empresaId: userData.empresaId === 0 ? null : userData.empresaId });
     const updateUser: Usuario = await UsuarioEntity.findOne({ where: { id: userId } });
     return updateUser;
   }
+
   public async deleteUser(userId: number): Promise<Usuario> {
-    try {
-      if (isEmpty(userId)) throw new HttpException(400, 'UserId está vazio');
-      const findUser: Usuario = await UsuarioEntity.findOne({ where: { id: userId } });
-      if (!findUser) throw new HttpException(409, 'Usuário não existe');
+    if (isEmpty(userId)) throw new HttpException(400, 'O ID do usuário está vazio');
+    const findUser: Usuario = await UsuarioEntity.findOne({ where: { id: userId } });
+    if (!findUser) throw new HttpException(409, 'Usuário não encontrado');
 
-      const manager = getManager();
-      manager.transaction(async transactionManager => {
-        // Deletar Pessoa
-        await transactionManager.delete(PessoaEntity, { id: findUser.pessoaId });
+    const manager = getManager();
+    await manager.transaction(async transactionManager => {
+      // Deletar Pessoa
+      await transactionManager.delete(PessoaEntity, { id: findUser.pessoaId });
+      // Deletar Responsável
+      await transactionManager.delete(ResponsavelEntity, { usuarioId: userId });
+      // Deletar Reservas
+      await transactionManager.delete(ReservaEntity, { usuarioId: userId });
+      // Deletar Usuário
+      await transactionManager.delete(UsuarioEntity, userId);
+    });
 
-        // Deletar Responsável
-        await transactionManager.delete(ResponsavelEntity, { usuarioId: userId });
-
-        // Deletar Reservas
-        await transactionManager.delete(ReservaEntity, { usuarioId: userId });
-
-        // Deletar Usuario'
-        await transactionManager.delete(UsuarioEntity, userId);
-      });
-
-      // await UsuarioEntity.delete({ id: userId });
-      return findUser;
-    } catch (error: any) {
-      throw new HttpException(500, error.message);
-    }
+    return findUser;
   }
 }
 

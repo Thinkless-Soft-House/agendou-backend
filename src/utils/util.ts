@@ -42,11 +42,48 @@ export const checkHour = (rangeA: { start: string; end: string }, rangeB: { star
   const startB = parse(rangeB.start, 'HH:mm', new Date());
   const endB = parse(rangeB.end, 'HH:mm', new Date());
 
+  // Verificar se a hora de término do rangeB é maior que a hora de início
   if (endB <= startB) {
-    return false;
+    return { valid: false, message: 'A hora de término da reserva (' + rangeB.end + ') deve ser maior que a hora de início (' + rangeB.start + ').' };
   }
 
-  return isWithinInterval(startB, { start: startA, end: endA }) && isWithinInterval(endB, { start: startA, end: endA });
+  // Verificar se as horas de início e término de rangeB estão dentro do intervalo de rangeA
+  const startInRange = isWithinInterval(startB, { start: startA, end: endA });
+  const endInRange = isWithinInterval(endB, { start: startA, end: endA });
+
+  if (!startInRange && !endInRange) {
+    return {
+      valid: false,
+      message:
+        'O horário da reserva (' +
+        rangeB.start +
+        ' a ' +
+        rangeB.end +
+        ') não está dentro do intervalo permitido (' +
+        rangeA.start +
+        ' a ' +
+        rangeA.end +
+        ').',
+    };
+  }
+
+  if (!startInRange) {
+    return {
+      valid: false,
+      message:
+        'A hora de início da reserva (' + rangeB.start + ') não está dentro do intervalo permitido (' + rangeA.start + ' a ' + rangeA.end + ').',
+    };
+  }
+
+  if (!endInRange) {
+    return {
+      valid: false,
+      message:
+        'A hora de término da reserva (' + rangeB.end + ') não está dentro do intervalo permitido (' + rangeA.start + ' a ' + rangeA.end + ').',
+    };
+  }
+
+  return { valid: true, message: '' };
 };
 
 export const checkDiffInterval = (rangeA: { start: string; end: string }, rangeB: { start: string; end: string }) => {
@@ -55,27 +92,14 @@ export const checkDiffInterval = (rangeA: { start: string; end: string }, rangeB
   const startB = parse(rangeB.start, 'HH:mm', new Date());
   const endB = parse(rangeB.end, 'HH:mm', new Date());
 
-  // Checar se o startA é diferente que o startB
-  if (compareAsc(startA, startB) !== 0) {
-    // Checar se o startA é menor que o startB
-    if (compareAsc(startA, startB) === -1) {
-      // Checar se o endA é menor ou igual ao startB e maior que o startA
-      if ((compareAsc(endA, startB) === -1 || compareAsc(endA, startB) === 0) && compareAsc(endA, startA) === 1) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      // Checar se o endB é menor ou igual ao startA
-      if (compareAsc(endB, startA) === -1 || compareAsc(endB, startA) === 0) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  } else {
-    return false;
+  if (compareAsc(endA, startB) > 0 && compareAsc(startA, endB) < 0) {
+    return {
+      valid: false,
+      message: `Conflito de horários: a reserva de ${rangeB.start} a ${rangeB.end} colide com uma reserva existente de ${rangeA.start} a ${rangeA.end}.`,
+    };
   }
+
+  return { valid: true, message: '' };
 };
 
 export const createPaginationConfig = (req: Request) => {

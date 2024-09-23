@@ -6,8 +6,7 @@ import { Reserva } from '@/interfaces/reserva.interface';
 import { ReservaCreateDTO, ReservaUpdateDTO } from '@/dtos/reserva.dto';
 import DisponibilidadeService from './disponibilidade.service';
 import { PaginationConfig } from '@/interfaces/utils.interface';
-
-import { set, format, addHours, parse, parseISO, isValid } from 'date-fns';
+import { set, format, addHours, parse, isValid } from 'date-fns';
 import StatusReservaService from './status-reserva.service';
 import { StatusEnum } from '@/interfaces/status.interface';
 import ResponsavelService from './responsavel.service';
@@ -32,7 +31,8 @@ class ReservaService extends Repository<ReservaEntity> {
   }
 
   public async findBookingById(bookingId: number): Promise<Reserva> {
-    if (isEmpty(bookingId)) throw new HttpException(400, 'BookingId está vazio');
+    if (isEmpty(bookingId)) throw new HttpException(400, 'O ID da reserva está vazio');
+
     const query = `
     SELECT
       ${this.mapRawToEntity()},
@@ -71,16 +71,13 @@ class ReservaService extends Repository<ReservaEntity> {
     const result: Reserva[] = this.mapRawDataToNestedObject(rawData);
     const booking = result[0];
 
-    if (!booking) throw new HttpException(409, 'Usuario não existe');
+    if (!booking) throw new HttpException(409, 'Reserva não encontrada');
 
     return booking;
   }
 
   public async findBookingByRoomAndDate(roomId: number, month: number, year: number): Promise<Reserva[]> {
-    if (isEmpty(roomId)) throw new HttpException(400, 'CompanyId está vazio');
-
-    console.log('month', month);
-    console.log('year', year);
+    if (isEmpty(roomId)) throw new HttpException(400, 'O ID da sala está vazio');
 
     const startDate = set(new Date(), {
       year,
@@ -93,16 +90,12 @@ class ReservaService extends Repository<ReservaEntity> {
 
     const endDate = set(new Date(), {
       year,
-      month: month,
+      month,
       date: 1,
       hours: 0,
       minutes: 0,
       milliseconds: 1,
     });
-
-    console.log('room', roomId);
-    console.log('startDate', startDate);
-    console.log('endDate', endDate);
 
     const results: Reserva[] = await ReservaEntity.find({
       where: { salaId: roomId, date: Between(startDate, endDate) },
@@ -129,24 +122,14 @@ class ReservaService extends Repository<ReservaEntity> {
         SR2."STARES_RES_ID" = R."RES_ID"
     ) = SR."STARES_STA_DATE"`;
 
-    if (status !== null && status.length > 0)
-      where +=
-        where === ''
-          ? `where SR."STARES_STA_ID" IN (${status.map(e => +e).join(', ')})
-            `
-          : ` AND SR."STARES_STA_ID" IN (${status.map(e => +e).join(', ')})
-          `;
-    if (empresaId !== null) where += where === '' ? `where S."SAL_EMP_ID" = ${empresaId}` : ` AND S."SAL_EMP_ID" = ${empresaId}`;
-    if (usuarioId !== null) where += where === '' ? `where R."RES_USU_ID" = ${usuarioId}` : ` AND R."RES_USU_ID" = ${usuarioId}`;
-    if (salaId !== null) where += where === '' ? `where R."RES_SAL_ID" = ${salaId}` : ` AND R."RES_SAL_ID" = ${salaId}`;
-    if (dia !== null) where += where === '' ? `where R."RES_DIASEMANAINDEX" = ${dia}` : ` AND R."RES_DIASEMANAINDEX" = ${dia}`;
-    if (hInicio !== null) where += where === '' ? `where R."RES_HRINICIO" = '${hInicio}'` : ` AND R."RES_HRINICIO" = '${hInicio}'`;
-    if (hFim !== null) where += where === '' ? `where R."RES_HRFIM" = '${hFim}'` : ` AND R."RES_HRFIM" = '${hFim}'`;
-    if (texto !== null)
-      where +=
-        where === ''
-          ? `where (P."PES_NAME" LIKE '%${texto}%' OR U."USU_LOGIN" LIKE '%${texto}%' OR E."EMP_NOME" LIKE '%${texto}%')`
-          : ` AND (P."PES_NAME" LIKE '%${texto}%' OR U."USU_LOGIN" LIKE '%${texto}%' OR E."EMP_NOME" LIKE '%${texto}%')`;
+    if (status !== null && status.length > 0) where += ` AND SR."STARES_STA_ID" IN (${status.map(e => +e).join(', ')})`;
+    if (empresaId !== null) where += ` AND S."SAL_EMP_ID" = ${empresaId}`;
+    if (usuarioId !== null) where += ` AND R."RES_USU_ID" = ${usuarioId}`;
+    if (salaId !== null) where += ` AND R."RES_SAL_ID" = ${salaId}`;
+    if (dia !== null) where += ` AND R."RES_DIASEMANAINDEX" = ${dia}`;
+    if (hInicio !== null) where += ` AND R."RES_HRINICIO" = '${hInicio}'`;
+    if (hFim !== null) where += ` AND R."RES_HRFIM" = '${hFim}'`;
+    if (texto !== null) where += ` AND (P."PES_NAME" LIKE '%${texto}%' OR U."USU_LOGIN" LIKE '%${texto}%' OR E."EMP_NOME" LIKE '%${texto}%')`;
     if (date !== null) {
       let parsedDate = parse(date, 'dd/MM/yyyy', new Date());
       if (!isValid(parsedDate)) {
@@ -157,8 +140,7 @@ class ReservaService extends Repository<ReservaEntity> {
       if (parsed) {
         const newDate = addHours(parsed, 3);
         const formatDate = format(newDate, 'yyyy-MM-dd');
-        where +=
-          where === '' ? `where to_char(R."RES_DATA", 'YYYY-MM-DD') = '${formatDate}'` : ` AND to_char(R."RES_DATA", 'YYYY-MM-DD') = '${formatDate}'`;
+        where += ` AND to_char(R."RES_DATA", 'YYYY-MM-DD') = '${formatDate}'`;
       }
     }
 
@@ -188,114 +170,13 @@ class ReservaService extends Repository<ReservaEntity> {
 
     const rawData: any[] = await ReservaEntity.query(query);
     const results = this.mapRawDataToNestedObject(rawData);
-    const total = await ReservaEntity.query(`SELECT
-    count(R."RES_ID") as total
-      FROM "RESERVA" AS R
+    const total = await ReservaEntity.query(`SELECT count(R."RES_ID") as total FROM "RESERVA" AS R
       INNER JOIN "SALA" AS S on S."SAL_ID" = R."RES_SAL_ID"
       INNER JOIN "USUARIO" AS U on U."USU_ID" = R."RES_USU_ID"
       INNER JOIN "PESSOA" AS P on U."USU_PES_ID" = P."PES_ID"
       INNER JOIN "EMPRESA" AS E on S."SAL_EMP_ID" = E."EMP_ID"
       INNER JOIN "STATUS_RESERVA" AS SR on SR."STARES_RES_ID" = R."RES_ID"
-    ${where}
-      `);
-
-    return {
-      data: results,
-      total: +total[0].total,
-    };
-  }
-
-  public async findBookingByFilterBetweenDates(
-    paginationConfig: PaginationConfig,
-    usuarioId: number,
-    empresaId: number,
-    status: string[],
-    salaId: number,
-    dia: number,
-    hInicio: string,
-    hFim: string,
-    dataInicio: string,
-    dataFim: string,
-    texto: string,
-  ): Promise<{ data: Reserva[]; total: number }> {
-    let where = `where (
-      select MAX(SR2."STARES_STA_DATE") from "STATUS_RESERVA" as SR2
-      where
-        SR2."STARES_RES_ID" = R."RES_ID"
-    ) = SR."STARES_STA_DATE"`;
-
-    if (status !== null && status.length > 0)
-      where +=
-        where === ''
-          ? `where SR."STARES_STA_ID" IN (${status.map(e => +e).join(', ')})
-            `
-          : ` AND SR."STARES_STA_ID" IN (${status.map(e => +e).join(', ')})
-          `;
-    if (empresaId !== null) where += where === '' ? `where S."SAL_EMP_ID" = ${empresaId}` : ` AND S."SAL_EMP_ID" = ${empresaId}`;
-    if (usuarioId !== null) where += where === '' ? `where R."RES_USU_ID" = ${usuarioId}` : ` AND R."RES_USU_ID" = ${usuarioId}`;
-    if (salaId !== null) where += where === '' ? `where R."RES_SAL_ID" = ${salaId}` : ` AND R."RES_SAL_ID" = ${salaId}`;
-    if (dia !== null) where += where === '' ? `where R."RES_DIASEMANAINDEX" = ${dia}` : ` AND R."RES_DIASEMANAINDEX" = ${dia}`;
-    if (hInicio !== null) where += where === '' ? `where R."RES_HRINICIO" = '${hInicio}'` : ` AND R."RES_HRINICIO" = '${hInicio}'`;
-    if (hFim !== null) where += where === '' ? `where R."RES_HRFIM" = '${hFim}'` : ` AND R."RES_HRFIM" = '${hFim}'`;
-    if (texto !== null)
-      where +=
-        where === ''
-          ? `where (P."PES_NAME" LIKE '%${texto}%' OR U."USU_LOGIN" LIKE '%${texto}%' OR E."EMP_NOME" LIKE '%${texto}%')`
-          : ` AND (P."PES_NAME" LIKE '%${texto}%' OR U."USU_LOGIN" LIKE '%${texto}%' OR E."EMP_NOME" LIKE '%${texto}%')`;
-    if (dataInicio !== null && dataFim !== null) {
-      const parsedInicio = parse(dataInicio, 'dd/MM/yyyy', new Date());
-      console.log('date parsed', parsedInicio);
-      const newDateInicio = addHours(parsedInicio, 3);
-      const formatDateInicio = format(newDateInicio, 'yyyy-MM-dd');
-      console.log('formatDate', formatDateInicio);
-
-      const parsedFim = parse(dataFim, 'dd/MM/yyyy', new Date());
-      console.log('date parsed', parsedFim);
-      const newDateFim = addHours(parsedFim, 3);
-      const formatDateFim = format(newDateFim, 'yyyy-MM-dd');
-      console.log('formatDate', formatDateFim);
-      where +=
-        where === ''
-          ? `where R."RES_DATA" BETWEEN '${formatDateInicio}' AND '${formatDateFim}'`
-          : ` AND R."RES_DATA" BETWEEN '${formatDateInicio}' AND '${formatDateFim}'`;
-    }
-
-    const query = `
-    SELECT
-      ${this.mapRawToEntity()},
-      SR."STARES_STA_ID" as statusId,
-      S."SAL_EMP_ID" as empresaId,
-      (
-        select S2."STA_TIPO" from "STATUS" as S2
-          where
-            S2."STA_ID" = SR."STARES_STA_ID"
-      ) as status,
-      ${this.mapRawToUserEntity()},
-      ${this.mapRawToPersonEntity()},
-      ${this.mapRawToCompanyEntity()},
-      S."SAL_NOME" as "salaNome"
-      FROM "RESERVA" AS R
-      INNER JOIN "SALA" AS S on S."SAL_ID" = R."RES_SAL_ID"
-      INNER JOIN "USUARIO" AS U on U."USU_ID" = R."RES_USU_ID"
-      INNER JOIN "PESSOA" AS P on U."USU_PES_ID" = P."PES_ID"
-      INNER JOIN "EMPRESA" AS E on S."SAL_EMP_ID" = E."EMP_ID"
-      INNER JOIN "STATUS_RESERVA" AS SR on SR."STARES_RES_ID" = R."RES_ID"
-      ${where}
-      order by ${this.getOneRawNameOfEntityName(paginationConfig.orderColumn) || 'R."RES_ID"'} ${paginationConfig.order}
-    limit ${paginationConfig.take} offset ${paginationConfig.skip}`;
-
-    const rawData: any[] = await ReservaEntity.query(query);
-    const results = this.mapRawDataToNestedObject(rawData);
-    const total = await ReservaEntity.query(`SELECT
-    count(R."RES_ID") as total
-      FROM "RESERVA" AS R
-      INNER JOIN "SALA" AS S on S."SAL_ID" = R."RES_SAL_ID"
-      INNER JOIN "USUARIO" AS U on U."USU_ID" = R."RES_USU_ID"
-      INNER_JOIN "PESSOA" AS P on U."USU_PES_ID" = P."PES_ID"
-      INNER JOIN "EMPRESA" AS E on S."SAL_EMP_ID" = E."EMP_ID"
-      INNER JOIN "STATUS_RESERVA" AS SR on SR."STARES_RES_ID" = R."RES_ID"
-    ${where}
-      `);
+      ${where}`);
 
     return {
       data: results,
@@ -304,22 +185,18 @@ class ReservaService extends Repository<ReservaEntity> {
   }
 
   public async createBooking(bookingData: ReservaCreateDTO): Promise<Reserva> {
-    if (isEmpty(bookingData)) throw new HttpException(400, 'bookingData is empty');
+    if (isEmpty(bookingData)) throw new HttpException(400, 'Os dados da reserva estão vazios');
 
     // Check Disponibilidade dia
     const availabilityDay = await this.disponibilidadeService.findAvailabilityByDay(bookingData.diaSemanaIndex);
     if (isEmpty(availabilityDay)) throw new HttpException(400, 'Disponibilidade não encontrada');
 
-    console.log('Disponibilidade encontrada!');
-
-    // Se existe, checar horario
-    const hourValidate = checkHour(
+    const hourValidation = checkHour(
       { start: availabilityDay.hrAbertura, end: availabilityDay.hrFim },
       { start: bookingData.horaInicio, end: bookingData.horaFim },
     );
-    // Se fora do horario, erro 404
-    if (!hourValidate) throw new HttpException(409, 'Horario da reserva não compatível com a do dia escolhido');
-    console.log('Hora valida!');
+
+    if (!hourValidation.valid) throw new HttpException(409, hourValidation.message);
 
     const paginationConfig: PaginationConfig = {
       take: 1000,
@@ -329,7 +206,7 @@ class ReservaService extends Repository<ReservaEntity> {
     };
 
     const dateToFilter = format(new Date(parseDate(bookingData.date, '-')), 'dd/MM/yyyy');
-    // Testar se horario está vazio
+    // Testar se horário está vazio
     const { data } = await this.findBookingByFilter(
       paginationConfig,
       null,
@@ -342,35 +219,24 @@ class ReservaService extends Repository<ReservaEntity> {
       dateToFilter,
       null,
     );
-    for (let index = 0; index < data.length; index++) {
-      const element = data[index];
-
-      const isValidInterval = checkDiffInterval(
+    for (const element of data) {
+      const intervalValidation = checkDiffInterval(
         { start: element.horaInicio, end: element.horaFim },
         { start: bookingData.horaInicio, end: bookingData.horaFim },
       );
-      // Se não, erro 500 com mensagem
-      if (!isValidInterval) throw new HttpException(400, 'Duplicidade de reservas');
+      if (!intervalValidation.valid) throw new HttpException(400, intervalValidation.message);
     }
-
-    console.log('Sem duplicidade!');
-
     const date = addHours(new Date(parseDate(bookingData.date, '-')), 6);
     const newBookingData = { ...bookingData, date: date };
-    console.log('Iniciando criação da reserva...', newBookingData);
     const createBookingData: Reserva = await ReservaEntity.create(newBookingData).save();
-    console.log('Nova reserva criada!');
 
     // Criar novo status = Aguardando
     await this.statusReservaService.createBookingStatus({
       reservaId: createBookingData.id,
       statusId: StatusEnum.Aguardando,
     });
-    console.log('Status = Aguardando criado!');
 
     const bookingCreated: any = await this.findBookingById(createBookingData.id);
-
-    console.log('bookingCreated', bookingCreated);
     if (bookingCreated) {
       const clientTemplateData: {
         company: string;
@@ -383,7 +249,6 @@ class ReservaService extends Repository<ReservaEntity> {
         date: format(new Date(bookingCreated.date), 'dd/MM/y'),
         hour: bookingCreated.horaInicio + ' - ' + bookingCreated.horaFim,
       };
-      console.log('clientTemplateData', clientTemplateData);
       await sendBookingClientEmail(bookingCreated.usuario.login, clientTemplateData);
 
       const companyTemplateData: {
@@ -399,9 +264,8 @@ class ReservaService extends Repository<ReservaEntity> {
         date: format(new Date(bookingCreated.date), 'dd/MM/y'),
         hour: bookingCreated.horaInicio + ' - ' + bookingCreated.horaFim,
       };
-      console.log('companyTemplateData', companyTemplateData);
 
-      const resps = await this.responsavelService.findAllResponsibleByRommWithUsers(bookingData.salaId);
+      const resps = await this.responsavelService.findAllResponsibleByRoomWithUsers(bookingData.salaId);
       const dests = resps.map(el => el.usuario.login);
       await sendBookingCompanyEmail(dests[0], companyTemplateData);
     }
@@ -410,10 +274,10 @@ class ReservaService extends Repository<ReservaEntity> {
   }
 
   public async updateBooking(bookingId: number, bookingData: ReservaUpdateDTO): Promise<Reserva> {
-    if (isEmpty(bookingData)) throw new HttpException(400, 'Usuário Data está vazio');
+    if (isEmpty(bookingData)) throw new HttpException(400, 'Os dados da reserva estão vazios');
 
     const findBooking: Reserva = await ReservaEntity.findOne({ where: { id: bookingId } });
-    if (!findBooking) throw new HttpException(409, 'Reserva não existe');
+    if (!findBooking) throw new HttpException(409, 'Reserva não encontrada');
 
     await ReservaEntity.update(bookingId, { ...bookingData });
 
@@ -422,17 +286,17 @@ class ReservaService extends Repository<ReservaEntity> {
   }
 
   public async deleteBooking(bookingId: number): Promise<Reserva> {
-    if (isEmpty(bookingId)) throw new HttpException(400, 'BookingId está vazio');
+    if (isEmpty(bookingId)) throw new HttpException(400, 'O ID da reserva está vazio');
 
     const findBooking: Reserva = await ReservaEntity.findOne({ where: { id: bookingId } });
-    if (!findBooking) throw new HttpException(409, 'Reserva não existe');
+    if (!findBooking) throw new HttpException(409, 'Reserva não encontrada');
 
     await ReservaEntity.delete({ id: bookingId });
     return findBooking;
   }
 
   private mapRawToEntity() {
-    const query = `
+    return `
     R."RES_ID" as "id",
     R."RES_DATA" as "date",
     R."RES_HRINICIO" as "horaInicio",
@@ -442,9 +306,6 @@ class ReservaService extends Repository<ReservaEntity> {
     R."RES_SAL_ID" as "salaId",
     R."RES_USU_ID" as "usuarioId"
     `;
-
-    console.log('mapRawToEntity query', query);
-    return query;
   }
 
   private mapRawToUserEntity() {
@@ -464,6 +325,7 @@ class ReservaService extends Repository<ReservaEntity> {
     U."USU_PES_ID" as "usu_pessoaId"
     `;
   }
+
   private mapRawToPersonEntity() {
     return `
     P."PES_ID" as "pes_id",
@@ -485,6 +347,7 @@ class ReservaService extends Repository<ReservaEntity> {
     P."PES_DTAALTERA" as "pes_dateUpdated"
     `;
   }
+
   private mapRawToCompanyEntity() {
     return `
     E."EMP_ID" as "emp_id",

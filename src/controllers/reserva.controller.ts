@@ -164,6 +164,7 @@ class ReservaController {
 
       // empresaId = 2;
 
+      
       const findOneCompanyData: {
         data: Reserva[];
         total: number;
@@ -184,13 +185,18 @@ class ReservaController {
       console.log('Quantidade encontrada => ', findOneCompanyData.data.length);
       console.log('Quantidade encontrada => ', findOneCompanyData.total);
 
+      if (!findOneCompanyData || !findOneCompanyData.data || findOneCompanyData.data.length === 0) {
+        res.status(404).json({ ok: false, message: 'Nenhum dado encontrado para gerar o relatório.' });
+        return;
+      }
+
       const fileConfig = {
         filename:
-          `Relatório_Collegato_Cliente_${req.user.id}_Datas_` +
-          format(new Date(dataInicio), 'dd-MM-yyyy') +
-          '_a_' +
+          `Relatorio_Collegato_Cliente_${req.user.id}_Datas_` +
           format(new Date(dataFim), 'dd-MM-yyyy') +
-          `_Criado_${format(new Date(), 'dd-MM-yyyy_HH:mm:ss')}` +
+          '_a_' +
+          format(new Date(dataInicio), 'dd-MM-yyyy') +
+          `_Criado_${format(new Date(), 'dd-MM-yyyy')}` +
           '.csv',
         path: './files/reports/',
         save: true,
@@ -205,10 +211,9 @@ class ReservaController {
       const fileUrl = `${baseUrl}/reserva/report/download/${fileConfig.filename}`;
 
       // Chama a função para enviar o email com a URL do arquivo
-      const email = await sendGenerateReportEmail(req.user.login, fileUrl);
-      console.log('email', email);
-      res.status(200).json({ ok: true, message: 'Relatório gerado com sucesso.', email });
-      // res.status(200).json({ ok: true, message: 'Relatório gerado com sucesso.' });
+      const emailResponse = await sendGenerateReportEmail(req.user.login, fileUrl);
+      console.log("Email enviado:", emailResponse);
+      res.status(200).json({ ok: true, message: "Relatório gerado com sucesso.", email: emailResponse });
       return;
     } catch (error) {
       next(error);

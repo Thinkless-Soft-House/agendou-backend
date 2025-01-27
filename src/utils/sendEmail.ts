@@ -84,7 +84,7 @@ export const sendGenerateReportEmail = async (email: string, path: string) => {
     },
     to: [
       {
-        email: "ericeliasconde70@gmail.com",
+        email: email,
         name: "Recipient", // Nome do destinatário (opcional)
       },
     ],

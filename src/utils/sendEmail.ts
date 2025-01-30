@@ -117,6 +117,50 @@ export const sendGenerateReportEmail = async (email: string, path: string) => {
     }
   }
 };
+export const sendUserCreatedEmail = async (email: string, nome: string) => {
+  const apiKey = "mlsn.8ad9ae17d39f29487b63d079312644fb0fde0a861fe98a2f001f7532f929e6b4"; // Substitua pela sua chave de API
+  const url = "https://api.mailersend.com/v1/email";
+
+  const emailData = {
+    from: {
+      email: "noreply@thinkless.com.br", // Remetente configurado na MailerSend
+      name: "Collegato",              // Nome do remetente
+    },
+    to: [
+      {
+        email: email,
+        name: "Recipient", // Nome do destinatário (opcional)
+      },
+    ],
+    subject: "Usuário criado - Collegato",
+    html: `Parabens ${nome}, seu usuário foi criado com sucesso.`, // Conteúdo HTML
+    text: `Parabens ${nome}, seu usuário foi criado com sucesso.`, // Conteúdo texto simples
+  };
+
+  try {
+    const response = await axios.post(url, emailData, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("Email enviado com sucesso:", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error("Erro ao enviar email:", error);
+
+    if (error.response) {
+      throw new Error(
+        `Erro com dados da resposta: ${JSON.stringify(error.response.data)}`
+      );
+    } else if (error.request) {
+      throw new Error("Sem resposta da MailerSend");
+    } else {
+      throw new Error(`Erro desconhecido: ${error.message}`);
+    }
+  }
+};
 export const sendBookingClientEmail = async (
   email: string,
   data: {

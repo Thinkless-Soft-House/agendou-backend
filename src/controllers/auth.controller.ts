@@ -4,6 +4,7 @@ import { RequestWithUser } from '@interfaces/auth.interface';
 import { Usuario } from '@interfaces/usuario.interface';
 import AuthService from '@services/auth.service';
 import { HttpException } from '@/exceptions/HttpException';
+import { sendUserCreatedEmail } from '@/utils/sendEmail';
 
 class AuthController {
   public authService = new AuthService();
@@ -14,6 +15,10 @@ class AuthController {
       const signUpUserData: Usuario = await this.authService.signup(userData);
 
       res.status(201).json({ data: signUpUserData, message: 'signup' });
+      console.log('signUpUserData', signUpUserData.login);
+      //enviar email de confirmação de cadastro
+      const emailResponse = await sendUserCreatedEmail(signUpUserData.login, signUpUserData.pessoa.nome);
+      console.log("Email enviado:", emailResponse);
     } catch (error) {
       next(error);
     }

@@ -2,13 +2,21 @@ import { NextFunction, Request, Response } from 'express';
 import { ReservaCreateDTO, ReservaUpdateDTO } from '@dtos/reserva.dto';
 import { Reserva } from '@interfaces/reserva.interface';
 import ReservaService from '@/services/reserva.service';
+import { SalaEntity } from '@/entities/sala.entity';
+import { Sala } from '@/interfaces/sala.interface';
 import { PaginationConfig } from '@/interfaces/utils.interface';
 import { createCSV, createPaginationConfig } from '@/utils/util';
 import { RequestWithUser } from '@/interfaces/auth.interface';
+import { EmpresaEntity } from '@/entities/empresa.entity';
+import { Empresa } from '@/interfaces/empresa.interface';
 
 import * as fs from 'fs';
 import { sendGenerateReportEmail } from '@/utils/sendEmail';
+import { sendBookingClientEmail } from '@/utils/sendEmail';
 import { format } from 'date-fns';
+import { Usuario } from '@/interfaces/usuario.interface';
+import { UsuarioEntity } from '@/entities/usuario.entity';
+import { SimpleConsoleLogger } from 'typeorm';
 
 class ReservaController {
   public reservaService = new ReservaService();
@@ -68,20 +76,22 @@ class ReservaController {
         data: Reserva[];
         total: number;
       } = await this.reservaService.findBookingByFilter(paginationConfig, userId, companyId, statusList, salaId, dia, hInicio, hFim, data, texto);
-
+      console.log('findOneCompanyData', findOneCompanyData);
       res.status(200).json({ data: findOneCompanyData, message: 'findByFilter' });
     } catch (error) {
       next(error);
     }
   };
 
-  public createBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public createBooking = async (req: Request, res: Response,next: NextFunction): Promise<void> => {
     try {
       const bookingData: ReservaCreateDTO = req.body;
       console.log('bookingData', JSON.stringify(bookingData));
       const createBookingData: Reserva = await this.reservaService.createBooking(bookingData);
-
-      res.status(201).json({ data: createBookingData, message: 'created' });
+      const findUser: Usuario = await UsuarioEntity.findOne({ where: { id: createBookingData.usuarioId } });
+      const findRoom: Sala = await SalaEntity.findOne({ where: { id: createBookingData.salaId }, relations: ['empresa'] });const emailResponse = await sendBookingClientEmail(findUser.login, findRoom.empresa.nome)
+      console.log("Email enviado:", emailResponse);
+      res.status(201).json({ data: createBookingData, message: 'created', email: emailResponse });
     } catch (error) {
       next(error);
     }

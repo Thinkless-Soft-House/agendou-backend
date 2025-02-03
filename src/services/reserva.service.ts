@@ -334,40 +334,6 @@ class ReservaService extends Repository<ReservaEntity> {
       statusId: StatusEnum.Aguardando,
     });
 
-    const bookingCreated: any = await this.findBookingById(createBookingData.id);
-    if (bookingCreated) {
-      const clientTemplateData: {
-        company: string;
-        room: string;
-        date: string;
-        hour: string;
-      } = {
-        company: bookingCreated.empresa.nome,
-        room: bookingCreated.salaNome,
-        date: format(new Date(bookingCreated.date), 'dd/MM/y'),
-        hour: bookingCreated.horaInicio + ' - ' + bookingCreated.horaFim,
-      };
-      await sendBookingClientEmail(bookingCreated.usuario.login, clientTemplateData);
-
-      const companyTemplateData: {
-        client: string;
-        clientEmail: string;
-        room: string;
-        date: string;
-        hour: string;
-      } = {
-        client: bookingCreated.pessoa.nome,
-        clientEmail: bookingCreated.usuario.login,
-        room: bookingCreated.salaNome,
-        date: format(new Date(bookingCreated.date), 'dd/MM/y'),
-        hour: bookingCreated.horaInicio + ' - ' + bookingCreated.horaFim,
-      };
-
-      const resps = await this.responsavelService.findAllResponsibleByRoomWithUsers(bookingData.salaId);
-      const dests = resps.map(el => el.usuario.login);
-      await sendBookingCompanyEmail(dests[0], companyTemplateData);
-    }
-
     return createBookingData;
   }
 

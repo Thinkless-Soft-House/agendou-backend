@@ -5,6 +5,7 @@ import * as crypto from 'crypto';
 
 import * as Papa from 'papaparse';
 import * as fs from 'fs';
+import path from 'path';
 
 /**
  * @method isEmpty
@@ -131,28 +132,37 @@ export const createCSV = (data: any[], fileConfig: { filename?: string; path?: s
     return;
   }
 
-  const csv = Papa.unparse(data);
+  try {
+    // Gera o CSV a partir dos dados
+    const csv = Papa.unparse(data);
 
-  if (!fileConfig.filename) {
-    fileConfig.filename = 'default_' + new Date().getTime() + '.csv';
-  }
+    // Define o nome do arquivo padrão, se não fornecido
+    const filename = fileConfig.filename || `default_${Date.now()}.csv`;
 
-  if (!fileConfig.path) {
-    fileConfig.path = './';
-  }
+    // Define o caminho da pasta padrão, se não fornecido
+    const dirPath = fileConfig.path || './';
 
-  fs.mkdirSync(fileConfig.path, { recursive: true });
+    // Garante que o caminho da pasta termina com uma barra
+    const fullPath = path.resolve(dirPath);
 
-  // Checar se o arquivo já existe, se sim adicionar um timestamp
-  if (fs.existsSync(`${fileConfig.path}${fileConfig.filename}`)) {
-    fileConfig.filename = fileConfig.filename.split('.')[0] + '_' + new Date().getTime() + '.csv';
-  }
-
-  fs.writeFile(`${fileConfig.path}${fileConfig.filename}`, csv, function (err) {
-    if (err) {
-      console.log('Erro ao salvar o arquivo:', err);
-    } else {
-      console.log(`Arquivo salvo como ${fileConfig.filename} em ${fileConfig.path}`);
+    // Cria a pasta, se ela não existir
+    if (!fs.existsSync(fullPath)) {
+      console.log(`Diretório não encontrado, criando: ${fullPath}`);
+      fs.mkdirSync(fullPath, { recursive: true });
     }
-  });
+
+    // Garante que o nome do arquivo seja único
+    let filePath = path.join(fullPath, filename);
+    if (fs.existsSync(filePath)) {
+      const timestamp = Date.now();
+      const ext = path.extname(filename);
+      const baseName = path.basename(filename, ext);
+      filePath = path.join(fullPath, `${baseName}_${timestamp}${ext}`);
+    }
+    // Escreve o arquivo
+    fs.writeFileSync(filePath, csv);
+    console.log(`Arquivo salvo como ${filePath}`);
+  } catch (err) {
+    console.error('Erro ao salvar o arquivo:', err);
+  }
 };

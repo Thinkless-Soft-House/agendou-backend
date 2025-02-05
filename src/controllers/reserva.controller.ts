@@ -2,13 +2,21 @@ import { NextFunction, Request, Response } from 'express';
 import { ReservaCreateDTO, ReservaUpdateDTO } from '@dtos/reserva.dto';
 import { Reserva } from '@interfaces/reserva.interface';
 import ReservaService from '@/services/reserva.service';
+import { SalaEntity } from '@/entities/sala.entity';
+import { Sala } from '@/interfaces/sala.interface';
 import { PaginationConfig } from '@/interfaces/utils.interface';
 import { createCSV, createPaginationConfig } from '@/utils/util';
 import { RequestWithUser } from '@/interfaces/auth.interface';
+import { EmpresaEntity } from '@/entities/empresa.entity';
+import { Empresa } from '@/interfaces/empresa.interface';
 
 import * as fs from 'fs';
 import { sendGenerateReportEmail } from '@/utils/sendEmail';
+import { sendBookingClientEmail } from '@/utils/sendEmail';
 import { format } from 'date-fns';
+import { Usuario } from '@/interfaces/usuario.interface';
+import { UsuarioEntity } from '@/entities/usuario.entity';
+import { SimpleConsoleLogger } from 'typeorm';
 
 class ReservaController {
   public reservaService = new ReservaService();
@@ -68,20 +76,22 @@ class ReservaController {
         data: Reserva[];
         total: number;
       } = await this.reservaService.findBookingByFilter(paginationConfig, userId, companyId, statusList, salaId, dia, hInicio, hFim, data, texto);
-
+      console.log('findOneCompanyData', findOneCompanyData);
       res.status(200).json({ data: findOneCompanyData, message: 'findByFilter' });
     } catch (error) {
       next(error);
     }
   };
 
-  public createBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public createBooking = async (req: Request, res: Response,next: NextFunction): Promise<void> => {
     try {
       const bookingData: ReservaCreateDTO = req.body;
       console.log('bookingData', JSON.stringify(bookingData));
       const createBookingData: Reserva = await this.reservaService.createBooking(bookingData);
-
-      res.status(201).json({ data: createBookingData, message: 'created' });
+      const findUser: Usuario = await UsuarioEntity.findOne({ where: { id: createBookingData.usuarioId } });
+      const findRoom: Sala = await SalaEntity.findOne({ where: { id: createBookingData.salaId }, relations: ['empresa'] });const emailResponse = await sendBookingClientEmail(findUser.login, findRoom.empresa.nome)
+      console.log("Email enviado:", emailResponse);
+      res.status(201).json({ data: createBookingData, message: 'created', email: emailResponse });
     } catch (error) {
       next(error);
     }
@@ -164,6 +174,7 @@ class ReservaController {
 
       // empresaId = 2;
 
+      
       const findOneCompanyData: {
         data: Reserva[];
         total: number;
@@ -184,13 +195,18 @@ class ReservaController {
       console.log('Quantidade encontrada => ', findOneCompanyData.data.length);
       console.log('Quantidade encontrada => ', findOneCompanyData.total);
 
+      if (!findOneCompanyData || !findOneCompanyData.data || findOneCompanyData.data.length === 0) {
+        res.status(404).json({ ok: false, message: 'Nenhum dado encontrado para gerar o relatório.' });
+        return;
+      }
+
       const fileConfig = {
         filename:
-          `Relatório_Collegato_Cliente_${req.user.id}_Datas_` +
-          format(new Date(dataInicio), 'dd-MM-yyyy') +
-          '_a_' +
+          `Relatorio_Collegato_Cliente_${req.user.id}_Datas_` +
           format(new Date(dataFim), 'dd-MM-yyyy') +
-          `_Criado_${format(new Date(), 'dd-MM-yyyy_HH:mm:ss')}` +
+          '_a_' +
+          format(new Date(dataInicio), 'dd-MM-yyyy') +
+          `_Criado_${format(new Date(), 'dd-MM-yyyy')}` +
           '.csv',
         path: './files/reports/',
         save: true,
@@ -205,10 +221,9 @@ class ReservaController {
       const fileUrl = `${baseUrl}/reserva/report/download/${fileConfig.filename}`;
 
       // Chama a função para enviar o email com a URL do arquivo
-      const email = await sendGenerateReportEmail(req.user.login, fileUrl);
-      console.log('email', email);
-      res.status(200).json({ ok: true, message: 'Relatório gerado com sucesso.', email });
-      // res.status(200).json({ ok: true, message: 'Relatório gerado com sucesso.' });
+      const emailResponse = await sendGenerateReportEmail(req.user.login, fileUrl);
+      console.log("Email enviado:", emailResponse);
+      res.status(200).json({ ok: true, message: "Relatório gerado com sucesso.", email: emailResponse });
       return;
     } catch (error) {
       next(error);

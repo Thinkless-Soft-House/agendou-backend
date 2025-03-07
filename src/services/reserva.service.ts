@@ -10,7 +10,9 @@ import { set, format, addHours, parse, isValid } from 'date-fns';
 import StatusReservaService from './status-reserva.service';
 import { StatusEnum } from '@/interfaces/status.interface';
 import ResponsavelService from './responsavel.service';
-import { sendBookingClientEmail, sendBookingCompanyEmail } from '@/utils/sendEmail';
+import { sendAppointmentConfirmationEmail, sendBookingClientEmail, sendBookingCompanyEmail } from '@/utils/sendEmail';
+import { Usuario } from '@/interfaces/usuario.interface';
+import { UsuarioEntity } from '@/entities/usuario.entity';
 
 @EntityRepository()
 class ReservaService extends Repository<ReservaEntity> {
@@ -341,7 +343,36 @@ class ReservaService extends Repository<ReservaEntity> {
     if (isEmpty(bookingData)) throw new HttpException(400, 'Os dados da reserva estão vazios');
 
     const findBooking: Reserva = await ReservaEntity.findOne({ where: { id: bookingId } });
+
     if (!findBooking) throw new HttpException(409, 'Reserva não encontrada');
+
+      const ultimoStatusId = findBooking.statusReserva[findBooking.statusReserva.length - 1].statusId;
+
+      if(ultimoStatusId == 2){
+        const existeRepetido = findBooking.statusReserva
+            ?.slice(0, -1)
+            ?.some(status => status.statusId === ultimoStatusId) || false;
+
+            if (!existeRepetido) {
+              const [horaInicioHours, horaInicioMinutes] = findBooking.horaInicio.split(':').map(Number);
+              const [horaFimHours, horaFimMinutes] = findBooking.horaFim.split(':').map(Number);
+              const startDateTime = new Date(findBooking.date);
+              startDateTime.setHours(horaInicioHours, horaInicioMinutes, 0, 0);
+
+              const endDateTime = new Date(findBooking.date);
+              endDateTime.setHours(horaFimHours, horaFimMinutes, 0, 0);
+
+              const findUser: Usuario = await UsuarioEntity.findOne({ where: { id: findBooking.usuarioId } });
+              const appointmentConfirmationEmailResponse = await sendAppointmentConfirmationEmail(findUser.login, {
+                      title: 'Reunião entre ' + findUser.pessoa.nome + ' / ' + findUser.empresa.nome,
+                      startDateTime: startDateTime,
+                      endDateTime: endDateTime,
+                      description: 'Reunião entre ' + findUser.pessoa.nome + ' / ' + findUser.empresa.nome,
+                      location: findUser.empresa.endereco
+                    });
+              console.log("Email enviado:", appointmentConfirmationEmailResponse);
+            } 
+      }   
 
     await ReservaEntity.update(bookingId, { ...bookingData });
 

@@ -7,6 +7,42 @@ import { generateReportTemplate } from './templates/generate-report';
 import { Recipient, EmailParams, MailerSend, Sender } from "mailersend";
 const AWS_SES_URL = process.env.URL_LAMBDA;
 
+const generateIcsContent = (eventDetails: {
+  title: string;
+  startDateTime: Date;
+  endDateTime: Date;
+  description?: string;
+  location?: string;
+}) => {
+  const formatDate = (date: Date) => 
+    date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Collegato//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:REQUEST',
+    'BEGIN:VEVENT',
+    `UID:${Date.now()}@collegato.com`,
+    `DTSTAMP:${formatDate(new Date())}`,
+    `DTSTART:${formatDate(eventDetails.startDateTime)}`,
+    `DTEND:${formatDate(eventDetails.endDateTime)}`,
+    `SUMMARY:${eventDetails.title}`,
+    `DESCRIPTION:${eventDetails.description || ''}`,
+    `LOCATION:${eventDetails.location || ''}`,
+    'STATUS:CONFIRMED',
+    'SEQUENCE:0',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT15M',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Lembrete',
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+};
+
 export interface EmailTemplateData {
   [key: string]: string;
 }
@@ -260,5 +296,70 @@ export const sendBookingCompanyEmail = async (
     }
     console.log(error.config);
     throw new HttpException(4500, 'Unknown Error');
+  }
+};
+
+export const sendAppointmentConfirmationEmail = async (
+  email: string,
+  eventDetails: {
+    title: string;
+    startDateTime: Date;
+    endDateTime: Date;
+    description?: string;
+    location?: string;
+  }
+) => {
+  const apiKey = "mlsn.8ad9ae17d39f29487b63d079312644fb0fde0a861fe98a2f001f7532f929e6b4";
+  const url = "https://api.mailersend.com/v1/email";
+
+  // Gera o conteúdo ICS
+  const icsContent = generateIcsContent(eventDetails);
+  
+  // Converte para Base64
+  const icsBase64 = Buffer.from(icsContent).toString('base64');
+
+  const emailData = {
+    from: {
+      email: "noreply@thinkless.com.br",
+      name: "Collegato"
+    },
+    to: [{ email }],
+    subject: `Confirmação de Agendamento: ${eventDetails.title}`,
+    html: `
+      <h1>Agendamento Confirmado!</h1>
+      <p><strong>Evento:</strong> ${eventDetails.title}</p>
+      <p><strong>Data:</strong> ${eventDetails.startDateTime.toLocaleDateString()}</p>
+      <p><strong>Horário:</strong> ${eventDetails.startDateTime.toLocaleTimeString()} às ${eventDetails.endDateTime.toLocaleTimeString()}</p>
+      <p>O anexo ICS foi incluído para você adicionar à sua agenda.</p>
+    `,
+    text: `
+      Agendamento Confirmado!
+      Evento: ${eventDetails.title}
+      Data: ${eventDetails.startDateTime.toLocaleDateString()}
+      Horário: ${eventDetails.startDateTime.toLocaleTimeString()} às ${eventDetails.endDateTime.toLocaleTimeString()}
+      O anexo ICS foi incluído para você adicionar à sua agenda.
+    `,
+    attachments: [
+      {
+        content: icsBase64,
+        filename: 'agendamento-collegato.ics',
+        type: 'text/calendar; method=REQUEST; charset=UTF-8'
+      }
+    ]
+  };
+
+  try {
+    const response = await axios.post(url, emailData, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log('E-mail com ICS enviado:', response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error('Erro ao enviar:', error.response?.data || error.message);
+    throw new Error('Falha no envio do e-mail com ICS');
   }
 };

@@ -17,6 +17,7 @@ import { format } from 'date-fns';
 import { Usuario } from '@/interfaces/usuario.interface';
 import { UsuarioEntity } from '@/entities/usuario.entity';
 import { SimpleConsoleLogger } from 'typeorm';
+import { sendAppointmentConfirmationEmail } from '@/utils/sendEmail';
 
 class ReservaController {
   public reservaService = new ReservaService();

@@ -13,6 +13,7 @@ import StatusRoute from './routes/status.route';
 import UsuarioRoute from './routes/usuario.route';
 import CategoriaEmpresaRoute from './routes/categoria-empresa.route';
 import PessoaRoute from './routes/pessoa.route';
+import ChatRoute from './routes/chat.route';
 
 // validateEnv();
 
@@ -30,6 +31,7 @@ const app = new App([
   new StatusRoute(),
   new CategoriaEmpresaRoute(),
   new PessoaRoute(),
+  new ChatRoute(),
 ]);
 
 app.listen();

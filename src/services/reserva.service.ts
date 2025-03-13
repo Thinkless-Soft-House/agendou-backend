@@ -13,6 +13,10 @@ import ResponsavelService from './responsavel.service';
 import { sendAppointmentConfirmationEmail, sendBookingClientEmail, sendBookingCompanyEmail } from '@/utils/sendEmail';
 import { Usuario } from '@/interfaces/usuario.interface';
 import { UsuarioEntity } from '@/entities/usuario.entity';
+import { ca } from 'date-fns/locale';
+import WhatsAppService from './whatsapp.service';
+import { WhatsAppProvider } from '@/enums/provider.enum';
+import whatsappService from './whatsapp.service';
 
 @EntityRepository()
 class ReservaService extends Repository<ReservaEntity> {
@@ -371,7 +375,27 @@ class ReservaService extends Repository<ReservaEntity> {
                       location: findUser.empresa.endereco
                     });
               console.log("Email enviado:", appointmentConfirmationEmailResponse);
-            } 
+              
+              const stringTelefone: string = findUser.pessoa.telefone.toString();
+              const stringDate: string = format(new Date(findBooking.date), 'dd/MM/yyyy');
+
+              try {
+                const findUser = await UsuarioEntity.findOne({
+                  where: { id: findBooking.usuarioId },
+                  relations: ['empresa'] // Carrega a relação com empresa
+                });
+              
+                const messageContent = `✅ Agendamento Confirmado!\n\n` +
+                  `Cliente: ${findUser.pessoa.nome}\n` +
+                  `Data: ${stringDate}\n` +
+                  `Hora: ${findBooking.horaInicio}`;
+              
+                const result = await whatsappService.sendConfirmation(findUser, messageContent);
+                console.log('Mensagem enviada:', result);
+              
+              } catch (error) {
+                console.error('Erro WhatsApp:', error.message);
+              }
       }   
 
     await ReservaEntity.update(bookingId, { ...bookingData });
@@ -379,6 +403,7 @@ class ReservaService extends Repository<ReservaEntity> {
     const updateBooking: Reserva = await ReservaEntity.findOne({ where: { id: bookingId } });
     return updateBooking;
   }
+}
 
   public async deleteBooking(bookingId: number): Promise<Reserva> {
     if (isEmpty(bookingId)) throw new HttpException(400, 'O ID da reserva está vazio');

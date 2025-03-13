@@ -1,18 +1,12 @@
 import { IsBoolean, IsNumber, IsString } from 'class-validator';
+import { WhatsAppProvider } from '../enums/provider.enum';
 
 export class SendMessageDTO {
-  @IsNumber()
-  connectionId: number;
-
-  @IsString()
-  messageType: string;
-
-  @IsString()
-  content: string;
-
-  @IsString()
+  provider: WhatsAppProvider;
+  connectionId?: number;
+  keyConexao?: string;
   number: string;
-
-  @IsBoolean()
-  openTicket: boolean;
+  content: string;
+  openTicket?: boolean;
+  closeTicket?: boolean;
 }

@@ -1,30 +1,21 @@
 // src/controllers/chat.controller.ts
 import { Request, Response } from 'express';
-import axios from 'axios';
+import WhatsAppService from '../services/whatsapp.service';
 import { SendMessageDTO } from '../dtos/chat.dto';
 
 class ChatController {
+
   public sendMessage = async (req: Request, res: Response) => {
     try {
       const messageData: SendMessageDTO = req.body;
       
-      const response = await axios.post(
-        'https://rest.botflex.com.br/api/v1/chat/send-message/integration',
-        messageData,
-        {
-          headers: {
-            'x-integration-token': process.env.BOTFLEX_TOKEN,
-            'Content-Type': 'application/json',
-            'Cookie': 'session=value'
-          }
-        }
-      );
 
-      res.status(200).json(response.data);
+      
+      res.status(200).json('result');
     } catch (error) {
-      console.error('Error in sendMessage:', error.response?.data || error.message);
-      res.status(error.response?.status || 500).json({
-        error: error.response?.data?.error || 'Failed to send message'
+      console.error('Error in sendMessage:', error.message);
+      res.status(500).json({
+        error: error.message || 'Failed to send message'
       });
     }
   };

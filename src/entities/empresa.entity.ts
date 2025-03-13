@@ -35,6 +35,9 @@ export class EmpresaEntity extends BaseEntity implements Empresa {
   @Column({ name: 'EMP_USERINCLUI' })
   userCreated: number;
 
+  @Column({ type: 'int', default: 1 })
+  EMP_PROVIDER: number;
+
   @CreateDateColumn({
     name: 'EMP_DTAINCLUI',
   })

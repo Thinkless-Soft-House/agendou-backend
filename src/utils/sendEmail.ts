@@ -68,47 +68,48 @@ export interface EmailData {
   templateData?: EmailTemplateData;
 }
 
-export const sendForgotPasswordEmail = async (email: string, code: number) => {
-  const templateWithCode = codeVerificationTemplate.replace('{{CODE}}', code.toString());
-  const url = AWS_SES_URL + '/email/send';
-  console.log('url ses', url);
+export const sendForgotPasswordEmail = async (email: string, newPassword: string) => {
+  const apiKey = "mlsn.8ad9ae17d39f29487b63d079312644fb0fde0a861fe98a2f001f7532f929e6b4";
+  const url = "https://api.mailersend.com/v1/email";
+
+  const emailContent = `
+    <h1>Sua Nova Senha Agendou Ai!</h1>
+    <p>Sua nova senha temporária é: <strong>${newPassword}</strong></p>
+    <p>Recomendamos que você:</p>
+    <ol>
+      <li>Acesse o sistema com esta senha</li>
+      <li>Vá até seu perfil</li>
+      <li>Altere para uma senha segura de sua preferência</li>
+    </ol>
+    <p><em>Esta é uma senha temporária, não a compartilhe com ninguém.</em></p>
+  `;
+
+  const emailData = {
+    from: {
+      email: "noreply@thinkless.com.br",
+      name: "Agendou Ai"
+    },
+    to: [{ email: email }],
+    subject: "Redefinição de Senha - Agendou Ai",
+    html: emailContent,
+    text: `Sua nova senha temporária é: ${newPassword}\n\nAcesse o sistema e altere-a imediatamente.`
+  };
+
   try {
-    const { data } = await axios.post(url, {
-      destination: email,
-      templateType: EmailTemplateType.REQUEST_TEMPLATE,
-      template: templateWithCode,
-      subject: 'Recuperação de senha - Collegato',
-      fromName: {
-        name: 'Collegato',
-        prefix: 'noreply',
-      },
-    } as EmailData);
-
-    return data;
-  } catch (error) {
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-
-      throw new HttpException(error.response.data, 'error with data');
-    } else if (error.request) {
-      // The request was made but no response was received
-      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-      // http.ClientRequest in node.js
-      console.log(error.request);
-      throw new HttpException(500, 'Sem resposta do SES');
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.log('Error', error.message);
-      throw new HttpException(500, error.message);
-    }
-    console.log(error.config);
-    throw new HttpException(4500, 'Unknown Error');
+    await axios.post(url, emailData, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      }
+    });
+    
+    console.log(`Email com nova senha enviado para ${email}`);
+  } catch (error: any) {
+    console.error("Erro no envio de senha:", error.response?.data || error.message);
+    throw new Error("Falha ao enviar email com nova senha");
   }
 };
+
 export const sendGenerateReportEmail = async (email: string, path: string) => {
   const apiKey = "mlsn.8ad9ae17d39f29487b63d079312644fb0fde0a861fe98a2f001f7532f929e6b4"; // Substitua pela sua chave de API
   const url = "https://api.mailersend.com/v1/email";
@@ -153,6 +154,7 @@ export const sendGenerateReportEmail = async (email: string, path: string) => {
     }
   }
 };
+
 export const sendUserCreatedEmail = async (email: string, nome: string) => {
   const apiKey = "mlsn.8ad9ae17d39f29487b63d079312644fb0fde0a861fe98a2f001f7532f929e6b4"; // Substitua pela sua chave de API
   const url = "https://api.mailersend.com/v1/email";

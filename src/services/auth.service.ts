@@ -8,6 +8,8 @@ import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
 import { Usuario } from '@interfaces/usuario.interface';
 import { comparePassword, isEmpty, setPassword } from '@utils/util';
 import { sendForgotPasswordEmail } from '@/utils/sendEmail';
+import * as generator from 'generate-password';
+import * as bcrypt from 'bcrypt';
 
 @EntityRepository()
 class AuthService extends Repository<UsuarioEntity> {
@@ -55,18 +57,34 @@ class AuthService extends Repository<UsuarioEntity> {
   }
 
   public async forgotPassword(email: string): Promise<Usuario> {
-    if (isEmpty(email)) throw new HttpException(400, 'Sem dados para login');
+    if (isEmpty(email)) throw new HttpException(400, 'Email é obrigatório');
+  
+    const usuario = await UsuarioEntity.findOne({ where: { login: email } });
+    if (!usuario) throw new HttpException(409, 'Email não cadastrado');
+  
+    // Gerar senha segura
+    const newPassword = generator.generate({
+      length: 12,
+      numbers: true,
+      symbols: true,
+      uppercase: true,
+      strict: true
+    });
+  
+    try {
+      await sendForgotPasswordEmail(email, newPassword);
 
-    const findUser: Usuario = await UsuarioEntity.findOne({ where: { login: email } });
-    if (!findUser) throw new HttpException(409, 'Usuário com esse email não existe');
-
-    const code = Math.floor(100000 + Math.random() * 900000);
-    await UsuarioEntity.update(findUser.id, { ...findUser, resetPasswordCode: code });
-    const updateUser: Usuario = await UsuarioEntity.findOne({ where: { id: findUser.id } });
-    // Send Email
-
-    await sendForgotPasswordEmail(updateUser.login, code);
-    return updateUser;
+      const hashedPassword = setPassword(newPassword);
+      await UsuarioEntity.update(usuario.id, { 
+        senha: hashedPassword
+      });
+  
+      return await UsuarioEntity.findOne({ where: { id: usuario.id } });
+      
+    } catch (error) {
+      console.error("Rollback: Erro no fluxo de senha -", error.message);
+      throw new HttpException(500, 'Erro no processo de recuperação');
+    }
   }
 
   public async resetPassword(email: string, code: number, newPassword: string): Promise<Usuario> {

@@ -63,6 +63,7 @@ class AuthController {
       next(error);
     }
   };
+  
   public resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const email: string = req.body.login;

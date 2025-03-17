@@ -75,6 +75,36 @@ class EmpresaController {
     }
   };
 
+  public createCompanyWeb = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const companyData: EmpresaCreateDTO = req.body;
+      const createCompanyData: Empresa = await this.empresaService.createCompanyWeb(companyData);
+
+      res.status(201).json({ data: createCompanyData, message: 'created' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public updateDisponibilidade = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const companyId = Number(req.params.id);
+      const { disponibilidade } = req.body;
+      
+      const updatedCompany = await this.empresaService.updateDisponibilidade(
+        companyId,
+        disponibilidade
+      );
+
+      res.status(200).json({ 
+        data: updatedCompany,
+        message: 'Disponibilidade atualizada com sucesso' 
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public updateCompany = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const companyId = Number(req.params.id);

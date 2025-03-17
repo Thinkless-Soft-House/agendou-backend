@@ -110,6 +110,41 @@ export const sendForgotPasswordEmail = async (email: string, newPassword: string
   }
 };
 
+export const sendPasswordNewUser = async (email: string, newPassword: string) => {
+  const apiKey = "mlsn.8ad9ae17d39f29487b63d079312644fb0fde0a861fe98a2f001f7532f929e6b4";
+  const url = "https://api.mailersend.com/v1/email";
+
+  const emailContent = `
+    <h1>Sua Nova Senha Agendou Ai!</h1>
+    <p>Sua senha de acesso é: <strong>${newPassword}</strong></p>
+  `;
+
+  const emailData = {
+    from: {
+      email: "noreply@thinkless.com.br",
+      name: "Agendou Ai"
+    },
+    to: [{ email: email }],
+    subject: "Nova Senha - Agendou Ai",
+    html: emailContent,
+    text: `Sua senha de acesso é: ${newPassword}\n\n`
+  };
+
+  try {
+    await axios.post(url, emailData, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      }
+    });
+    
+    console.log(`Email com nova senha enviado para ${email}`);
+  } catch (error: any) {
+    console.error("Erro no envio de senha:", error.response?.data || error.message);
+    throw new Error("Falha ao enviar email com nova senha");
+  }
+};
+
 export const sendGenerateReportEmail = async (email: string, path: string) => {
   const apiKey = "mlsn.8ad9ae17d39f29487b63d079312644fb0fde0a861fe98a2f001f7532f929e6b4"; // Substitua pela sua chave de API
   const url = "https://api.mailersend.com/v1/email";

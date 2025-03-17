@@ -71,6 +71,32 @@ class EmpresaService extends Repository<EmpresaEntity> {
     return createCompanyData;
   }
 
+  async createCompanyWeb(companyData: EmpresaCreateDTO): Promise<Empresa> {
+    const empresa = new EmpresaEntity();
+    if (isEmpty(companyData)) throw new HttpException(400, 'Os dados da empresa estão vazios');
+    empresa.nome = companyData.nome;
+    empresa.cpfCnpj = companyData.cpfCnpj;
+    empresa.userCreated = companyData.userCreated || 1;
+    empresa.endereco = companyData.endereco;
+    empresa.telefone = companyData.telefone;
+    empresa.status = companyData.status || 'active';
+    empresa.assinaturaStatus = companyData.assinaturaStatus || 'active';
+    empresa.plano = companyData.plano;
+    empresa.disponibilidadePadrao = companyData.disponibilidadePadrao;
+    empresa.categoriaId = companyData.categoriaId;
+
+    return await empresa.save();
+  }
+
+  async updateDisponibilidade(id: number, status: string): Promise<Empresa> {
+    const empresa = await EmpresaEntity.findOne({ where: { id } });
+    
+    if (!empresa) throw new HttpException(409, 'Empresa não encontrada');
+  
+    empresa.disponibilidade = status;
+    return await empresa.save();
+  }
+
   public async updateCompany(companyId: number, companyData: EmpresaUpdateDTO): Promise<Empresa> {
     if (isEmpty(companyData)) throw new HttpException(400, 'Os dados da empresa estão vazios');
 

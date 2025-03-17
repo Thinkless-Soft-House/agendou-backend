@@ -9,6 +9,8 @@ import { PaginationConfig } from '@/interfaces/utils.interface';
 import { PessoaEntity } from '@/entities/pessoa.entity';
 import { ResponsavelEntity } from '@/entities/responsavel.entity';
 import { ReservaEntity } from '@/entities/reserva.entity';
+import * as generator from 'generate-password';
+import { sendPasswordNewUser } from '@/utils/sendEmail';
 
 @EntityRepository()
 class UsuarioService extends Repository<UsuarioEntity> {
@@ -97,6 +99,30 @@ class UsuarioService extends Repository<UsuarioEntity> {
     const hashedPassword = setPassword(userData.senha);
     const createUserData: Usuario = await UsuarioEntity.create({ ...userData, senha: hashedPassword }).save();
     return createUserData;
+  }
+
+  public async createUserWithoutPassword(userData: UsuarioCreateDTO): Promise<Usuario> {
+    if (isEmpty(userData)) throw new HttpException(400, 'Os dados do usuário estão vazios');
+    const findUser: Usuario = await UsuarioEntity.findOne({ where: { login: userData.login } });
+    if (findUser) throw new HttpException(409, `O Login ${userData.login} já existe`);
+
+    const newPassword = generator.generate({
+          length: 12,
+          numbers: true,
+          symbols: true,
+          uppercase: true,
+          strict: true
+        });
+      
+        try {    
+          const hashedPassword = setPassword(newPassword);
+          const createUserData: Usuario = await UsuarioEntity.create({ ...userData, senha: hashedPassword }).save();
+          await sendPasswordNewUser(userData.login, newPassword);
+          return createUserData;
+        } catch (error) {
+          console.error("Rollback: Erro no fluxo de senha -", error.message);
+          throw new HttpException(500, 'Erro no processo de criação de usuário');
+        }
   }
 
   public async updatePushNotificationToken(userId: number, token: string): Promise<Usuario> {

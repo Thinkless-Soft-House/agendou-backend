@@ -92,6 +92,17 @@ class UsersController {
     }
   };
 
+  public createUserWithoutPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userData: UsuarioCreateDTO = req.body;
+      const createUserData: Usuario = await this.usuarioService.createUserWithoutPassword(userData);
+
+      res.status(201).json({ data: createUserData, message: 'created' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public updatePushToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = Number(req.params.id);

@@ -67,4 +67,19 @@ export class EmpresaEntity extends BaseEntity implements Empresa {
   })
   @JoinColumn([{ name: 'EMP_CATEMP_ID', referencedColumnName: 'id' }])
   categoria: CategoriaEmpresaEntity;
+
+  @Column({ name: 'EMP_STATUS', default: 'active' })
+  status: string;
+
+  @Column({ name: 'EMP_ASSINATURA_STATUS', default: 'active' })
+  assinaturaStatus: string;
+
+  @Column({ name: 'EMP_PLANO' })
+  plano: string;
+
+  @Column({ name: 'EMP_DISPONIBILIDADE_PADRAO', type: 'json' })
+  disponibilidadePadrao: object;
+
+  @Column({ name: 'EMP_DISPONIBILIDADE', type: 'varchar', default: 'active' })
+  disponibilidade: string;
 }

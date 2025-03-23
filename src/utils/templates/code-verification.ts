@@ -680,7 +680,7 @@ export const codeVerificationTemplate = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML
                           >
                             <multiline>
                               <div mc:edit Simpli>
-                                O App Collegato está disponivel em Android e IOS
+                                O App Agendou Aí? está disponivel em Android e IOS
                               </div>
                             </multiline>
                           </td>
@@ -731,7 +731,7 @@ export const codeVerificationTemplate = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML
                                     "
                                     data-image-edit
                                     width="117"
-                                    src="https://collegato-app.s3.amazonaws.com/email-templates/code-verification/images/App-Store.png"
+                                    src="https://agendouai-app.s3.amazonaws.com/email-templates/code-verification/images/App-Store.png"
                                     border="0"
                                     editable="true"
                                     alt="icon"
@@ -748,7 +748,7 @@ export const codeVerificationTemplate = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML
                                     "
                                     data-image-edit
                                     width="117"
-                                    src="https://collegato-app.s3.amazonaws.com/email-templates/code-verification/images/Google-play.png"
+                                    src="https://agendouai-app.s3.amazonaws.com/email-templates/code-verification/images/Google-play.png"
                                     border="0"
                                     editable="true"
                                     alt="icon"
@@ -816,10 +816,10 @@ export const codeVerificationTemplate = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML
                           >
                             <multiline>
                               <div mc:edit Simpli>
-                                2022 Collegato. Todos os direitos reservados<br />
+                                2022 Agendou Aí?. Todos os direitos reservados<br />
                                 <br />
                                 Você recebeu esse email por ter se cadastrado no
-                                Collegato - Agendamento de salas.
+                                Agendou Aí? - Agendamento de salas.
                               </div>
                             </multiline>
                           </td>
@@ -844,7 +844,7 @@ export const codeVerificationTemplate = `<!DOCTYPE html PUBLIC "-//W3C//DTD HTML
                           border: 0px;
                           display: inline !important;
                         "
-                        src="https://collegato-app.s3.amazonaws.com/email-templates/code-verification/images/logo-footer.png"
+                        src="https://agendouai-app.s3.amazonaws.com/email-templates/code-verification/images/logo-footer.png"
                         width="120"
                         border="0"
                         editable="true"

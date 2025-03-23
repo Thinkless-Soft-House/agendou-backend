@@ -533,7 +533,7 @@ export const generateReportTemplate = `
                             "
                           >
                             <multiline>
-                              <div mc:edit Simpli>O App Collegato está disponivel em Android e IOS</div>
+                              <div mc:edit Simpli>O App Agendou Aí? está disponivel em Android e IOS</div>
                             </multiline>
                           </td>
                         </tr>
@@ -566,7 +566,7 @@ export const generateReportTemplate = `
                                     style="display: block; width: 100%; max-width: 117px; border: 0px"
                                     data-image-edit
                                     width="117"
-                                    src="https://collegato-app.s3.amazonaws.com/email-templates/code-verification/images/App-Store.png"
+                                    src="https://agendouai-app.s3.amazonaws.com/email-templates/code-verification/images/App-Store.png"
                                     border="0"
                                     editable="true"
                                     alt="icon"
@@ -578,7 +578,7 @@ export const generateReportTemplate = `
                                     style="display: block; width: 100%; max-width: 117px; border: 0px"
                                     data-image-edit
                                     width="117"
-                                    src="https://collegato-app.s3.amazonaws.com/email-templates/code-verification/images/Google-play.png"
+                                    src="https://agendouai-app.s3.amazonaws.com/email-templates/code-verification/images/Google-play.png"
                                     border="0"
                                     editable="true"
                                     alt="icon"
@@ -630,9 +630,9 @@ export const generateReportTemplate = `
                           >
                             <multiline>
                               <div mc:edit Simpli>
-                                2022 Collegato. Todos os direitos reservados<br />
+                                2022 Agendou Aí?. Todos os direitos reservados<br />
                                 <br />
-                                Você recebeu esse email por ter se cadastrado no Collegato - Agendamento de salas.
+                                Você recebeu esse email por ter se cadastrado no Agendou Aí? - Agendamento de salas.
                               </div>
                             </multiline>
                           </td>
@@ -647,7 +647,7 @@ export const generateReportTemplate = `
                     <td align="center" class="center-text">
                       <img
                         style="width: 120px; border: 0px; display: inline !important"
-                        src="https://collegato-app.s3.amazonaws.com/email-templates/code-verification/images/logo-footer.png"
+                        src="https://agendouai-app.s3.amazonaws.com/email-templates/code-verification/images/logo-footer.png"
                         width="120"
                         border="0"
                         editable="true"

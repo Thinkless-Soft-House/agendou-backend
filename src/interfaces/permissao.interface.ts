@@ -1,16 +1,15 @@
-import { UsuarioEntity } from '@/entities/usuario.entity';
+import { Usuario } from './usuario.interface';
 
 export interface Permissao {
   id: PermissaoEnum;
   descricao: string;
 
-  usuarios: UsuarioEntity[];
+  usuarios: Usuario[];
 }
 
 export enum PermissaoEnum {
-  _,
-  Cliente,
-  Administrador,
-  Empresario,
-  Funcionario,
+  Admin = 1,
+  Cliente = 2,
+  Empresa = 3,
+  Funcionario = 4,
 }

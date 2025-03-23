@@ -1,10 +1,11 @@
-import { EntityRepository, Repository } from 'typeorm';
 import { HttpException } from '@exceptions/HttpException';
 import { isEmpty } from '@utils/util';
 import { EmpresaEntity } from '@/entities/empresa.entity';
 import { Empresa } from '@/interfaces/empresa.interface';
 import { EmpresaCreateDTO, EmpresaUpdateDTO } from '@/dtos/empresa.dto';
 import { PaginationConfig } from '@/interfaces/utils.interface';
+import { EmpresaEstatisticasView } from '@/entities/empresa-estatisticas.view.entity';
+import { EntityRepository, getRepository, Repository } from 'typeorm';
 
 @EntityRepository()
 class EmpresaService extends Repository<EmpresaEntity> {
@@ -63,6 +64,33 @@ class EmpresaService extends Repository<EmpresaEntity> {
     };
   }
 
+  // Add new method to fetch statistics with pagination
+  public async getEmpresaEstatisticas(paginationConfig: PaginationConfig): Promise<{ data: EmpresaEstatisticasView[]; count: number }> {
+    try {
+      const { skip, take, orderColumn, order } = paginationConfig;
+
+      // Corretamente utilizando o getRepository para acessar o repositório da view
+      const empresaEstatisticasRepository = getRepository(EmpresaEstatisticasView);
+
+      const [data, count] = await empresaEstatisticasRepository.findAndCount({
+        order: { [orderColumn]: order },
+        skip,
+        take,
+      });
+
+      // Explicitly convert string values to numbers
+      const processedData = data.map(item => ({
+        ...item,
+        totalUsuarios: Number(item.totalUsuarios),
+        totalReservas: Number(item.totalReservas)
+      }));
+
+      return { data: processedData, count };
+    } catch (error) {
+      throw new HttpException(500, 'Erro ao buscar estatísticas de empresas');
+    }
+  }
+
   public async createCompany(companyData: EmpresaCreateDTO): Promise<Empresa> {
     if (isEmpty(companyData)) throw new HttpException(400, 'Os dados da empresa estão vazios');
 
@@ -90,9 +118,9 @@ class EmpresaService extends Repository<EmpresaEntity> {
 
   async updateDisponibilidade(id: number, status: string): Promise<Empresa> {
     const empresa = await EmpresaEntity.findOne({ where: { id } });
-    
+
     if (!empresa) throw new HttpException(409, 'Empresa não encontrada');
-  
+
     empresa.disponibilidade = status;
     return await empresa.save();
   }

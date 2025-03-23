@@ -19,11 +19,16 @@ class EmpresaRoute implements Routes {
     this.router.get(`${this.path}/:id(\\d+)`, this.empresaController.getCompanyById);
     this.router.get(`${this.path}/filter`, this.empresaController.getCompanyByFilter);
     this.router.get(`${this.path}/categoria/:id(\\d+)`, this.empresaController.getCompanyByCategory);
+    this.router.get(`${this.path}/estatisticas`, this.empresaController.getEmpresaEstatisticas);
     this.router.post(`${this.path}`, validationMiddleware(EmpresaCreateDTO, 'body'), this.empresaController.createCompany);
     this.router.put(`${this.path}/:id(\\d+)`, validationMiddleware(EmpresaUpdateDTO, 'body', true), this.empresaController.updateCompany);
     this.router.delete(`${this.path}/:id(\\d+)`, this.empresaController.deleteCompany);
     this.router.post(`${this.path}/web`, validationMiddleware(EmpresaCreateDTO, 'body'), this.empresaController.createCompanyWeb);
-    this.router.put(`${this.path}/disponibilidade/:id(\\d+)`, validationMiddleware(EmpresaUpdateDisponibilidadeDTO, 'body', true), this.empresaController.updateDisponibilidade);
+    this.router.put(
+      `${this.path}/disponibilidade/:id(\\d+)`,
+      validationMiddleware(EmpresaUpdateDisponibilidadeDTO, 'body', true),
+      this.empresaController.updateDisponibilidade,
+    );
   }
 }
 

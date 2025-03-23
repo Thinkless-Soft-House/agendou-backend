@@ -175,7 +175,7 @@ class ReservaController {
 
       // empresaId = 2;
 
-      
+
       const findOneCompanyData: {
         data: Reserva[];
         total: number;
@@ -203,7 +203,7 @@ class ReservaController {
 
       const fileConfig = {
         filename:
-          `Relatorio_Collegato_Cliente_${req.user.id}_Datas_` +
+          `Relatorio_Agendou Aí?_Cliente_${req.user.id}_Datas_` +
           format(new Date(dataFim), 'dd-MM-yyyy') +
           '_a_' +
           format(new Date(dataInicio), 'dd-MM-yyyy') +

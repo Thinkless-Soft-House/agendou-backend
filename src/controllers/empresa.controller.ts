@@ -90,15 +90,12 @@ class EmpresaController {
     try {
       const companyId = Number(req.params.id);
       const { disponibilidade } = req.body;
-      
-      const updatedCompany = await this.empresaService.updateDisponibilidade(
-        companyId,
-        disponibilidade
-      );
 
-      res.status(200).json({ 
+      const updatedCompany = await this.empresaService.updateDisponibilidade(companyId, disponibilidade);
+
+      res.status(200).json({
         data: updatedCompany,
-        message: 'Disponibilidade atualizada com sucesso' 
+        message: 'Disponibilidade atualizada com sucesso',
       });
     } catch (error) {
       next(error);
@@ -123,6 +120,17 @@ class EmpresaController {
       const deleteCompanyData: Empresa = await this.empresaService.deleteCompany(companyId);
 
       res.status(200).json({ data: deleteCompanyData, message: 'deleted' });
+    } catch (error) {
+      next(error);
+    }
+  };
+  // Add new controller method for statistics
+  public getEmpresaEstatisticas = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const paginationConfig = createPaginationConfig(req);
+      const { data, count } = await this.empresaService.getEmpresaEstatisticas(paginationConfig);
+
+      res.status(200).json({ data, count, message: 'findAll' });
     } catch (error) {
       next(error);
     }

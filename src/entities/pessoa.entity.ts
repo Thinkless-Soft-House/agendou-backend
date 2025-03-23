@@ -10,7 +10,7 @@ export class PessoaEntity extends BaseEntity implements Pessoa {
   @Column({ name: 'PES_NAME' })
   nome: string;
 
-  @Column({ name: 'PES_CPFCNPJ', nullable: true, type: 'bigint', unique: true })
+  @Column({ name: 'PES_CPFCNPJ', type: 'bigint', unique: true })
   cpfCnpj: number;
   @Column({ name: 'PES_FUNCAO', nullable: true })
   funcao: string;

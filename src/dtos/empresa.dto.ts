@@ -82,9 +82,9 @@ export class EmpresaCreateDTO {
   @IsOptional()
   assinaturaStatus?: string;
 
-  @IsString()
-  @IsIn(['basic', 'premium'])
-  plano: string;
+  @IsNumber()
+  @IsOptional()
+  plano: number;
 
   @IsObject()
   @Type(() => DisponibilidadePadraoDTO)

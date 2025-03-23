@@ -14,17 +14,17 @@ const generateIcsContent = (eventDetails: {
   description?: string;
   location?: string;
 }) => {
-  const formatDate = (date: Date) => 
+  const formatDate = (date: Date) =>
     date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
 
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Collegato//EN',
+    'PRODID:-//Agendou Aí?//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:REQUEST',
     'BEGIN:VEVENT',
-    `UID:${Date.now()}@collegato.com`,
+    `UID:${Date.now()}@agendouai.com`,
     `DTSTAMP:${formatDate(new Date())}`,
     `DTSTART:${formatDate(eventDetails.startDateTime)}`,
     `DTEND:${formatDate(eventDetails.endDateTime)}`,
@@ -102,7 +102,7 @@ export const sendForgotPasswordEmail = async (email: string, newPassword: string
         "Content-Type": "application/json"
       }
     });
-    
+
     console.log(`Email com nova senha enviado para ${email}`);
   } catch (error: any) {
     console.error("Erro no envio de senha:", error.response?.data || error.message);
@@ -137,7 +137,7 @@ export const sendPasswordNewUser = async (email: string, newPassword: string) =>
         "Content-Type": "application/json"
       }
     });
-    
+
     console.log(`Email com nova senha enviado para ${email}`);
   } catch (error: any) {
     console.error("Erro no envio de senha:", error.response?.data || error.message);
@@ -152,7 +152,7 @@ export const sendGenerateReportEmail = async (email: string, path: string) => {
   const emailData = {
     from: {
       email: "noreply@thinkless.com.br", // Remetente configurado na MailerSend
-      name: "Collegato",              // Nome do remetente
+      name: "Agendou Aí?",              // Nome do remetente
     },
     to: [
       {
@@ -160,7 +160,7 @@ export const sendGenerateReportEmail = async (email: string, path: string) => {
         name: "Recipient", // Nome do destinatário (opcional)
       },
     ],
-    subject: "Relatório de uso - Collegato",
+    subject: "Relatório de uso - Agendou Aí?",
     html: `Relatório disponível no link: <a href="${path}">Clique aqui</a>`, // Conteúdo HTML
     text: `Relatório disponível no link: ${path}`, // Conteúdo texto simples
   };
@@ -197,7 +197,7 @@ export const sendUserCreatedEmail = async (email: string, nome: string) => {
   const emailData = {
     from: {
       email: "noreply@thinkless.com.br", // Remetente configurado na MailerSend
-      name: "Collegato",              // Nome do remetente
+      name: "Agendou Aí?",              // Nome do remetente
     },
     to: [
       {
@@ -205,7 +205,7 @@ export const sendUserCreatedEmail = async (email: string, nome: string) => {
         name: "Recipient", // Nome do destinatário (opcional)
       },
     ],
-    subject: "Usuário criado - Collegato",
+    subject: "Usuário criado - Agendou Aí?",
     html: `Parabens ${nome}, seu usuário foi criado com sucesso.`, // Conteúdo HTML
     text: `Parabens ${nome}, seu usuário foi criado com sucesso.`, // Conteúdo texto simples
   };
@@ -241,7 +241,7 @@ export const sendBookingClientEmail = async (email: string, empresa: string) => 
   const emailData = {
     from: {
       email: "noreply@thinkless.com.br", // Remetente configurado na MailerSend
-      name: "Collegato",              // Nome do remetente
+      name: "Agendou Aí?",              // Nome do remetente
     },
     to: [
       {
@@ -249,7 +249,7 @@ export const sendBookingClientEmail = async (email: string, empresa: string) => 
         name: "Recipient", // Nome do destinatário (opcional)
       },
     ],
-    subject: "Reserva realizada - Collegato",
+    subject: "Reserva realizada - Agendou Aí?",
     html: `Reserva na sala ${empresa} realizada com sucesso para a data solicitada!`, // Conteúdo HTML
     text: `Reserva na sala ${empresa} realizada com sucesso para a data solicitada!`, // Conteúdo texto simples
   };
@@ -303,9 +303,9 @@ export const sendBookingCompanyEmail = async (
       destination: email,
       templateType: EmailTemplateType.REQUEST_TEMPLATE,
       template: templateWithCode,
-      subject: 'Nova reserva - Collegato',
+      subject: 'Nova reserva - Agendou Aí?',
       fromName: {
-        name: 'Collegato',
+        name: 'Agendou Aí?',
         prefix: 'noreply',
       },
     } as EmailData);
@@ -351,14 +351,14 @@ export const sendAppointmentConfirmationEmail = async (
 
   // Gera o conteúdo ICS
   const icsContent = generateIcsContent(eventDetails);
-  
+
   // Converte para Base64
   const icsBase64 = Buffer.from(icsContent).toString('base64');
 
   const emailData = {
     from: {
       email: "noreply@thinkless.com.br",
-      name: "Collegato"
+      name: "Agendou Aí?"
     },
     to: [{ email }],
     subject: `Confirmação de Agendamento: ${eventDetails.title}`,
@@ -379,7 +379,7 @@ export const sendAppointmentConfirmationEmail = async (
     attachments: [
       {
         content: icsBase64,
-        filename: 'agendamento-collegato.ics',
+        filename: 'agendamento-agendouai.ics',
         type: 'text/calendar; method=REQUEST; charset=UTF-8'
       }
     ]

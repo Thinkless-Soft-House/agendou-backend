@@ -9,8 +9,8 @@ export class EmpresaEntity extends BaseEntity implements Empresa {
   @PrimaryGeneratedColumn({ name: 'EMP_ID' })
   id: number;
   @Column({ name: 'EMP_LOGOURL', nullable: true, type: 'text' })
-  logo: string;
-  @Column({ name: 'EMP_NOME', nullable: true })
+  logo: string; // TODO: Trocar pra S3
+  @Column({ name: 'EMP_NOME' })
   nome: string;
   @Column({ name: 'EMP_TELEFONE', nullable: true })
   telefone: string;
@@ -74,11 +74,11 @@ export class EmpresaEntity extends BaseEntity implements Empresa {
   @Column({ name: 'EMP_ASSINATURA_STATUS', default: 'active' })
   assinaturaStatus: string;
 
-  @Column({ name: 'EMP_PLANO' })
-  plano: string;
+  @Column({ name: 'EMP_PLANO', nullable: true })
+  plano: number;
 
-  @Column({ name: 'EMP_DISPONIBILIDADE_PADRAO', type: 'json' })
-  disponibilidadePadrao: object;
+  @Column({ name: 'EMP_DISPONIBILIDADE_PADRAO', type: 'json', nullable: true, default: {} })
+  disponibilidadePadrao: Record<string, any>; // TODO: Isso não é record, na verdade essa coluna nem existe. É a entity DISPONIBILIDADE que controla isso
 
   @Column({ name: 'EMP_DISPONIBILIDADE', type: 'varchar', default: 'active' })
   disponibilidade: string;

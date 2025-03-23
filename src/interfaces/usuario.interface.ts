@@ -8,7 +8,7 @@ export interface Usuario {
   id: number;
   login: string;
   senha: string;
-  status: number;
+  status: number; // TODO: Errado isso aqui
 
   resetPasswordCode: number;
   pushToken: string;

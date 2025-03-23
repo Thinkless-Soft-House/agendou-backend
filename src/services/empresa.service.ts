@@ -4,7 +4,7 @@ import { EmpresaEntity } from '@/entities/empresa.entity';
 import { Empresa } from '@/interfaces/empresa.interface';
 import { EmpresaCreateDTO, EmpresaUpdateDTO } from '@/dtos/empresa.dto';
 import { PaginationConfig } from '@/interfaces/utils.interface';
-import { EmpresaEstatisticasView } from '@/entities/empresa-estatisticas.view.entity';
+import { EmpresaEstatisticasView } from '@/entities/views/empresa-estatisticas.view.entity';
 import { EntityRepository, getRepository, Repository } from 'typeorm';
 
 @EntityRepository()

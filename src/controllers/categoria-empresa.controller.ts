@@ -60,6 +60,17 @@ class CategoriaEmpresaController {
       next(error);
     }
   };
+
+  public getEmpresasByCategoriaId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const categoriaId = Number(req.params.id);
+      const empresas = await this.categoriaEmpresaService.getEmpresasByCategoriaId(categoriaId);
+
+      res.status(200).json({ data: empresas, message: 'findAll' });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export default CategoriaEmpresaController;

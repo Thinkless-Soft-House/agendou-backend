@@ -10,6 +10,9 @@ export class CategoriaEmpresaEntity extends BaseEntity implements CategoriaEmpre
   @Column({ name: 'CATEMP_DESCRICAO' })
   descricao: string;
 
+  @Column({ name: 'CATEMP_PREFIXPARTICAO', default: 'Sala' })
+  prefixParticao: string;
+
   @OneToMany(() => EmpresaEntity, empresa => empresa.categoria, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',

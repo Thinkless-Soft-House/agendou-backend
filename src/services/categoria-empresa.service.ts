@@ -50,6 +50,19 @@ class CategoriaEmpresaService extends Repository<CategoriaEmpresaEntity> {
     await CategoriaEmpresaEntity.delete({ id: categoriaEmpresaId });
     return findCategoriaEmpresa;
   }
+
+  public async getEmpresasByCategoriaId(categoriaId: number) {
+    if (isEmpty(categoriaId)) throw new HttpException(400, 'CategoriaId está vazio');
+
+    const categoria = await CategoriaEmpresaEntity.findOne({
+      where: { id: categoriaId },
+      relations: ['empresas']
+    });
+
+    if (!categoria) throw new HttpException(409, 'Categoria não encontrada');
+
+    return categoria.empresas;
+  }
 }
 
 export default CategoriaEmpresaService;

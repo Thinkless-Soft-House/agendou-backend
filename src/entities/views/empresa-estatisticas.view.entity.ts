@@ -1,11 +1,11 @@
 import { ViewEntity, ViewColumn, Connection } from 'typeorm';
-import { EmpresaEntity } from './empresa.entity';
-import { UsuarioEntity } from './usuario.entity';
-import { SalaEntity } from './sala.entity';
-import { ReservaEntity } from './reserva.entity';
+import { EmpresaEntity } from '../empresa.entity';
+import { UsuarioEntity } from '../usuario.entity';
+import { SalaEntity } from '../sala.entity';
+import { ReservaEntity } from '../reserva.entity';
 
 @ViewEntity({
-  name: 'V_EMPRESA_ESTATISTICAS_VIEW',
+  name: 'V_EMPRESA_ESTATISTICAS',
   expression: (connection: Connection) =>
     connection
       .createQueryBuilder()

@@ -146,6 +146,8 @@ class ReservaController {
         usuarioId: number;
         start: string;
         end: string;
+        empresaId: number;
+        salaId: number;
       } = req.body;
       const paginationConfig: PaginationConfig = createPaginationConfig(req);
       paginationConfig.take = 1000000;
@@ -165,16 +167,6 @@ class ReservaController {
         return;
       }
 
-      let empresaId = null;
-
-      if (req.user.permissaoId === 3) {
-        empresaId = req.user.empresaId || null;
-      } else if (req.user.permissaoId === 2) {
-        empresaId = req.body.empresaId || null;
-      }
-
-      // empresaId = 2;
-
 
       const findOneCompanyData: {
         data: Reserva[];
@@ -182,9 +174,9 @@ class ReservaController {
       } = await this.reservaService.findBookingByFilterBetweenDates(
         paginationConfig,
         null,
-        empresaId,
+        body.empresaId,
         null,
-        null,
+        body.salaId,
         null,
         null,
         null,

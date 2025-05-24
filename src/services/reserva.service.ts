@@ -17,6 +17,10 @@ import { ca } from 'date-fns/locale';
 import WhatsAppService from './whatsapp.service';
 import { WhatsAppProvider } from '@/enums/provider.enum';
 import whatsappService from './whatsapp.service';
+import { EmpresaEntity } from '@/entities/empresa.entity';
+import { Empresa } from '@/interfaces/empresa.interface';
+import { SalaEntity } from '@/entities/sala.entity';
+import { Sala } from '@/interfaces/sala.interface';
 
 @EntityRepository()
 class ReservaService extends Repository<ReservaEntity> {
@@ -367,12 +371,13 @@ class ReservaService extends Repository<ReservaEntity> {
               endDateTime.setHours(horaFimHours, horaFimMinutes, 0, 0);
 
               const findUser: Usuario = await UsuarioEntity.findOne({ where: { id: findBooking.usuarioId } });
+              const findRoom: Sala = await SalaEntity.findOne({ where: { id: findBooking.salaId}, relations: ['empresa'] });
               const appointmentConfirmationEmailResponse = await sendAppointmentConfirmationEmail(findUser.login, {
-                      title: 'Reunião entre ' + findUser.pessoa.nome + ' / ' + findUser.empresa.nome,
+                      title: 'Reunião entre' + findUser.pessoa.nome + ' / ' + findRoom.empresa.nome,
                       startDateTime: startDateTime,
                       endDateTime: endDateTime,
-                      description: 'Reunião entre ' + findUser.pessoa.nome + ' / ' + findUser.empresa.nome,
-                      location: findUser.empresa.endereco
+                      description: 'Reunião entre' + findUser.pessoa.nome + ' / ' + findRoom.empresa.nome,
+                      location: findRoom.empresa.endereco
                     });
               console.log("Email enviado:", appointmentConfirmationEmailResponse);
               
@@ -380,9 +385,9 @@ class ReservaService extends Repository<ReservaEntity> {
               const stringDate: string = format(new Date(findBooking.date), 'dd/MM/yyyy');
 
               try {
+                const findRoom = await SalaEntity.findOne({ where: { id: findBooking.salaId}, relations: ['empresa'] });
                 const findUser = await UsuarioEntity.findOne({
-                  where: { id: findBooking.usuarioId },
-                  relations: ['empresa'] // Carrega a relação com empresa
+                  where: { id: findBooking.usuarioId }
                 });
               
                 const messageContent = `✅ Agendamento Confirmado!\n\n` +
@@ -390,7 +395,7 @@ class ReservaService extends Repository<ReservaEntity> {
                   `Data: ${stringDate}\n` +
                   `Hora: ${findBooking.horaInicio}`;
               
-                const result = await whatsappService.sendConfirmation(findUser, messageContent);
+                const result = await whatsappService.sendConfirmation(findRoom,findUser, messageContent);
                 console.log('Mensagem enviada:', result);
               
               } catch (error) {
